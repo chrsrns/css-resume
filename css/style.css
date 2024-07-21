@@ -2665,6 +2665,17 @@ video {
   forced-color-adjust: none;
 }
 
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    /*Chrome, Safari */
+    print-color-adjust: exact !important;
+    /*Chrome, Safari */
+    color-adjust: exact !important;
+    /*Firefox*/
+  }
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
@@ -2754,5 +2765,11 @@ video {
     .dark\:lg\:hover\:\[paint-order\:markers\]:hover {
       paint-order: markers;
     }
+  }
+}
+
+@media print {
+  .print\:hidden {
+    display: none;
   }
 }
