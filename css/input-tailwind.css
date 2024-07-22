@@ -8,4 +8,10 @@
     print-color-adjust: exact !important; /*Chrome, Safari */
     color-adjust: exact !important; /*Firefox*/
   }
+  body {
+    margin-top: 5px;
+    margin-left: 10px;
+    zoom: 71%;
+    transform-origin: 0 0;
+  }
 }
