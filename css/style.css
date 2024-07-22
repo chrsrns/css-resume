@@ -574,6 +574,18 @@ video {
   right: -1rem;
 }
 
+.right-0 {
+  right: 0px;
+}
+
+.top-0 {
+  top: 0px;
+}
+
+.left-0 {
+  left: 0px;
+}
+
 .mx-4 {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -587,6 +599,10 @@ video {
 .my-4 {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.me-1 {
+  margin-inline-end: 0.25rem;
 }
 
 .me-2 {
@@ -615,10 +631,6 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.me-1 {
-  margin-inline-end: 0.25rem;
 }
 
 .inline-block {
@@ -767,6 +779,10 @@ video {
   border-radius: 0.5rem;
 }
 
+.border {
+  border-width: 1px;
+}
+
 .border-b-2 {
   border-bottom-width: 2px;
 }
@@ -774,6 +790,11 @@ video {
 .border-b-black {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(0 0 0 / var(--tw-border-opacity));
+}
+
+.bg-blue-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(219 234 254 / var(--tw-bg-opacity));
 }
 
 .bg-blue-600 {
@@ -784,11 +805,6 @@ video {
 .bg-neutral-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(229 229 229 / var(--tw-bg-opacity));
-}
-
-.bg-purple-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 232 255 / var(--tw-bg-opacity));
 }
 
 .bg-sky-400 {
@@ -804,11 +820,6 @@ video {
 .bg-yellow-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 249 195 / var(--tw-bg-opacity));
-}
-
-.bg-blue-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(219 234 254 / var(--tw-bg-opacity));
 }
 
 .p-4 {
@@ -906,14 +917,14 @@ video {
   font-weight: 600;
 }
 
+.text-blue-700 {
+  --tw-text-opacity: 1;
+  color: rgb(29 78 216 / var(--tw-text-opacity));
+}
+
 .text-gray-900 {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
-}
-
-.text-purple-700 {
-  --tw-text-opacity: 1;
-  color: rgb(126 34 206 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -924,11 +935,6 @@ video {
 .text-yellow-700 {
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity));
-}
-
-.text-blue-700 {
-  --tw-text-opacity: 1;
-  color: rgb(29 78 216 / var(--tw-text-opacity));
 }
 
 .opacity-75 {
@@ -993,6 +999,24 @@ video {
   --tw-shadow: 0 0 #0000;
   --tw-shadow-colored: 0 0 #0000;
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+@keyframes octocat-wave {
+  0%, 100% {
+    transform: rotate(0);
+  }
+
+  20%, 60% {
+    transform: rotate(-25deg);
+  }
+
+  40%, 80% {
+    transform: rotate(10deg);
+  }
+}
+
+.group\/github-corner:hover .group-hover\/github-corner\:animate-octocat-wave {
+  animation: octocat-wave 560ms ease-in-out;
 }
 
 @media (min-width: 640px) {
