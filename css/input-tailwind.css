@@ -11,7 +11,17 @@
   body {
     margin-top: 5px;
     margin-left: 10px;
-    zoom: 71%;
+    zoom: 70%;
     transform-origin: 0 0;
+  }
+  @page {
+    size: auto;
+    margin: 0;
+  }
+  @page :footer {
+    display: none;
+  }
+  @page :header {
+    display: none;
   }
 }
