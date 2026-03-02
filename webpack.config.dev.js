@@ -8,6 +8,13 @@ module.exports = merge(common, {
     liveReload: true,
     hot: true,
     open: true,
+    proxy: [
+      {
+        context: ["/api"],
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    ],
     static: {
       directory: "./",
       publicPath: "/css-resume/",
