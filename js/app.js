@@ -351,10 +351,29 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
 
   for (const p of (projects || []).slice().sort(sortByDisplayOrder)) {
     const href = p.project_link || p.source_code_link || "#";
+    const noPreview = !p.project_link || String(p.project_link).trim() === "";
+    const titleChildren = [
+      linkIconSvg(),
+      document.createTextNode(" "),
+      document.createTextNode(p.project_name || ""),
+    ];
+
+    if (noPreview) {
+      titleChildren.push(
+        el(
+          "span",
+          {
+            class:
+              "inline-block items-center justify-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-yellow-700 print:hidden",
+          },
+          [el("p", { class: "whitespace-nowrap text-sm", text: "No Preview" })]
+        )
+      );
+    }
     const title = el(
       "h3",
-      { class: "text-lg font-medium text-gray-900" },
-      [linkIconSvg(), document.createTextNode(" "), document.createTextNode(p.project_name || "")]
+      { class: `text-lg font-medium text-gray-900${noPreview ? " inline-flex items-center gap-2" : ""}` },
+      titleChildren
     );
 
     const link = el("a", { href }, [title]);
