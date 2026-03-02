@@ -601,10 +601,6 @@ video {
   margin-inline-end: 0.25rem;
 }
 
-.me-12 {
-  margin-inline-end: 3rem;
-}
-
 .me-2 {
   margin-inline-end: 0.5rem;
 }
@@ -631,10 +627,6 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.me-4 {
-  margin-inline-end: 1rem;
 }
 
 .inline-block {
