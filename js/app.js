@@ -1,4 +1,8 @@
-//- Using an anonymous function:
-document.getElementById("printButton").onclick = function () {
-  window.print();
+const onReady = async () => {
+  const btn = document.getElementById("printButton");
+  if (btn) {
+    btn.onclick = function () {
+      window.print();
+    };
+  }
 };
