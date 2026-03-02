@@ -45,11 +45,11 @@
   <div
     class="flex-shrink-0 flex-grow-0 basis-full overflow-hidden rounded p-8 shadow-[0_4px_10px_0_rgba(0,0,0,0.2),0_4px_20px_0_rgba(0,0,0,0.19)] sm:flex-shrink sm:flex-grow sm:basis-0">
     <div class="mx-4 overflow-hidden rounded-full">
-      <img src="/css-resume/img/profile.jpg" />
+      <img id="profileImage" src="/css-resume/img/profile.jpg" />
     </div>
     <div class="mt-8 pb-4">
       <h1 class="me-1 inline-block align-middle text-2xl">
-        <span>Christian Louise Aranas</span>
+        <span id="profileName">Christian Louise Aranas</span>
       </h1>
       <button id="printButton"
         class="inline-block select-none rounded bg-yellow-100 px-3 py-1 text-center align-middle text-sm text-yellow-700 shadow transition-all hover:shadow-lg active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none print:hidden"
@@ -57,7 +57,7 @@
         Save as PDF
       </button>
     </div>
-    <div>
+    <div id="profileTitle">
       <i class="me-2 inline-block h-full align-middle">
         <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
           style="overflow: visible; color: currentcolor" height="1em" width="1em">
@@ -80,11 +80,11 @@
           </path>
         </svg>
       </i>
-      <span class="inline-block align-middle">Cabuyao, </span>
-      <span class="inline-block align-middle">Laguna</span>
+      <span id="profileLocationPart1" class="inline-block align-middle">Cabuyao, </span>
+      <span id="profileLocationPart2" class="inline-block align-middle">Laguna</span>
     </div>
     <div>
-      <a class="text-wrap break-words" href="mailto:aranaschristianlouise@gmail.com">
+      <a id="profileEmailLink" class="text-wrap break-words" href="mailto:aranaschristianlouise@gmail.com">
         <i class="me-2 inline-block h-full align-middle">
           <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
             style="overflow: visible; color: currentcolor" height="1em" width="1em">
@@ -93,12 +93,12 @@
             </path>
           </svg>
         </i>
-        <span class="inline-block align-middle">aranaschristianlouise</span><span
-          class="inline-block align-middle">@gmail.com </span>
+        <span id="profileEmailText1" class="inline-block align-middle">aranaschristianlouise</span><span
+          id="profileEmailText2" class="inline-block align-middle">@gmail.com </span>
       </a>
     </div>
     <div>
-      <a href="https://github.com/chrsrns/">
+      <a id="profileGithubLink" href="https://github.com/chrsrns/">
         <i class="me-2 inline-block h-full align-middle">
           <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"
             style="overflow: visible; color: currentcolor" height="1em" width="1em">
@@ -107,7 +107,7 @@
             </path>
           </svg>
         </i>
-        <span class="inline-block align-middle">
+        <span id="profileGithubText" class="inline-block align-middle">
           https://github.com/chrsrns
         </span>
       </a>
@@ -121,11 +121,11 @@
           </path>
         </svg>
       </i>
-      <span class="inline-block align-middle"> (+63) 969 643 5518 </span>
+      <span id="profileMobile" class="inline-block align-middle"> (+63) 969 643 5518 </span>
     </div>
     <hr class="mt-5" />
     <h2 class="mt-5 text-xl">Skills</h2>
-    <ul>
+    <ul id="skillsList">
       <li class="py-2">
         Javascript
         <div class="overflow-clip rounded-full bg-neutral-200">
@@ -177,74 +177,76 @@
       </li>
     </ul>
     <h2 class="mt-5 text-xl">Frameworks & Tech Used</h2>
-    <h3 class="py-2">Javascript</h3>
-    <div class="my-2 flex flex-wrap gap-2">
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">TypeScript</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">NodeJS</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">SolidJS</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">ReactJS</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">NextJS</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">Express.js</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">Prisma ORM</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">11ty's WebC</p>
-      </span>
-    </div>
-    <h3 class="py-2">HTML/CSS</h3>
-    <div class="flex flex-wrap gap-2">
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">TailwindCSS</p>
-      </span>
-    </div>
-    <h3 class="py-2">Android Kotlin</h3>
-    <div class="flex flex-wrap gap-2">
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">Jetpack Compose</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">Room Persistence Database</p>
-      </span>
-    </div>
-    <h3 class="py-2">Python</h3>
-    <div class="flex flex-wrap gap-2">
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">LangChain</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">Odoo</p>
-      </span>
-    </div>
-    <h3 class="py-2">Dart</h3>
-    <div class="flex flex-wrap gap-2">
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">Flutter</p>
-      </span>
-    </div>
-    <h3 class="py-2">SQL Databases</h3>
-    <div class="flex flex-wrap gap-2">
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">MySQL</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">PostgreSQL</p>
-      </span>
-      <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-        <p class="whitespace-nowrap text-sm">SQLite</p>
-      </span>
+    <div id="languagesContainer">
+      <h3 class="py-2">Javascript</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">TypeScript</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">NodeJS</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">SolidJS</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">ReactJS</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">NextJS</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">Express.js</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">Prisma ORM</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">11ty's WebC</p>
+        </span>
+      </div>
+      <h3 class="py-2">HTML/CSS</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">TailwindCSS</p>
+        </span>
+      </div>
+      <h3 class="py-2">Android Kotlin</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">Jetpack Compose</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">Room Persistence Database</p>
+        </span>
+      </div>
+      <h3 class="py-2">Python</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">LangChain</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">Odoo</p>
+        </span>
+      </div>
+      <h3 class="py-2">Dart</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">Flutter</p>
+        </span>
+      </div>
+      <h3 class="py-2">SQL Databases</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">MySQL</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">PostgreSQL</p>
+        </span>
+        <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+          <p class="whitespace-nowrap text-sm">SQLite</p>
+        </span>
+      </div>
     </div>
   </div>
   <div
@@ -260,62 +262,64 @@
       </i>
       <span class="inline-block align-middle">Education</span>
     </h1>
-    <div class="my-4 flex flex-wrap gap-2 print:my-3">
-      <span class="inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700">
-        <p class="whitespace-nowrap text-sm">Tertiary</p>
-      </span>
-      <h2 class="inline-flex text-lg font-bold">STI College Calamba</h2>
-    </div>
-    <p class="mt-2 font-semibold">BS in Computer Engineering</p>
-    <div class="mt-1">
-      <span class="inline-block">
-        <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
-          style="overflow: visible; color: currentcolor" height="1em" width="1em">
-          <path
-            d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64h-40V24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H152V24zM48 192h80v56H48v-56zm0 104h80v64H48v-64zm128 0h96v64h-96v-64zm144 0h80v64h-80v-64zm80-48h-80v-56h80v56zm0 160v40c0 8.8-7.2 16-16 16h-64v-56h80zm-128 0v56h-96v-56h96zm-144 0v56H64c-8.8 0-16-7.2-16-16v-40h80zm144-160h-96v-56h96v56z">
-          </path>
-        </svg>
-      </span>
-      <span>2020 - 2024</span>
-    </div>
-    <div class="mt-4 print:mt-2">
-      <ul class="ms-4 list-disc">
-        <li>Cum Laude</li>
-        <li>1st Runner-up | Codefest 2022-2023 Local Level</li>
-      </ul>
-      <p class="mt-2">
-        At this institution, I've learned how to design hardware systems, 3D
-        design component chassis, and implement them in the exercises provided
-        by the institution.
-      </p>
-    </div>
-    <div class="my-4 flex flex-wrap gap-2 print:my-3">
-      <span class="inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700">
-        <p class="whitespace-nowrap text-sm">Senior High School</p>
-      </span>
-      <h2 class="inline-flex text-lg font-bold">STI College Calamba</h2>
-    </div>
-    <p class="mt-2 font-semibold">ITMAWD Strand</p>
-    <div class="mt-1">
-      <span class="inline-block">
-        <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
-          style="overflow: visible; color: currentcolor" height="1em" width="1em">
-          <path
-            d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64h-40V24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H152V24zM48 192h80v56H48v-56zm0 104h80v64H48v-64zm128 0h96v64h-96v-64zm144 0h80v64h-80v-64zm80-48h-80v-56h80v56zm0 160v40c0 8.8-7.2 16-16 16h-64v-56h80zm-128 0v56h-96v-56h96zm-144 0v56H64c-8.8 0-16-7.2-16-16v-40h80zm144-160h-96v-56h96v56z">
-          </path>
-        </svg>
-      </span>
-      <span>2018 - 2020</span>
-    </div>
-    <div class="mt-4 print:mt-2">
-      <ul class="ms-4 list-disc">
-        <li>Dean's Lister</li>
-      </ul>
-      <p class="mt-2">
-        At this institution, I've learned some fundamentals of some
-        programming concepts, learned several software and web technologies,
-        and provided exercises to challenge my skills.
-      </p>
+    <div id="educationContainer">
+      <div class="my-4 flex flex-wrap gap-2 print:my-3">
+        <span class="inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700">
+          <p class="whitespace-nowrap text-sm">Tertiary</p>
+        </span>
+        <h2 class="inline-flex text-lg font-bold">STI College Calamba</h2>
+      </div>
+      <p class="mt-2 font-semibold">BS in Computer Engineering</p>
+      <div class="mt-1">
+        <span class="inline-block">
+          <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+            style="overflow: visible; color: currentcolor" height="1em" width="1em">
+            <path
+              d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64h-40V24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H152V24zM48 192h80v56H48v-56zm0 104h80v64H48v-64zm128 0h96v64h-96v-64zm144 0h80v64h-80v-64zm80-48h-80v-56h80v56zm0 160v40c0 8.8-7.2 16-16 16h-64v-56h80zm-128 0v56h-96v-56h96zm-144 0v56H64c-8.8 0-16-7.2-16-16v-40h80zm144-160h-96v-56h96v56z">
+            </path>
+          </svg>
+        </span>
+        <span>2020 - 2024</span>
+      </div>
+      <div class="mt-4 print:mt-2">
+        <ul class="ms-4 list-disc">
+          <li>Cum Laude</li>
+          <li>1st Runner-up | Codefest 2022-2023 Local Level</li>
+        </ul>
+        <p class="mt-2">
+          At this institution, I've learned how to design hardware systems, 3D
+          design component chassis, and implement them in the exercises provided
+          by the institution.
+        </p>
+      </div>
+      <div class="my-4 flex flex-wrap gap-2 print:my-3">
+        <span class="inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700">
+          <p class="whitespace-nowrap text-sm">Senior High School</p>
+        </span>
+        <h2 class="inline-flex text-lg font-bold">STI College Calamba</h2>
+      </div>
+      <p class="mt-2 font-semibold">ITMAWD Strand</p>
+      <div class="mt-1">
+        <span class="inline-block">
+          <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+            style="overflow: visible; color: currentcolor" height="1em" width="1em">
+            <path
+              d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64h-40V24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H152V24zM48 192h80v56H48v-56zm0 104h80v64H48v-64zm128 0h96v64h-96v-64zm144 0h80v64h-80v-64zm80-48h-80v-56h80v56zm0 160v40c0 8.8-7.2 16-16 16h-64v-56h80zm-128 0v56h-96v-56h96zm-144 0v56H64c-8.8 0-16-7.2-16-16v-40h80zm144-160h-96v-56h96v56z">
+            </path>
+          </svg>
+        </span>
+        <span>2018 - 2020</span>
+      </div>
+      <div class="mt-4 print:mt-2">
+        <ul class="ms-4 list-disc">
+          <li>Dean's Lister</li>
+        </ul>
+        <p class="mt-2">
+          At this institution, I've learned some fundamentals of some
+          programming concepts, learned several software and web technologies,
+          and provided exercises to challenge my skills.
+        </p>
+      </div>
     </div>
     <h1 class="mt-8 text-2xl print:mt-4">
       <i class="me-2 inline-block h-full align-middle text-yellow-600">
@@ -328,61 +332,63 @@
       </i>
       <span class="inline-block align-middle">Experience</span>
     </h1>
-    <h2 class="mt-4 inline-flex text-lg font-bold print:mt-2">
-      Freelance Web Developer
-    </h2>
-    <ul class="ms-4 mt-2 list-disc">
-      <li>Worked in React, Prisma, and ExpressJS frameworks.</li>
-      <li>
-        Answered client questions and implemented requested product features.
-      </li>
-      <li>
-        Diagnosed issues in website implementation by employing debugging
-        techniques.
-      </li>
-      <li class="print:hidden">
-        Meeting deadlines optimally without being too early.
-      </li>
-    </ul>
-    <h2 class="mt-4 inline-flex text-lg font-bold print:mt-2">
-      On the Job Training @ Lecheria Integrated School
-    </h2>
-    <ul class="ms-4 mt-2 list-disc">
-      <li>
-        Disassembled and reassembled computer equipment between different
-        laboratories.
-      </li>
-      <li>
-        Troubleshooted and fixed problems regarding the school's examination
-        software.
-      </li>
-      <li class="print:hidden">
-        Assisted the faculty on conducting their National Learning Camp
-        Assessment.
-      </li>
-      <li class="print:hidden">
-        Digitized student grading sheets in preparation for printing to a new
-        document format.
-      </li>
-      <li class="print:hidden">
-        Fixed issues on student accounts using the school's admin panel when
-        necessary.
-      </li>
-    </ul>
-    <h2 class="mt-4 inline-flex gap-2 text-lg font-bold print:mt-2">
-      Junior Full Stack Software Developer
-      <span class="inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700">
-        <p class="whitespace-nowrap text-sm">Current</p>
-      </span>
-    </h2>
-    <ul class="ms-4 mt-2 list-disc">
-      <li>
-        Worked in Javascript, Python, LangChain, LLMs and related frameworks
-        to build software that matches the given requirements.
-      </li>
-      <li>Built software solutions independently.</li>
-      <li>Involved in deploying software solutions to production via AWS.</li>
-    </ul>
+    <div id="experienceContainer">
+      <h2 class="mt-4 inline-flex text-lg font-bold print:mt-2">
+        Freelance Web Developer
+      </h2>
+      <ul class="ms-4 mt-2 list-disc">
+        <li>Worked in React, Prisma, and ExpressJS frameworks.</li>
+        <li>
+          Answered client questions and implemented requested product features.
+        </li>
+        <li>
+          Diagnosed issues in website implementation by employing debugging
+          techniques.
+        </li>
+        <li class="print:hidden">
+          Meeting deadlines optimally without being too early.
+        </li>
+      </ul>
+      <h2 class="mt-4 inline-flex text-lg font-bold print:mt-2">
+        On the Job Training @ Lecheria Integrated School
+      </h2>
+      <ul class="ms-4 mt-2 list-disc">
+        <li>
+          Disassembled and reassembled computer equipment between different
+          laboratories.
+        </li>
+        <li>
+          Troubleshooted and fixed problems regarding the school's examination
+          software.
+        </li>
+        <li class="print:hidden">
+          Assisted the faculty on conducting their National Learning Camp
+          Assessment.
+        </li>
+        <li class="print:hidden">
+          Digitized student grading sheets in preparation for printing to a new
+          document format.
+        </li>
+        <li class="print:hidden">
+          Fixed issues on student accounts using the school's admin panel when
+          necessary.
+        </li>
+      </ul>
+      <h2 class="mt-4 inline-flex gap-2 text-lg font-bold print:mt-2">
+        Junior Full Stack Software Developer
+        <span class="inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700">
+          <p class="whitespace-nowrap text-sm">Current</p>
+        </span>
+      </h2>
+      <ul class="ms-4 mt-2 list-disc">
+        <li>
+          Worked in Javascript, Python, LangChain, LLMs and related frameworks
+          to build software that matches the given requirements.
+        </li>
+        <li>Built software solutions independently.</li>
+        <li>Involved in deploying software solutions to production via AWS.</li>
+      </ul>
+    </div>
     <a href="https://chrsrns.github.io/personal-projects-portal/">
       <h1 class="relative mt-8 w-fit border-b-2 border-b-black pe-1 text-2xl print:mt-4 print:border-b-0">
         <span class="absolute -right-4 flex h-3 w-3 print:hidden">
@@ -404,158 +410,12 @@
         https://chrsrns.github.io/personal-projects-portal/
       </p>
     </a>
-    <div class="glow-on-hover rounded-lg">
-      <article class="group">
-        <div class="px-4 pt-4 print:pt-2">
-          <a href="https://finnhub-webapp.vercel.app/">
-            <h3 class="text-lg font-medium text-gray-900">
-              <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="overflow: visible; color: currentcolor"
-                height="1em" width="1em">
-                <path
-                  d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
-                </path>
-              </svg>
-              Finnhub Stocks API Web App
-            </h3>
-            <p class="hidden text-sm print:block">
-              Vercel Demo Link: https://finnhub-webapp.vercel.app/
-            </p>
-          </a>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Yarn</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">NextJS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">ReactJS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">TailwindCSS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">TypeScript</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">WebSockets</p>
-            </span>
-          </div>
-        </div>
-      </article>
-    </div>
-    <div class="glow-on-hover rounded-lg">
-      <article class="group">
-        <div class="px-4 pt-4 print:pt-2">
-          <a href="https://chrsrns-projects-server.domcloud.dev/online-shopping-solidjs">
-            <h3 class="text-lg font-medium text-gray-900">
-              <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="overflow: visible; color: currentcolor"
-                height="1em" width="1em">
-                <path
-                  d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
-                </path>
-              </svg>
-              FurniCo - Online Shopping Project
-            </h3>
-            <p class="hidden text-sm print:block">
-              Github Demo Link:
-              https://chrsrns-projects-server.domcloud.dev/online-shopping-solidjs
-            </p>
-          </a>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">SolidJS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">NodeJS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">TailwindCSS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">TypeScript</p>
-            </span>
-          </div>
-        </div>
-      </article>
-    </div>
-    <div class="glow-on-hover rounded-lg">
-      <article class="group">
-        <div class="px-4 pt-4 print:pt-2">
-          <a href="https://chrsrns.github.io/habit-tracker-flutter/">
-            <h3 class="text-lg font-medium text-gray-900">
-              <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="overflow: visible; color: currentcolor"
-                height="1em" width="1em">
-                <path
-                  d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
-                </path>
-              </svg>
-              CoHabit - Habit Tracking Application
-            </h3>
-            <p class="hidden text-sm print:block">
-              Github Demo Link:
-              https://chrsrns.github.io/habit-tracker-flutter/
-            </p>
-          </a>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Dart</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Flutter</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">SQL</p>
-            </span>
-          </div>
-        </div>
-      </article>
-    </div>
-    <div class="glow-on-hover rounded-lg print:hidden">
-      <article class="group">
-        <div class="px-4 pt-4 print:pt-2">
-          <a href="https://chrsrns.github.io/tailwind-infinix-website/">
-            <h3 class="text-lg font-medium text-gray-900">
-              <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="overflow: visible; color: currentcolor"
-                height="1em" width="1em">
-                <path
-                  d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
-                </path>
-              </svg>
-              InfiniX - A Gaming Blog Site
-            </h3>
-            <p class="hidden text-sm print:block">
-              Github Demo Link:
-              https://chrsrns.github.io/tailwind-infinix-website/
-            </p>
-          </a>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">WebC for HTML</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">TailwindCSS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Pure JS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Web Components</p>
-            </span>
-          </div>
-        </div>
-      </article>
-    </div>
-    <div class="glow-on-hover rounded-lg print:hidden">
-      <article class="group">
-        <div class="px-4 pt-4 print:pt-2">
-          <a href="https://github.com/chrsrns/codingencyclopedia">
-            <div class="gap-2">
-              <h3 class="inline-block text-lg font-medium text-gray-900 print:block">
+    <div id="projectsContainer">
+      <div class="glow-on-hover rounded-lg">
+        <article class="group">
+          <div class="px-4 pt-4 print:pt-2">
+            <a href="https://finnhub-webapp.vercel.app/">
+              <h3 class="text-lg font-medium text-gray-900">
                 <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
                   style="overflow: visible; color: currentcolor" height="1em" width="1em">
@@ -563,78 +423,258 @@
                     d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
                   </path>
                 </svg>
-                Coding Encyclopedia
+                Finnhub Stocks API Web App
               </h3>
-              <span
-                class="inline-block items-center justify-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-yellow-700 print:hidden">
-                <p class="whitespace-nowrap text-sm">No Preview</p>
-              </span>
-
               <p class="hidden text-sm print:block">
-                Github Link: https://github.com/chrsrns/codingencyclopedia
+                Vercel Demo Link: https://finnhub-webapp.vercel.app/
               </p>
+            </a>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Yarn</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">NextJS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">ReactJS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">TailwindCSS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">TypeScript</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">WebSockets</p>
+              </span>
             </div>
-          </a>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Kotlin</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Android Studio</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Jetpack Compose</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">
-                Room Persistence Database
+          </div>
+        </article>
+      </div>
+      <div class="glow-on-hover rounded-lg">
+        <article class="group">
+          <div class="px-4 pt-4 print:pt-2">
+            <a href="https://chrsrns-projects-server.domcloud.dev/online-shopping-solidjs">
+              <h3 class="text-lg font-medium text-gray-900">
+                <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
+                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+                  style="overflow: visible; color: currentcolor" height="1em" width="1em">
+                  <path
+                    d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
+                  </path>
+                </svg>
+                FurniCo - Online Shopping Project
+              </h3>
+              <p class="hidden text-sm print:block">
+                Github Demo Link:
+                https://chrsrns-projects-server.domcloud.dev/online-shopping-solidjs
               </p>
-            </span>
+            </a>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">SolidJS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">NodeJS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">TailwindCSS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">TypeScript</p>
+              </span>
+            </div>
           </div>
-        </div>
-      </article>
-    </div>
-    <div class="glow-on-hover rounded-lg">
-      <article class="group">
-        <div class="px-4 pt-4 print:pt-2">
-          <a href="https://scheduler-website.domcloud.dev">
-            <h3 class="text-lg font-medium text-gray-900">
-              <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" style="overflow: visible; color: currentcolor"
-                height="1em" width="1em">
-                <path
-                  d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
-                </path>
-              </svg>
-              Scheduler Website
-            </h3>
-            <p class="hidden text-sm print:block">
-              Demo Link: https://scheduler-website.domcloud.dev
-            </p>
-          </a>
+        </article>
+      </div>
+      <div class="glow-on-hover rounded-lg">
+        <article class="group">
+          <div class="px-4 pt-4 print:pt-2">
+            <a href="https://chrsrns.github.io/habit-tracker-flutter/">
+              <h3 class="text-lg font-medium text-gray-900">
+                <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
+                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+                  style="overflow: visible; color: currentcolor" height="1em" width="1em">
+                  <path
+                    d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
+                  </path>
+                </svg>
+                CoHabit - Habit Tracking Application
+              </h3>
+              <p class="hidden text-sm print:block">
+                Github Demo Link:
+                https://chrsrns.github.io/habit-tracker-flutter/
+              </p>
+            </a>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Dart</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Flutter</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">SQL</p>
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="glow-on-hover rounded-lg print:hidden">
+        <article class="group">
+          <div class="px-4 pt-4 print:pt-2">
+            <a href="https://chrsrns.github.io/tailwind-infinix-website/">
+              <h3 class="text-lg font-medium text-gray-900">
+                <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
+                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+                  style="overflow: visible; color: currentcolor" height="1em" width="1em">
+                  <path
+                    d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
+                  </path>
+                </svg>
+                InfiniX - A Gaming Blog Site
+              </h3>
+              <p class="hidden text-sm print:block">
+                Github Demo Link:
+                https://chrsrns.github.io/tailwind-infinix-website/
+              </p>
+            </a>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">WebC for HTML</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">TailwindCSS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Pure JS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Web Components</p>
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="glow-on-hover rounded-lg print:hidden">
+        <article class="group">
+          <div class="px-4 pt-4 print:pt-2">
+            <a href="https://github.com/chrsrns/codingencyclopedia">
+              <div class="gap-2">
+                <h3 class="inline-block text-lg font-medium text-gray-900 print:block">
+                  <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+                    style="overflow: visible; color: currentcolor" height="1em" width="1em">
+                    <path
+                      d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
+                    </path>
+                  </svg>
+                  Coding Encyclopedia
+                </h3>
+                <span
+                  class="inline-block items-center justify-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-yellow-700 print:hidden">
+                  <p class="whitespace-nowrap text-sm">No Preview</p>
+                </span>
 
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">NodeJS</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Express</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Prisma</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">React</p>
-            </span>
-            <span class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
-              <p class="whitespace-nowrap text-sm">Bootstrap</p>
-            </span>
+                <p class="hidden text-sm print:block">
+                  Github Link: https://github.com/chrsrns/codingencyclopedia
+                </p>
+              </div>
+            </a>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Kotlin</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Android Studio</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Jetpack Compose</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">
+                  Room Persistence Database
+                </p>
+              </span>
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
+      </div>
+      <div class="glow-on-hover rounded-lg">
+        <article class="group">
+          <div class="px-4 pt-4 print:pt-2">
+            <a href="https://scheduler-website.domcloud.dev">
+              <h3 class="text-lg font-medium text-gray-900">
+                <svg class="inline-block print:hidden" fill="currentColor" stroke-width="0"
+                  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
+                  style="overflow: visible; color: currentcolor" height="1em" width="1em">
+                  <path
+                    d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z">
+                  </path>
+                </svg>
+                Scheduler Website
+              </h3>
+              <p class="hidden text-sm print:block">
+                Demo Link: https://scheduler-website.domcloud.dev
+              </p>
+            </a>
+
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">NodeJS</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Express</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Prisma</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">React</p>
+              </span>
+              <span
+                class="inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700">
+                <p class="whitespace-nowrap text-sm">Bootstrap</p>
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
     </div>
   </div>
 
+  <script>
+    window.__CONFIG__ = window.__CONFIG__ || {
+      API_BASE_URL: "/api",
+      RESUME_ID: 192,
+    };
+  </script>
   <script src="js/app.js"></script>
 </body>
 
