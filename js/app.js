@@ -192,6 +192,20 @@ const formatDateRange = (start, end) => {
   return "";
 };
 
+const formatYear = (value) => {
+  if (value == null) return "";
+  const s = String(value).trim();
+  if (!s) return "";
+
+  const match = s.match(/(19|20)\d{2}/);
+  if (match) return match[0];
+
+  const d = new Date(s);
+  if (!Number.isNaN(d.getTime())) return String(d.getFullYear());
+
+  return s;
+};
+
 const renderEducation = (educations, keyPointsByEducationId) => {
   const container = document.getElementById("educationContainer");
   if (!container) return;
@@ -212,7 +226,7 @@ const renderEducation = (educations, keyPointsByEducationId) => {
     ]);
 
     const degree = ed.degree ? el("p", { class: "mt-2 font-semibold", text: ed.degree }) : null;
-    const rangeText = formatDateRange(ed.start_date, ed.end_date);
+    const rangeText = formatDateRange(formatYear(ed.start_date), formatYear(ed.end_date));
 
     const range = rangeText
       ? el("div", { class: "mt-1" }, [
