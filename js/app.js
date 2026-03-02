@@ -284,7 +284,29 @@ const renderExperience = (items, keyPointsByWorkId) => {
 
   for (const w of (items || []).slice().sort(sortByDisplayOrder)) {
     const title = w.company_name ? `${w.job_title} @ ${w.company_name}` : w.job_title;
-    container.appendChild(el("h2", { class: "mt-4 inline-flex text-lg font-bold print:mt-2", text: title }));
+    const isCurrent = w && (w.end_date == null || String(w.end_date).trim() === "");
+    const h2Children = [document.createTextNode(title || "")];
+    if (isCurrent) {
+      h2Children.push(
+        el(
+          "span",
+          {
+            class:
+              "inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700",
+          },
+          [el("p", { class: "whitespace-nowrap text-sm", text: "Current" })]
+        )
+      );
+    }
+    container.appendChild(
+      el(
+        "h2",
+        {
+          class: `mt-4 inline-flex${isCurrent ? " gap-2" : ""} text-lg font-bold print:mt-2`,
+        },
+        h2Children
+      )
+    );
 
     const points = (keyPointsByWorkId && keyPointsByWorkId[w.id]) || [];
     const ul = el(
