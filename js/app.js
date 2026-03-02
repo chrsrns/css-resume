@@ -282,7 +282,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
 
   clearEl(container);
 
-  for (const w of (items || []).slice().sort(sortByDisplayOrder)) {
+  for (const [idx, w] of (items || []).slice().sort(sortByDisplayOrder).entries()) {
     const title = w.company_name ? `${w.job_title} @ ${w.company_name}` : w.job_title;
     const isCurrent = w && (w.end_date == null || String(w.end_date).trim() === "");
     const h2Children = [document.createTextNode(title || "")];
@@ -302,7 +302,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
       el(
         "h2",
         {
-          class: `mt-4 inline-flex${isCurrent ? " gap-2" : ""} text-lg font-bold print:mt-2`,
+          class: `mt-4 inline-flex${isCurrent ? " gap-2" : ""} text-lg font-bold print:mt-2 ${idx >= 2 ? "print:hidden" : ""}`,
         },
         h2Children
       )
@@ -311,12 +311,12 @@ const renderExperience = (items, keyPointsByWorkId) => {
     const points = (keyPointsByWorkId && keyPointsByWorkId[w.id]) || [];
     const ul = el(
       "ul",
-      { class: "ms-4 mt-2 list-disc" },
+      { class: `ms-4 mt-2 list-disc ${idx >= 2 ? "print:hidden" : ""}` },
       points.slice().sort(sortByDisplayOrder).map((kp) => el("li", { text: kp.key_point || "" }))
     );
 
     if (w.description) {
-      ul.appendChild(el("li", { text: w.description }));
+      ul.appendChild(el("li", { text: w.description, class: `${idx >= 2 ? "print:hidden" : ""}` }));
     }
 
     container.appendChild(ul);
