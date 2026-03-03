@@ -48,8 +48,29 @@ const fetchBody = async (apiBaseUrl, path) => {
 };
 
 const clearEl = (el) => {
-  while (el.firstChild) el.removeChild(el.firstChild);
+  for (const child of Array.from(el.children)) {
+    if (!child.id || !child.classList.contains("overlay-placeholder")) {
+      el.removeChild(child);
+    } else if (child.classList.contains("overlay-placeholder")) {
+      child.classList.remove('opacity-100');
+      child.classList.add('opacity-0');
+
+      child.addEventListener('transitionend', () => {
+        child.classList.add('hidden');
+      }, { once: true });
+    }
+  }
 };
+
+const reAddSectionPlaceholder = (sectionEl) => {
+  for (const child of Array.from(sectionEl.children)) {
+    if (child.classList.contains("overlay-placeholder")) {
+      child.classList.add('opacity-100');
+      child.classList.remove('opacity-0');
+      child.classList.remove('hidden');
+    }
+  }
+}
 
 const el = (tag, attrs = {}, children = []) => {
   const svgTags = new Set([
@@ -89,6 +110,17 @@ const el = (tag, attrs = {}, children = []) => {
 
 const renderProfile = (resume) => {
   if (!resume) return;
+
+  // Hide the profile placeholder overlay
+  const profilePlaceholder = document.getElementById("profilePlaceholderOverlay");
+  if (profilePlaceholder) {
+    profilePlaceholder.classList.remove('opacity-100');
+    profilePlaceholder.classList.add('opacity-0');
+
+    profilePlaceholder.addEventListener('transitionend', () => {
+      profilePlaceholder.classList.add('hidden');
+    }, { once: true });
+  }
 
   const nameEl = document.getElementById("profileName");
   if (nameEl && resume.name) nameEl.textContent = resume.name;
