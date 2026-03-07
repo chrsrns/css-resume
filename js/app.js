@@ -1,4 +1,120 @@
 ////////////////////////////////////////////////////////
+// WebSocket Connection Helpers
+////////////////////////////////////////////////////////
+
+const handleResumeChange = (event) => {
+  console.log(`Resume ${event.resume_id} changed:`, event.action);
+  const { apiBaseUrl, resumeId } = getConfig();
+
+  // Check if action is valid
+  // For the purposes of this function, we only care about the 'updated' property
+  if (event.action === null || typeof event.action !== 'object' || !('updated' in event.action)) {
+    return;
+  }
+
+  switch (event.action.updated) {
+    case 'personalinfo':
+      refreshProfile(apiBaseUrl, resumeId);
+      break;
+    case 'education':
+      refreshEducation(apiBaseUrl, resumeId);
+      break;
+    case 'frameworks':
+      refreshFrameworks(apiBaseUrl, resumeId);
+      break;
+    case 'languages':
+      refreshLanguages(apiBaseUrl, resumeId);
+      break;
+    case 'projects':
+      refreshPortfolioProjects(apiBaseUrl, resumeId);
+      break;
+    case 'skills':
+      refreshSkills(apiBaseUrl, resumeId);
+      break;
+    case 'experience':
+      refreshWorkExperiences(apiBaseUrl, resumeId);
+      break;
+  }
+};
+
+const handleWebSocketMessage = (event) => {
+  try {
+    const message = JSON.parse(event.data);
+
+    switch (message.type) {
+      case 'resume.changed':
+        handleResumeChange(message);
+        break;
+      case 'error':
+        console.error('WebSocket error:', message.message);
+        break;
+      default:
+        console.log('Unknown message type:', message);
+    }
+  } catch (error) {
+    console.error('Failed to parse WebSocket message:', error);
+  }
+};
+
+const createWebSocketConnection = (apiBaseUrl, resumeId, authToken = null) => {
+  // Sanitize apiBaseUrl: remove protocol prefix and trailing slashes
+  const sanitizedUrl = apiBaseUrl
+    .replace(/^https?:\/\//, '')
+    .replace(/\/+$/, '');
+
+  // Determine protocol (wss for HTTPS, ws for HTTP)
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocol}//${sanitizedUrl}/ws`;
+
+  const ws = new WebSocket(wsUrl);
+
+  ws.addEventListener('open', () => {
+    console.log('WebSocket connected');
+    // Send initial subscribe message
+    const subscribeMessage = {
+      type: 'subscribe',
+      resume_id: resumeId,
+    };
+    if (authToken) {
+      subscribeMessage.token = authToken;
+    }
+    ws.send(JSON.stringify(subscribeMessage));
+  });
+
+  return ws;
+};
+
+const createWebSocketWithReconnect = (apiBaseUrl, resumeId, authToken = null) => {
+  let ws = null;
+  let reconnectAttempts = 0;
+  const maxReconnectAttempts = 5;
+  const reconnectDelay = 1000;
+
+  const connect = () => {
+    ws = createWebSocketConnection(apiBaseUrl, resumeId, authToken);
+
+    ws.addEventListener('message', handleWebSocketMessage);
+
+    ws.addEventListener('close', (event) => {
+      console.log('WebSocket closed:', event.code, event.reason);
+
+      if (reconnectAttempts < maxReconnectAttempts) {
+        reconnectAttempts++;
+        console.log(`Reconnecting... Attempt ${reconnectAttempts}/${maxReconnectAttempts}`);
+        setTimeout(connect, reconnectDelay * reconnectAttempts);
+      }
+    });
+
+    ws.addEventListener('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  };
+
+  connect();
+  return ws;
+};
+
+////////////////////////////////////////////////////////
 // API Access Helpers
 ////////////////////////////////////////////////////////
 
