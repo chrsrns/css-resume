@@ -1,3 +1,123 @@
+////////////////////////////////////////////////////////
+// WebSocket Connection Helpers
+////////////////////////////////////////////////////////
+
+const handleResumeChange = (event) => {
+  console.log(`Resume ${event.resume_id} changed:`, event.action);
+  const { apiBaseUrl, resumeId } = getConfig();
+
+  // Check if action is valid
+  // For the purposes of this function, we only care about the 'updated' property
+  if (event.action === null || typeof event.action !== 'object' || !('updated' in event.action)) {
+    return;
+  }
+
+  switch (event.action.updated) {
+    case 'personalinfo':
+      refreshProfile(apiBaseUrl, resumeId);
+      break;
+    case 'education':
+      refreshEducation(apiBaseUrl, resumeId);
+      break;
+    case 'frameworks':
+      refreshFrameworks(apiBaseUrl, resumeId);
+      break;
+    case 'languages':
+      refreshLanguages(apiBaseUrl, resumeId);
+      break;
+    case 'projects':
+      refreshPortfolioProjects(apiBaseUrl, resumeId);
+      break;
+    case 'skills':
+      refreshSkills(apiBaseUrl, resumeId);
+      break;
+    case 'experience':
+      refreshWorkExperiences(apiBaseUrl, resumeId);
+      break;
+  }
+};
+
+const handleWebSocketMessage = (event) => {
+  try {
+    const message = JSON.parse(event.data);
+
+    switch (message.type) {
+      case 'resume.changed':
+        handleResumeChange(message);
+        break;
+      case 'error':
+        console.error('WebSocket error:', message.message);
+        break;
+      default:
+        console.log('Unknown message type:', message);
+    }
+  } catch (error) {
+    console.error('Failed to parse WebSocket message:', error);
+  }
+};
+
+const createWebSocketConnection = (apiBaseUrl, resumeId, authToken = null) => {
+  // Sanitize apiBaseUrl: remove protocol prefix and trailing slashes
+  const sanitizedUrl = apiBaseUrl
+    .replace(/^https?:\/\//, '')
+    .replace(/\/+$/, '');
+
+  // Determine protocol (wss for HTTPS, ws for HTTP)
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocol}//${sanitizedUrl}/ws`;
+
+  const ws = new WebSocket(wsUrl);
+
+  ws.addEventListener('open', () => {
+    console.log('WebSocket connected');
+    // Send initial subscribe message
+    const subscribeMessage = {
+      type: 'subscribe',
+      resume_id: resumeId,
+    };
+    if (authToken) {
+      subscribeMessage.token = authToken;
+    }
+    ws.send(JSON.stringify(subscribeMessage));
+  });
+
+  return ws;
+};
+
+const createWebSocketWithReconnect = (apiBaseUrl, resumeId, authToken = null) => {
+  let ws = null;
+  let reconnectAttempts = 0;
+  const maxReconnectAttempts = 5;
+  const reconnectDelay = 1000;
+
+  const connect = () => {
+    ws = createWebSocketConnection(apiBaseUrl, resumeId, authToken);
+
+    ws.addEventListener('message', handleWebSocketMessage);
+
+    ws.addEventListener('close', (event) => {
+      console.log('WebSocket closed:', event.code, event.reason);
+
+      if (reconnectAttempts < maxReconnectAttempts) {
+        reconnectAttempts++;
+        console.log(`Reconnecting... Attempt ${reconnectAttempts}/${maxReconnectAttempts}`);
+        setTimeout(connect, reconnectDelay * reconnectAttempts);
+      }
+    });
+
+    ws.addEventListener('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  };
+
+  connect();
+  return ws;
+};
+
+////////////////////////////////////////////////////////
+// API Access Helpers
+////////////////////////////////////////////////////////
+
 const getConfig = () => {
   const cfg = window.__CONFIG__ || {};
   return {
@@ -7,15 +127,6 @@ const getConfig = () => {
         ? cfg.RESUME_ID
         : Number.parseInt(String(cfg.RESUME_ID || "1"), 10),
   };
-};
-
-const sortByDisplayOrder = (a, b) => {
-  const ao = a && a.display_order != null ? a.display_order : Number.MAX_SAFE_INTEGER;
-  const bo = b && b.display_order != null ? b.display_order : Number.MAX_SAFE_INTEGER;
-  if (ao !== bo) return ao - bo;
-  const aid = a && a.id != null ? a.id : 0;
-  const bid = b && b.id != null ? b.id : 0;
-  return aid - bid;
 };
 
 const buildUrl = (apiBaseUrl, path) => {
@@ -45,6 +156,19 @@ const fetchBody = async (apiBaseUrl, path) => {
 
   const data = await res.json();
   return data.body;
+};
+
+////////////////////////////////////////////////////////
+// DOM Manipulation Helpers
+////////////////////////////////////////////////////////
+
+const sortByDisplayOrder = (a, b) => {
+  const ao = a && a.display_order != null ? a.display_order : Number.MAX_SAFE_INTEGER;
+  const bo = b && b.display_order != null ? b.display_order : Number.MAX_SAFE_INTEGER;
+  if (ao !== bo) return ao - bo;
+  const aid = a && a.id != null ? a.id : 0;
+  const bid = b && b.id != null ? b.id : 0;
+  return aid - bid;
 };
 
 const clearEl = (el) => {
@@ -107,6 +231,30 @@ const el = (tag, attrs = {}, children = []) => {
   }
   return node;
 };
+
+const formatDateRange = (start, end) => {
+  if (start && end) return `${start} - ${end}`;
+  if (start && !end) return `${start} - Present`;
+  return "";
+};
+
+const formatYear = (value) => {
+  if (value == null) return "";
+  const s = String(value).trim();
+  if (!s) return "";
+
+  const match = s.match(/(19|20)\d{2}/);
+  if (match) return match[0];
+
+  const d = new Date(s);
+  if (!Number.isNaN(d.getTime())) return String(d.getFullYear());
+
+  return s;
+};
+
+////////////////////////////////////////////////////////
+// Section Rendering
+////////////////////////////////////////////////////////
 
 const renderProfile = (resume) => {
   if (!resume) return;
@@ -216,26 +364,6 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
 
     container.appendChild(wrap);
   }
-};
-
-const formatDateRange = (start, end) => {
-  if (start && end) return `${start} - ${end}`;
-  if (start && !end) return `${start} - Present`;
-  return "";
-};
-
-const formatYear = (value) => {
-  if (value == null) return "";
-  const s = String(value).trim();
-  if (!s) return "";
-
-  const match = s.match(/(19|20)\d{2}/);
-  if (match) return match[0];
-
-  const d = new Date(s);
-  if (!Number.isNaN(d.getTime())) return String(d.getFullYear());
-
-  return s;
 };
 
 const renderEducation = (educations, keyPointsByEducationId) => {
@@ -445,6 +573,124 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
   }
 };
 
+////////////////////////////////////////////////////////
+// Main Initialization
+////////////////////////////////////////////////////////
+
+const refreshProfile = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("profilePlaceholderOverlay");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}`).then((resume) => {
+    renderProfile(resume);
+  });
+};
+
+const refreshSkills = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("skillsList");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/skills`).then((skills) => {
+    renderSkills(skills);
+  });
+};
+
+const refreshEducation = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("educationContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/education`).then(async (educations) => {
+    const educationKeyPointsPairs = await Promise.all(
+      (educations || []).map(async (ed) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/education/${ed.id}/key_points`);
+          return [ed.id, items || []];
+        } catch {
+          return [ed.id, []];
+        }
+      })
+    );
+    const educationKeyPointsById = Object.fromEntries(educationKeyPointsPairs);
+    renderEducation(educations, educationKeyPointsById);
+  });
+};
+
+const refreshWorkExperiences = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("experienceContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences`).then(async (work) => {
+    const workKeyPointsPairs = await Promise.all(
+      (work || []).map(async (w) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences/${w.id}/key_points`);
+          return [w.id, items || []];
+        } catch {
+          return [w.id, []];
+        }
+      })
+    );
+    const workKeyPointsById = Object.fromEntries(workKeyPointsPairs);
+    renderExperience(work, workKeyPointsById);
+  });
+};
+
+const refreshPortfolioProjects = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("projectsContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects`).then(async (projects) => {
+    const projectKeyPointsPairs = await Promise.all(
+      (projects || []).map(async (p) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects/${p.id}/key_points`);
+          return [p.id, items || []];
+        } catch {
+          return [p.id, []];
+        }
+      })
+    );
+
+    const projectTechPairs = await Promise.all(
+      (projects || []).map(async (p) => {
+        try {
+          const items = await fetchBody(
+            apiBaseUrl,
+            `/resume/${resumeId}/portfolio_projects/${p.id}/technologies`
+          );
+          return [p.id, items || []];
+        } catch {
+          return [p.id, []];
+        }
+      })
+    );
+
+    const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
+    const projectTechById = Object.fromEntries(projectTechPairs);
+    renderProjects(projects, projectKeyPointsById, projectTechById);
+  });
+};
+
+const refreshLanguages = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("languagesContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/languages`).then(async (languages) => {
+    const frameworkPairs = await Promise.all(
+      (languages || []).map(async (lang) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/languages/${lang.id}/frameworks`);
+          return [lang.id, items || []];
+        } catch {
+          return [lang.id, []];
+        }
+      })
+    );
+    const frameworksByLanguageId = Object.fromEntries(frameworkPairs);
+    renderLanguages(languages, frameworksByLanguageId);
+  });
+};
+
+////////////////////////////////////////////////////////
+// Main Initialization
+////////////////////////////////////////////////////////
+
+let websocket = null;
+
 const onReady = async () => {
   const btn = document.getElementById("printButton");
   if (btn) {
@@ -457,92 +703,18 @@ const onReady = async () => {
   if (!Number.isFinite(resumeId)) return;
 
   try {
-    fetchBody(apiBaseUrl, `/resume/${resumeId}`).then((resume) => {
-      renderProfile(resume);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/skills`).then((skills) => {
-      renderSkills(skills);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/education`).then(async (educations) => {
-      const educationKeyPointsPairs = await Promise.all(
-        (educations || []).map(async (ed) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/education/${ed.id}/key_points`);
-            return [ed.id, items || []];
-          } catch {
-            return [ed.id, []];
-          }
-        })
-      );
-      const educationKeyPointsById = Object.fromEntries(educationKeyPointsPairs);
-      renderEducation(educations, educationKeyPointsById);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences`).then(async (work) => {
-      const workKeyPointsPairs = await Promise.all(
-        (work || []).map(async (w) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences/${w.id}/key_points`);
-            return [w.id, items || []];
-          } catch {
-            return [w.id, []];
-          }
-        })
-      );
-      const workKeyPointsById = Object.fromEntries(workKeyPointsPairs);
-      renderExperience(work, workKeyPointsById);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects`).then(async (projects) => {
-      const projectKeyPointsPairs = await Promise.all(
-        (projects || []).map(async (p) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects/${p.id}/key_points`);
-            return [p.id, items || []];
-          } catch {
-            return [p.id, []];
-          }
-        })
-      );
-
-      const projectTechPairs = await Promise.all(
-        (projects || []).map(async (p) => {
-          try {
-            const items = await fetchBody(
-              apiBaseUrl,
-              `/resume/${resumeId}/portfolio_projects/${p.id}/technologies`
-            );
-            return [p.id, items || []];
-          } catch {
-            return [p.id, []];
-          }
-        })
-      );
-
-      const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
-      const projectTechById = Object.fromEntries(projectTechPairs);
-      renderProjects(projects, projectKeyPointsById, projectTechById);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/languages`).then(async (languages) => {
-      const frameworkPairs = await Promise.all(
-        (languages || []).map(async (lang) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/languages/${lang.id}/frameworks`);
-            return [lang.id, items || []];
-          } catch {
-            return [lang.id, []];
-          }
-        })
-      );
-      const frameworksByLanguageId = Object.fromEntries(frameworkPairs);
-      renderLanguages(languages, frameworksByLanguageId);
-    })
+    await refreshProfile(apiBaseUrl, resumeId);
+    await refreshSkills(apiBaseUrl, resumeId);
+    await refreshEducation(apiBaseUrl, resumeId);
+    await refreshWorkExperiences(apiBaseUrl, resumeId);
+    await refreshPortfolioProjects(apiBaseUrl, resumeId);
+    await refreshLanguages(apiBaseUrl, resumeId);
   } catch (err) {
     console.error(err);
   }
+
+  // Initialize WebSocket for real-time updates
+  websocket = createWebSocketWithReconnect(apiBaseUrl, resumeId);
 };
 
 if (document.readyState === "loading") {
