@@ -577,6 +577,120 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
 // Main Initialization
 ////////////////////////////////////////////////////////
 
+const refreshProfile = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("profilePlaceholderOverlay");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}`).then((resume) => {
+    renderProfile(resume);
+  });
+};
+
+const refreshSkills = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("skillsList");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/skills`).then((skills) => {
+    renderSkills(skills);
+  });
+};
+
+const refreshEducation = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("educationContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/education`).then(async (educations) => {
+    const educationKeyPointsPairs = await Promise.all(
+      (educations || []).map(async (ed) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/education/${ed.id}/key_points`);
+          return [ed.id, items || []];
+        } catch {
+          return [ed.id, []];
+        }
+      })
+    );
+    const educationKeyPointsById = Object.fromEntries(educationKeyPointsPairs);
+    renderEducation(educations, educationKeyPointsById);
+  });
+};
+
+const refreshWorkExperiences = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("experienceContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences`).then(async (work) => {
+    const workKeyPointsPairs = await Promise.all(
+      (work || []).map(async (w) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences/${w.id}/key_points`);
+          return [w.id, items || []];
+        } catch {
+          return [w.id, []];
+        }
+      })
+    );
+    const workKeyPointsById = Object.fromEntries(workKeyPointsPairs);
+    renderExperience(work, workKeyPointsById);
+  });
+};
+
+const refreshPortfolioProjects = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("projectsContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects`).then(async (projects) => {
+    const projectKeyPointsPairs = await Promise.all(
+      (projects || []).map(async (p) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects/${p.id}/key_points`);
+          return [p.id, items || []];
+        } catch {
+          return [p.id, []];
+        }
+      })
+    );
+
+    const projectTechPairs = await Promise.all(
+      (projects || []).map(async (p) => {
+        try {
+          const items = await fetchBody(
+            apiBaseUrl,
+            `/resume/${resumeId}/portfolio_projects/${p.id}/technologies`
+          );
+          return [p.id, items || []];
+        } catch {
+          return [p.id, []];
+        }
+      })
+    );
+
+    const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
+    const projectTechById = Object.fromEntries(projectTechPairs);
+    renderProjects(projects, projectKeyPointsById, projectTechById);
+  });
+};
+
+const refreshLanguages = async (apiBaseUrl, resumeId) => {
+  const container = document.getElementById("languagesContainer");
+  reAddSectionPlaceholder(container);
+  fetchBody(apiBaseUrl, `/resume/${resumeId}/languages`).then(async (languages) => {
+    const frameworkPairs = await Promise.all(
+      (languages || []).map(async (lang) => {
+        try {
+          const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/languages/${lang.id}/frameworks`);
+          return [lang.id, items || []];
+        } catch {
+          return [lang.id, []];
+        }
+      })
+    );
+    const frameworksByLanguageId = Object.fromEntries(frameworkPairs);
+    renderLanguages(languages, frameworksByLanguageId);
+  });
+};
+
+////////////////////////////////////////////////////////
+// Main Initialization
+////////////////////////////////////////////////////////
+
+let websocket = null;
+
 const onReady = async () => {
   const btn = document.getElementById("printButton");
   if (btn) {
@@ -589,92 +703,18 @@ const onReady = async () => {
   if (!Number.isFinite(resumeId)) return;
 
   try {
-    fetchBody(apiBaseUrl, `/resume/${resumeId}`).then((resume) => {
-      renderProfile(resume);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/skills`).then((skills) => {
-      renderSkills(skills);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/education`).then(async (educations) => {
-      const educationKeyPointsPairs = await Promise.all(
-        (educations || []).map(async (ed) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/education/${ed.id}/key_points`);
-            return [ed.id, items || []];
-          } catch {
-            return [ed.id, []];
-          }
-        })
-      );
-      const educationKeyPointsById = Object.fromEntries(educationKeyPointsPairs);
-      renderEducation(educations, educationKeyPointsById);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences`).then(async (work) => {
-      const workKeyPointsPairs = await Promise.all(
-        (work || []).map(async (w) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/work_experiences/${w.id}/key_points`);
-            return [w.id, items || []];
-          } catch {
-            return [w.id, []];
-          }
-        })
-      );
-      const workKeyPointsById = Object.fromEntries(workKeyPointsPairs);
-      renderExperience(work, workKeyPointsById);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects`).then(async (projects) => {
-      const projectKeyPointsPairs = await Promise.all(
-        (projects || []).map(async (p) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/portfolio_projects/${p.id}/key_points`);
-            return [p.id, items || []];
-          } catch {
-            return [p.id, []];
-          }
-        })
-      );
-
-      const projectTechPairs = await Promise.all(
-        (projects || []).map(async (p) => {
-          try {
-            const items = await fetchBody(
-              apiBaseUrl,
-              `/resume/${resumeId}/portfolio_projects/${p.id}/technologies`
-            );
-            return [p.id, items || []];
-          } catch {
-            return [p.id, []];
-          }
-        })
-      );
-
-      const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
-      const projectTechById = Object.fromEntries(projectTechPairs);
-      renderProjects(projects, projectKeyPointsById, projectTechById);
-    })
-
-    fetchBody(apiBaseUrl, `/resume/${resumeId}/languages`).then(async (languages) => {
-      const frameworkPairs = await Promise.all(
-        (languages || []).map(async (lang) => {
-          try {
-            const items = await fetchBody(apiBaseUrl, `/resume/${resumeId}/languages/${lang.id}/frameworks`);
-            return [lang.id, items || []];
-          } catch {
-            return [lang.id, []];
-          }
-        })
-      );
-      const frameworksByLanguageId = Object.fromEntries(frameworkPairs);
-      renderLanguages(languages, frameworksByLanguageId);
-    })
+    await refreshProfile(apiBaseUrl, resumeId);
+    await refreshSkills(apiBaseUrl, resumeId);
+    await refreshEducation(apiBaseUrl, resumeId);
+    await refreshWorkExperiences(apiBaseUrl, resumeId);
+    await refreshPortfolioProjects(apiBaseUrl, resumeId);
+    await refreshLanguages(apiBaseUrl, resumeId);
   } catch (err) {
     console.error(err);
   }
+
+  // Initialize WebSocket for real-time updates
+  websocket = createWebSocketWithReconnect(apiBaseUrl, resumeId);
 };
 
 if (document.readyState === "loading") {
