@@ -1,3 +1,7 @@
+////////////////////////////////////////////////////////
+// API Access Helpers
+////////////////////////////////////////////////////////
+
 const getConfig = () => {
   const cfg = window.__CONFIG__ || {};
   return {
@@ -7,15 +11,6 @@ const getConfig = () => {
         ? cfg.RESUME_ID
         : Number.parseInt(String(cfg.RESUME_ID || "1"), 10),
   };
-};
-
-const sortByDisplayOrder = (a, b) => {
-  const ao = a && a.display_order != null ? a.display_order : Number.MAX_SAFE_INTEGER;
-  const bo = b && b.display_order != null ? b.display_order : Number.MAX_SAFE_INTEGER;
-  if (ao !== bo) return ao - bo;
-  const aid = a && a.id != null ? a.id : 0;
-  const bid = b && b.id != null ? b.id : 0;
-  return aid - bid;
 };
 
 const buildUrl = (apiBaseUrl, path) => {
@@ -45,6 +40,19 @@ const fetchBody = async (apiBaseUrl, path) => {
 
   const data = await res.json();
   return data.body;
+};
+
+////////////////////////////////////////////////////////
+// DOM Manipulation Helpers
+////////////////////////////////////////////////////////
+
+const sortByDisplayOrder = (a, b) => {
+  const ao = a && a.display_order != null ? a.display_order : Number.MAX_SAFE_INTEGER;
+  const bo = b && b.display_order != null ? b.display_order : Number.MAX_SAFE_INTEGER;
+  if (ao !== bo) return ao - bo;
+  const aid = a && a.id != null ? a.id : 0;
+  const bid = b && b.id != null ? b.id : 0;
+  return aid - bid;
 };
 
 const clearEl = (el) => {
@@ -107,6 +115,30 @@ const el = (tag, attrs = {}, children = []) => {
   }
   return node;
 };
+
+const formatDateRange = (start, end) => {
+  if (start && end) return `${start} - ${end}`;
+  if (start && !end) return `${start} - Present`;
+  return "";
+};
+
+const formatYear = (value) => {
+  if (value == null) return "";
+  const s = String(value).trim();
+  if (!s) return "";
+
+  const match = s.match(/(19|20)\d{2}/);
+  if (match) return match[0];
+
+  const d = new Date(s);
+  if (!Number.isNaN(d.getTime())) return String(d.getFullYear());
+
+  return s;
+};
+
+////////////////////////////////////////////////////////
+// Section Rendering
+////////////////////////////////////////////////////////
 
 const renderProfile = (resume) => {
   if (!resume) return;
@@ -216,26 +248,6 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
 
     container.appendChild(wrap);
   }
-};
-
-const formatDateRange = (start, end) => {
-  if (start && end) return `${start} - ${end}`;
-  if (start && !end) return `${start} - Present`;
-  return "";
-};
-
-const formatYear = (value) => {
-  if (value == null) return "";
-  const s = String(value).trim();
-  if (!s) return "";
-
-  const match = s.match(/(19|20)\d{2}/);
-  if (match) return match[0];
-
-  const d = new Date(s);
-  if (!Number.isNaN(d.getTime())) return String(d.getFullYear());
-
-  return s;
 };
 
 const renderEducation = (educations, keyPointsByEducationId) => {
@@ -444,6 +456,10 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
     container.appendChild(card);
   }
 };
+
+////////////////////////////////////////////////////////
+// Main Initialization
+////////////////////////////////////////////////////////
 
 const onReady = async () => {
   const btn = document.getElementById("printButton");
