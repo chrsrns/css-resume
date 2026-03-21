@@ -1172,10 +1172,14 @@ video {
     /*Firefox*/
   }
 
+  #projectsContainer > .glow-on-hover:nth-child(n + 7 of .glow-on-hover) {
+    display: none !important;
+  }
+
   body {
     margin-top: 5px;
     margin-left: 10px;
-    zoom: 70%;
+    zoom: 69.5%;
     transform-origin: 0 0;
   }
 
