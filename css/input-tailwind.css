@@ -4,27 +4,238 @@
 
 @media print {
   * {
-    -webkit-print-color-adjust: exact !important; /*Chrome, Safari */
-    print-color-adjust: exact !important; /*Chrome, Safari */
-    color-adjust: exact !important; /*Firefox*/
+    -webkit-print-color-adjust: exact !important;
+    /*Chrome, Safari */
+    print-color-adjust: exact !important;
+    /*Chrome, Safari */
+    color-adjust: exact !important;
+    /*Firefox*/
   }
-  #projectsContainer > .glow-on-hover:nth-child(n + 7 of .glow-on-hover) {
+
+  #projectsContainer>.glow-on-hover:nth-child(n + 7 of .glow-on-hover) {
     display: none !important;
   }
+
   body {
     margin-top: 5px;
     margin-left: 10px;
     zoom: 67%;
     transform-origin: 0 0;
   }
+
   @page {
     size: auto;
     margin: 0;
   }
+
   @page :footer {
     display: none;
   }
+
   @page :header {
     display: none;
+  }
+}
+
+/* Welcome Dialog Styles */
+#welcomeDialog:not(.hidden) {
+  display: block;
+}
+
+#welcomeDialog.hidden #dialogBackdrop {
+  opacity: 0;
+}
+
+#welcomeDialog:not(.hidden) #dialogBackdrop {
+  opacity: 1;
+}
+
+#welcomeDialog.hidden #dialogContent {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+#welcomeDialog:not(.hidden) #dialogContent {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Dialog Container */
+.dialog {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+}
+
+/* Dialog Header */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.close-button:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* Dialog Content */
+.dialog-content {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Text Section */
+.text-section {
+  margin-bottom: 1.25rem;
+}
+
+.greeting {
+  margin: 0 0 0.75rem 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.description {
+  margin: 0 0 0.75rem 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #111827;
+}
+
+.description:last-of-type {
+  margin-bottom: 1rem;
+}
+
+.cta {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+  text-decoration: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.card:hover {
+  border-color: #4f46e5;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0.25rem;
+  background: white;
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.card-action {
+  flex-shrink: 0;
+  color: #6b7280;
+  transition: color 140ms ease;
+}
+
+.card:hover .card-action {
+  color: #4f46e5;
+}
+
+/* Dialog Footer */
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-primary {
+  padding: 0.5rem 1.5rem;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+}
+
+@media (max-width: 640px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  #welcomeDialog #dialogContent {
+    max-height: 95vh;
   }
 }
