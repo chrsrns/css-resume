@@ -1023,6 +1023,150 @@
     };
   </script>
   <script type="module" src="js/app.js"></script>
+
+  <!-- Welcome Dialog -->
+  <div id="welcomeDialog" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true"
+    aria-labelledby="dialog-title">
+    <!-- Backdrop -->
+    <div id="dialogBackdrop"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Dialog Content -->
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+      <div id="dialogContent"
+        class="dialog relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] transform transition-all duration-300 scale-95 opacity-0">
+        <!-- Dialog Header -->
+        <div class="dialog-header">
+          <h2 id="dialog-title">Welcome to My Resume!</h2>
+          <button id="dialogCloseBtn" class="close-button" aria-label="Close dialog">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Dialog Content Body -->
+        <div class="dialog-content">
+          <!-- Icon Section -->
+          <div class="flex justify-center mb-6">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Server -->
+              <rect x="5" y="10" width="40" height="60" rx="4" fill="#4f46e5" opacity="0.9" />
+              <rect x="10" y="20" width="30" height="4" rx="2" fill="white" opacity="0.8" />
+              <rect x="10" y="28" width="20" height="4" rx="2" fill="white" opacity="0.6" />
+              <circle cx="32" cy="38" r="3" fill="#22c55e" />
+              <circle cx="32" cy="50" r="3" fill="#22c55e" />
+              <circle cx="32" cy="62" r="3" fill="#22c55e" />
+
+              <!-- Connection Lines -->
+              <path d="M45 40 L60 40" stroke="#4f46e5" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+              <path d="M60 25 L75 25" stroke="#4f46e5" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+              <path d="M60 55 L75 55" stroke="#4f46e5" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+
+              <!-- UI/Frontend -->
+              <rect x="75" y="5" width="40" height="30" rx="4" fill="#0ea5e9" opacity="0.9" />
+              <rect x="80" y="12" width="30" height="2" rx="1" fill="white" opacity="0.8" />
+              <rect x="80" y="18" width="20" height="2" rx="1" fill="white" opacity="0.6" />
+              <rect x="80" y="24" width="25" height="2" rx="1" fill="white" opacity="0.6" />
+
+              <!-- Another UI -->
+              <rect x="75" y="45" width="40" height="30" rx="4" fill="#8b5cf6" opacity="0.9" />
+              <rect x="80" y="52" width="30" height="2" rx="1" fill="white" opacity="0.8" />
+              <rect x="80" y="58" width="15" height="2" rx="1" fill="white" opacity="0.6" />
+              <rect x="80" y="64" width="20" height="2" rx="1" fill="white" opacity="0.6" />
+            </svg>
+          </div>
+          <div class="text-section">
+            <p class="greeting">
+              Hey! Looks like you came from one of my projects!
+            </p>
+            <p class="description">
+              This Resume Page project uses one of my projects - a <em>dedicated backend server</em> - to retrieve my
+              resume
+              data.
+              This makes it so that when I edit my resume data from my <strong>Resume Editor</strong>, the changes are
+              <em>immediately
+                reflected</em> on this page!
+            </p>
+            <p class="description">
+              Also, I wanted to demonstrate my ability to create a <strong>full-stack application</strong>, where
+              the frontend and backend work together to deliver <em>dynamic content</em>.
+            </p>
+            <p class="cta">
+              If you'd like to see my portfolit site or go back to the API Playground, <strong>click below!</strong>
+            </p>
+          </div>
+
+          <!-- Cards Section -->
+          <div class="cards">
+            <!-- Portfolio Card -->
+            <a href="https://chrsrns.github.io/personal-projects-portal/" target="_blank" rel="noopener noreferrer"
+              class="card">
+              <div class="card-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.7893 3 20.5304 3 20V9Z"
+                    stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M9 22V12H15V22" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="card-content">
+                <div class="card-title">Portfolio</div>
+                <div class="card-subtitle">Explore my projects</div>
+              </div>
+              <div class="card-action">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </div>
+            </a>
+
+            <!-- API Playground Card -->
+            <a href="https://chrsrns-api.domcloud.dev/api_playground" target="_blank" rel="noopener noreferrer"
+              class="card">
+              <div class="card-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2" stroke="#4f46e5" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2" stroke="#4f46e5" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                  <line x1="6" y1="6" x2="6.01" y2="6" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <line x1="6" y1="18" x2="6.01" y2="18" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="card-content">
+                <div class="card-title">API Playground</div>
+                <div class="card-subtitle">Explore my API backend</div>
+              </div>
+              <div class="card-action">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dialog-footer">
+          <button id="dialogGotItBtn" class="btn-primary">
+            Got it!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

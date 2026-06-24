@@ -479,28 +479,28 @@ const renderExperience = (items, keyPointsByWorkId) => {
 
     const range = rangeText
       ? el("div", { class: "mt-1" }, [
-          el("span", { class: "inline-block" }, [
-            el(
-              "svg",
-              {
-                fill: "currentColor",
-                "stroke-width": "0",
-                xmlns: "http://www.w3.org/2000/svg",
-                viewBox: "0 0 448 512",
-                style: "overflow: visible; color: currentcolor",
-                height: "1em",
-                width: "1em",
-              },
-              [
-                el("path", {
-                  d: "M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64h-40V24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H152V24zM48 192h80v56H48v-56zm0 104h80v64H48v-64zm128 0h96v64h-96v-64zm144 0h80v64h-80v-64zm80-48h-80v-56h80v56zm0 160v40c0 8.8-7.2 16-16 16h-64v-56h80zm-128 0v56h-96v-56h96zm-144 0v56H64c-8.8 0-16-7.2-16-16v-40h80zm144-160h-96v-56h96v56z",
-                }),
-              ],
-            ),
-          ]),
-          document.createTextNode(" "),
-          el("span", { text: rangeText }),
-        ])
+        el("span", { class: "inline-block" }, [
+          el(
+            "svg",
+            {
+              fill: "currentColor",
+              "stroke-width": "0",
+              xmlns: "http://www.w3.org/2000/svg",
+              viewBox: "0 0 448 512",
+              style: "overflow: visible; color: currentcolor",
+              height: "1em",
+              width: "1em",
+            },
+            [
+              el("path", {
+                d: "M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H64C28.7 64 0 92.7 0 128v320c0 35.3 28.7 64 64 64h320c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64h-40V24c0-13.3-10.7-24-24-24s-24 10.7-24 24v40H152V24zM48 192h80v56H48v-56zm0 104h80v64H48v-64zm128 0h96v64h-96v-64zm144 0h80v64h-80v-64zm80-48h-80v-56h80v56zm0 160v40c0 8.8-7.2 16-16 16h-64v-56h80zm-128 0v56h-96v-56h96zm-144 0v56H64c-8.8 0-16-7.2-16-16v-40h80zm144-160h-96v-56h96v56z",
+              }),
+            ],
+          ),
+        ]),
+        document.createTextNode(" "),
+        el("span", { text: rangeText }),
+      ])
       : null;
     container.appendChild(range);
 
@@ -722,12 +722,85 @@ const refreshLanguages = async (apiBaseUrl, resumeId) => {
 };
 
 ////////////////////////////////////////////////////////
+// Welcome Dialog
+////////////////////////////////////////////////////////
+
+const initWelcomeDialog = () => {
+  const dialog = document.getElementById('welcomeDialog');
+  const backdrop = document.getElementById('dialogBackdrop');
+  const closeBtn = document.getElementById('dialogCloseBtn');
+  const gotItBtn = document.getElementById('dialogGotItBtn');
+
+  if (!dialog) return;
+
+  // Check for source=backend query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('source') === 'backend') {
+    // Show dialog
+    dialog.classList.remove('hidden');
+    // Trigger animations
+    setTimeout(() => {
+      backdrop.classList.remove('opacity-0');
+      backdrop.classList.add('opacity-100');
+    }, 10);
+    setTimeout(() => {
+      const content = document.getElementById('dialogContent');
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  }
+
+  // Close dialog function
+  const closeDialog = () => {
+    // Animate out
+    backdrop.classList.remove('opacity-100');
+    backdrop.classList.add('opacity-0');
+    const content = document.getElementById('dialogContent');
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+
+    // Hide after animation completes
+    setTimeout(() => {
+      dialog.classList.add('hidden');
+    }, 300);
+
+    // Remove query parameter from URL without navigating
+    const url = new URL(window.location.href);
+    url.searchParams.delete('source');
+    window.history.replaceState({}, '', url.toString());
+  };
+
+  // Event listeners
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeDialog);
+  }
+
+  if (gotItBtn) {
+    gotItBtn.addEventListener('click', closeDialog);
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closeDialog);
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !dialog.classList.contains('hidden')) {
+      closeDialog();
+    }
+  });
+};
+
+////////////////////////////////////////////////////////
 // Main Initialization
 ////////////////////////////////////////////////////////
 
 let websocket = null;
 
 const onReady = async () => {
+  // Initialize welcome dialog
+  initWelcomeDialog();
+
   const btn = document.getElementById("printButton");
   if (btn) {
     btn.onclick = function () {
