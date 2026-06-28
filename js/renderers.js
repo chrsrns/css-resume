@@ -339,7 +339,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
   }
 };
 
-const buildProjectCard = (p, keyPointsByProjectId, techByProjectId) => {
+const buildProjectCard = (p, keyPointsByProjectId, techByProjectId, isCarousel = false) => {
   const linkIconSvg = () =>
     el(
       "svg",
@@ -413,12 +413,15 @@ const buildProjectCard = (p, keyPointsByProjectId, techByProjectId) => {
     )
     : null;
 
-  const body = el("div", { class: "px-4 pt-4 print:pt-2" },
+  const body = el("div", { class: `px-4 ${isCarousel ? "py-4" : "pt-4"} print:pt-2` },
     [link, printLink, pointsList, techWrap].filter(Boolean)
   );
 
   const article = el("article", { class: "group" }, [body]);
-  return el("div", { class: "glow-on-hover rounded-lg" }, [article]);
+  const cardClass = isCarousel
+    ? "carousel-card glow-on-hover rounded-lg"
+    : "glow-on-hover rounded-lg";
+  return el("div", { class: cardClass }, [article]);
 };
 
 const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
@@ -440,10 +443,9 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
     container.appendChild(card);
 
     if (track) {
-      const clonedCard = card.cloneNode(true);
-      clonedCard.classList.remove("static-project-card");
+      const carouselCard = buildProjectCard(p, keyPointsByProjectId, techByProjectId, true);
       const slide = el("div", { class: "projects-carousel-slide flex-shrink-0 flex-grow-0" }, [
-        clonedCard,
+        carouselCard,
       ]);
       track.appendChild(slide);
     }
@@ -457,4 +459,4 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
   return { projectCount: sortedProjects.length };
 };
 
-export { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills };
+export { buildProjectCard, clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills };

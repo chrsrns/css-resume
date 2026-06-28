@@ -3,6 +3,58 @@
 @tailwind utilities;
 
 /* Projects carousel / static list view */
+
+/* Carousel card styling */
+.carousel-card {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.carousel-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-card {
+    transition: none;
+  }
+
+  .carousel-card:hover {
+    transform: none;
+  }
+}
+
+/* Carousel card spacing */
+.projects-carousel-track .carousel-card {
+  margin: 0 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .projects-carousel-track .carousel-card {
+    margin: 0 0.75rem;
+  }
+}
+
+/* Long text content handling */
+.carousel-card .group {
+  min-width: 0;
+}
+
+.carousel-card h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .carousel-card h3 {
+    white-space: normal;
+  }
+}
+
 #projectsContainer .static-project-card {
   display: none;
 }

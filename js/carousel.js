@@ -52,7 +52,7 @@ const initProjectsCarousel = (projectCount) => {
   // V51: loop true; V56: reduced motion instant transitions
   const options = {
     loop: true,
-    duration: reduced ? 0 : undefined,
+    duration: reduced ? 0 : 25,
   };
 
   destroyProjectsCarousel();

@@ -10,6 +10,7 @@ import {
   showProjectsCarouselView,
   showProjectsStaticView,
 } from "../js/carousel.js";
+import { buildProjectCard } from "../js/renderers.js";
 
 class FakeIntersectionObserver {
   observe() { }
@@ -272,7 +273,7 @@ describe("reduced motion and autoplay", () => {
     expect(emblaSpy).toHaveBeenCalled();
     const [, options, plugins] = emblaSpy.mock.calls[0];
     expect(options.loop).toBe(true);
-    expect(options.duration).toBeUndefined();
+    expect(options.duration).toBe(25);
     expect(plugins).toHaveLength(1);
     expect(autoplaySpy).toHaveBeenCalledWith({ delay: 4000, stopOnInteraction: false });
   });
@@ -286,5 +287,51 @@ describe("V62 browser module import map", () => {
     expect(html).toContain('"embla-carousel-autoplay"');
     expect(html).toContain("cdn.jsdelivr.net/npm/embla-carousel@8.6.0");
     expect(html).toContain("cdn.jsdelivr.net/npm/embla-carousel-autoplay@8.6.0");
+  });
+});
+
+describe("carousel card visual styling", () => {
+  it("carousel cards have carousel-card class for visible boundaries (V68)", () => {
+    const card = buildProjectCard(projectFixture(1), {}, {}, true);
+    expect(card.classList.contains("carousel-card")).toBe(true);
+  });
+
+  it("static cards do not have carousel-card class (V67)", () => {
+    const card = buildProjectCard(projectFixture(1), {}, {}, false);
+    expect(card.classList.contains("carousel-card")).toBe(false);
+  });
+
+  it("carousel cards preserve existing glow-on-hover and rounded-lg classes (V71-V73)", () => {
+    const card = buildProjectCard(projectFixture(1), {}, {}, true);
+    expect(card.classList.contains("glow-on-hover")).toBe(true);
+    expect(card.classList.contains("rounded-lg")).toBe(true);
+  });
+
+  it("static cards preserve existing styling (V67)", () => {
+    const card = buildProjectCard(projectFixture(1), {}, {}, false);
+    expect(card.classList.contains("glow-on-hover")).toBe(true);
+    expect(card.classList.contains("rounded-lg")).toBe(true);
+  });
+
+  it("renderProjects applies carousel-card class to carousel slides (V68)", () => {
+    setProjectsHtml();
+    const projects = [projectFixture(1), projectFixture(2)];
+    renderProjects(projects, {}, {});
+
+    const track = document.querySelector(".projects-carousel-track");
+    const carouselCards = track.querySelectorAll(".carousel-card");
+    expect(carouselCards.length).toBe(2);
+  });
+
+  it("renderProjects does not apply carousel-card class to static cards (V67)", () => {
+    setProjectsHtml();
+    const projects = [projectFixture(1), projectFixture(2)];
+    renderProjects(projects, {}, {});
+
+    const container = document.getElementById("projectsContainer");
+    const staticCards = container.querySelectorAll(".static-project-card");
+    staticCards.forEach(card => {
+      expect(card.classList.contains("carousel-card")).toBe(false);
+    });
   });
 });
