@@ -1,5 +1,6 @@
 import { getConfig } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
+import { initProjectsCarousel, initProjectsToggle } from "./carousel.js";
 import { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills } from "./renderers.js";
 
 ////////////////////////////////////////////////////////
@@ -184,7 +185,8 @@ const refreshPortfolioProjects = async (apiBaseUrl, resumeId) => {
 
     const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
     const projectTechById = Object.fromEntries(projectTechPairs);
-    renderProjects(projects, projectKeyPointsById, projectTechById);
+    const result = renderProjects(projects, projectKeyPointsById, projectTechById);
+    initProjectsCarousel(result?.projectCount || 0);
   });
 };
 
@@ -293,6 +295,8 @@ const onReady = async () => {
       window.print();
     };
   }
+
+  initProjectsToggle();
 
   const { apiBaseUrl, resumeId } = getConfig();
   if (!Number.isFinite(resumeId)) return;

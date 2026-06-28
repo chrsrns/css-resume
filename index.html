@@ -660,6 +660,10 @@
         https://chrsrns.github.io/personal-projects-portal/
       </p>
     </a>
+    <button id="projectsViewToggle" type="button"
+      class="mb-2 rounded bg-blue-100 px-3 py-1 text-center text-sm text-blue-700 shadow transition-all hover:shadow-lg active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none print:hidden">
+      Show Static List
+    </button>
     <div id="projectsContainer" class="relative">
       <div id="projectsPlaceholderOverlay"
         class="overlay-placeholder absolute w-full h-full bg-white overflow-hidden transition-opacity duration-300 opacity-100">
@@ -757,6 +761,22 @@
             </div>
           </article>
         </div>
+      </div>
+      <div id="projectsCarousel" class="projects-carousel print:hidden">
+        <div class="projects-carousel-viewport overflow-hidden">
+          <div class="projects-carousel-track flex">
+          </div>
+        </div>
+        <button type="button"
+          class="projects-carousel-prev rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden"
+          aria-label="Previous project">
+          Prev
+        </button>
+        <button type="button"
+          class="projects-carousel-next rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden"
+          aria-label="Next project">
+          Next
+        </button>
       </div>
       <div class="glow-on-hover rounded-lg">
         <article class="group">

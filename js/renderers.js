@@ -4,8 +4,12 @@ import { clamp, formatDateRange, formatYear, sortByDisplayOrder } from "./helper
 // DOM Manipulation Helpers
 ////////////////////////////////////////////////////////
 
-const clearEl = (el) => {
+const clearEl = (el, preserveIds = []) => {
+  const preserveSet = new Set(preserveIds);
   for (const child of Array.from(el.children)) {
+    if (child.id && preserveSet.has(child.id)) {
+      continue;
+    }
     if (!child.id || !child.classList.contains("overlay-placeholder")) {
       el.removeChild(child);
     } else if (child.classList.contains("overlay-placeholder")) {
@@ -335,12 +339,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
   }
 };
 
-const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
-  const container = document.getElementById("projectsContainer");
-  if (!container) return;
-
-  clearEl(container);
-
+const buildProjectCard = (p, keyPointsByProjectId, techByProjectId) => {
   const linkIconSvg = () =>
     el(
       "svg",
@@ -356,73 +355,106 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
       },
       [
         el("path", {
-          d: "M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z",
+          d: "M579.8 267.7c56.5-56.5 56.5-148 0-204.5-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6 31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0l112.3-112.3zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5 50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5l112.2-112.3c31.5-31.5 82.5-31.5 114 0 27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9-34.4 7.4-44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z",
         }),
       ]
     );
 
-  for (const p of (projects || []).slice().sort(sortByDisplayOrder)) {
-    const href = p.project_link || p.source_code_link || "#";
-    const noPreview = !p.project_link || String(p.project_link).trim() === "";
-    const titleChildren = [
-      linkIconSvg(),
-      document.createTextNode(" "),
-      document.createTextNode(p.project_name || ""),
-    ];
+  const href = p.project_link || p.source_code_link || "#";
+  const noPreview = !p.project_link || String(p.project_link).trim() === "";
+  const titleChildren = [
+    linkIconSvg(),
+    document.createTextNode(" "),
+    document.createTextNode(p.project_name || ""),
+  ];
 
-    if (noPreview) {
-      titleChildren.push(
-        el(
-          "span",
-          {
-            class:
-              "inline-block items-center justify-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-yellow-700 print:hidden",
-          },
-          [el("p", { class: "whitespace-nowrap text-sm", text: "No Preview" })]
-        )
-      );
-    }
-    const title = el(
-      "h3",
-      { class: `text-lg font-medium text-gray-900${noPreview ? " inline-flex items-center gap-2" : ""}` },
-      titleChildren
-    );
-
-    const link = el("a", { href }, [title]);
-    const printLink = el("p", { class: "hidden text-sm print:block", text: href !== "#" ? href : "" });
-
-    const techWrap = el("div", { class: "mt-2 flex flex-wrap gap-2" });
-    const techs = (techByProjectId && techByProjectId[p.id]) || [];
-    for (const t of techs.slice().sort(sortByDisplayOrder)) {
-      techWrap.appendChild(
-        el(
-          "span",
-          {
-            class:
-              "inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700",
-          },
-          [el("p", { class: "whitespace-nowrap text-sm", text: t.technology_name || "" })]
-        )
-      );
-    }
-
-    const points = (keyPointsByProjectId && keyPointsByProjectId[p.id]) || [];
-    const pointsList = points.length
-      ? el(
-        "ul",
-        { class: "ms-4 mt-2 list-disc" },
-        points.slice().sort(sortByDisplayOrder).map((kp) => el("li", { text: kp.key_point || "" }))
+  if (noPreview) {
+    titleChildren.push(
+      el(
+        "span",
+        {
+          class:
+            "inline-block items-center justify-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-yellow-700 print:hidden",
+        },
+        [el("p", { class: "whitespace-nowrap text-sm", text: "No Preview" })]
       )
-      : null;
-
-    const body = el("div", { class: "px-4 pt-4 print:pt-2" },
-      [link, printLink, pointsList, techWrap].filter(Boolean)
     );
-
-    const article = el("article", { class: "group" }, [body]);
-    const card = el("div", { class: "glow-on-hover rounded-lg" }, [article]);
-    container.appendChild(card);
   }
+  const title = el(
+    "h3",
+    { class: `text-lg font-medium text-gray-900${noPreview ? " inline-flex items-center gap-2" : ""}` },
+    titleChildren
+  );
+
+  const link = el("a", { href }, [title]);
+  const printLink = el("p", { class: "hidden text-sm print:block", text: href !== "#" ? href : "" });
+
+  const techWrap = el("div", { class: "mt-2 flex flex-wrap gap-2" });
+  const techs = (techByProjectId && techByProjectId[p.id]) || [];
+  for (const t of techs.slice().sort(sortByDisplayOrder)) {
+    techWrap.appendChild(
+      el(
+        "span",
+        {
+          class:
+            "inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700",
+        },
+        [el("p", { class: "whitespace-nowrap text-sm", text: t.technology_name || "" })]
+      )
+    );
+  }
+
+  const points = (keyPointsByProjectId && keyPointsByProjectId[p.id]) || [];
+  const pointsList = points.length
+    ? el(
+      "ul",
+      { class: "ms-4 mt-2 list-disc" },
+      points.slice().sort(sortByDisplayOrder).map((kp) => el("li", { text: kp.key_point || "" }))
+    )
+    : null;
+
+  const body = el("div", { class: "px-4 pt-4 print:pt-2" },
+    [link, printLink, pointsList, techWrap].filter(Boolean)
+  );
+
+  const article = el("article", { class: "group" }, [body]);
+  return el("div", { class: "glow-on-hover rounded-lg" }, [article]);
+};
+
+const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
+  const container = document.getElementById("projectsContainer");
+  if (!container) return;
+
+  clearEl(container, ["projectsCarousel"]);
+
+  const carousel = document.getElementById("projectsCarousel");
+  const track = carousel?.querySelector(".projects-carousel-track");
+  if (track) {
+    track.innerHTML = "";
+  }
+
+  const sortedProjects = (projects || []).slice().sort(sortByDisplayOrder);
+  for (const p of sortedProjects) {
+    const card = buildProjectCard(p, keyPointsByProjectId, techByProjectId);
+    card.classList.add("static-project-card");
+    container.appendChild(card);
+
+    if (track) {
+      const clonedCard = card.cloneNode(true);
+      clonedCard.classList.remove("static-project-card");
+      const slide = el("div", { class: "projects-carousel-slide flex-shrink-0 flex-grow-0" }, [
+        clonedCard,
+      ]);
+      track.appendChild(slide);
+    }
+  }
+
+  // V60: ensure carousel markup is after the static list
+  if (carousel && carousel.parentElement === container) {
+    container.appendChild(carousel);
+  }
+
+  return { projectCount: sortedProjects.length };
 };
 
 export { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills };

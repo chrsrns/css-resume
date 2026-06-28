@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Projects carousel / static list view */
+#projectsContainer .static-project-card {
+  display: none;
+}
+
+#projectsContainer .projects-carousel {
+  display: block;
+}
+
+#projectsContainer.static-active .static-project-card {
+  display: block;
+}
+
+#projectsContainer.static-active .projects-carousel {
+  display: none;
+}
+
+#projectsContainer .projects-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  #projectsContainer .projects-carousel-slide {
+    flex: 0 0 auto;
+    width: 320px;
+  }
+}
+
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -13,6 +42,14 @@
   }
 
   #projectsContainer>.glow-on-hover:nth-child(n+7) {
+    display: none !important;
+  }
+
+  #projectsContainer .static-project-card {
+    display: block !important;
+  }
+
+  #projectsContainer .projects-carousel {
     display: none !important;
   }
 
