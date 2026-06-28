@@ -188,6 +188,33 @@ describe("showProjectsCarouselView / showProjectsStaticView", () => {
   });
 });
 
+describe("V55 destroy before re-render", () => {
+  beforeEach(() => {
+    setProjectsHtml();
+    destroyProjectsCarousel();
+  });
+
+  it("destroys carousel before re-rendering and re-initializes cleanly", () => {
+    // first render + init
+    renderProjects([projectFixture(1), projectFixture(2)], {}, {});
+    initProjectsCarousel(2);
+    const container = document.getElementById("projectsContainer");
+    const track = document.querySelector(".projects-carousel-track");
+    expect(container.classList.contains("carousel-active")).toBe(true);
+    expect(track.querySelectorAll(".projects-carousel-slide").length).toBe(2);
+
+    // simulate refreshPortfolioProjects sequence: destroy, render, init
+    destroyProjectsCarousel();
+    renderProjects([projectFixture(3), projectFixture(4), projectFixture(5)], {}, {});
+    expect(container.querySelectorAll(".static-project-card").length).toBe(3);
+    expect(track.querySelectorAll(".projects-carousel-slide").length).toBe(3);
+
+    initProjectsCarousel(3);
+    expect(container.classList.contains("carousel-active")).toBe(true);
+    expect(track.querySelectorAll(".projects-carousel-slide").length).toBe(3);
+  });
+});
+
 describe("reduced motion and autoplay", () => {
   const emblaSpy = vi.fn();
   const autoplaySpy = vi.fn();
