@@ -554,35 +554,59 @@ video {
   --tw-contain-style:  ;
 }
 
+.\!container {
+  width: 100% !important;
+}
+
 .container {
   width: 100%;
 }
 
 @media (min-width: 640px) {
+  .\!container {
+    max-width: 640px !important;
+  }
+
   .container {
     max-width: 640px;
   }
 }
 
 @media (min-width: 768px) {
+  .\!container {
+    max-width: 768px !important;
+  }
+
   .container {
     max-width: 768px;
   }
 }
 
 @media (min-width: 1024px) {
+  .\!container {
+    max-width: 1024px !important;
+  }
+
   .container {
     max-width: 1024px;
   }
 }
 
 @media (min-width: 1280px) {
+  .\!container {
+    max-width: 1280px !important;
+  }
+
   .container {
     max-width: 1280px;
   }
 }
 
 @media (min-width: 1536px) {
+  .\!container {
+    max-width: 1536px !important;
+  }
+
   .container {
     max-width: 1536px;
   }
@@ -590,6 +614,10 @@ video {
 
 .visible {
   visibility: visible;
+}
+
+.static {
+  position: static;
 }
 
 .fixed {
@@ -680,6 +708,10 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
+}
+
+.block {
+  display: block;
 }
 
 .inline-block {
@@ -934,6 +966,10 @@ video {
   overflow: clip;
 }
 
+.overflow-visible {
+  overflow: visible;
+}
+
 .whitespace-nowrap {
   white-space: nowrap;
 }
@@ -1018,6 +1054,11 @@ video {
   padding: 2rem;
 }
 
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .px-2\.5 {
   padding-left: 0.625rem;
   padding-right: 0.625rem;
@@ -1046,6 +1087,11 @@ video {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pb-4 {
@@ -1160,6 +1206,10 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.filter {
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .backdrop-blur-sm {
   --tw-backdrop-blur: blur(4px);
   -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
@@ -1182,6 +1232,90 @@ video {
   transition-duration: 300ms;
 }
 
+/* Projects carousel / static list view */
+
+/* Carousel card styling */
+
+.carousel-card {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.carousel-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-card {
+    transition: none;
+  }
+
+  .carousel-card:hover {
+    transform: none;
+  }
+}
+
+/* Carousel card spacing */
+
+.projects-carousel-track .carousel-card {
+  margin: 0 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .projects-carousel-track .carousel-card {
+    margin: 0 0.75rem;
+  }
+}
+
+/* Long text content handling */
+
+.carousel-card .group {
+  min-width: 0;
+}
+
+.carousel-card h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .carousel-card h3 {
+    white-space: normal;
+  }
+}
+
+#projectsContainer .static-project-card {
+  display: none;
+}
+
+#projectsContainer .projects-carousel {
+  display: block;
+}
+
+#projectsContainer.static-active .static-project-card {
+  display: block;
+}
+
+#projectsContainer.static-active .projects-carousel {
+  display: none;
+}
+
+#projectsContainer .projects-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  #projectsContainer .projects-carousel-slide {
+    flex: 0 0 auto;
+    width: 320px;
+  }
+}
+
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -1193,6 +1327,14 @@ video {
   }
 
   #projectsContainer>.glow-on-hover:nth-child(n+7) {
+    display: none !important;
+  }
+
+  #projectsContainer .static-project-card {
+    display: block !important;
+  }
+
+  #projectsContainer .projects-carousel {
     display: none !important;
   }
 
