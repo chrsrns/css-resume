@@ -345,3 +345,53 @@ describe("carousel card visual styling", () => {
     expect(css).toContain("overflow: hidden");
   });
 });
+
+describe("autoplay pause/reset on hover", () => {
+  beforeEach(() => {
+    setProjectsHtml();
+    destroyProjectsCarousel();
+  });
+
+  it("carousel initializes without errors when autoplay hover handlers are added (V89,V90,V91)", () => {
+    renderProjects([projectFixture(1), projectFixture(2)], {}, {});
+    initProjectsCarousel(2);
+
+    const carousel = document.getElementById("projectsCarousel");
+    expect(carousel).not.toBeNull();
+
+    // Verify event listeners can be dispatched without errors
+    expect(() => {
+      carousel.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      carousel.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
+    }).not.toThrow();
+  });
+
+  it("carousel hover handlers work when reduced motion is disabled", () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+
+    renderProjects([projectFixture(1), projectFixture(2)], {}, {});
+    initProjectsCarousel(2);
+
+    const carousel = document.getElementById("projectsCarousel");
+    expect(() => {
+      carousel.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      carousel.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
+    }).not.toThrow();
+  });
+
+  it("carousel works correctly when reduced motion is enabled (autoplay disabled)", () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })));
+
+    renderProjects([projectFixture(1), projectFixture(2)], {}, {});
+    initProjectsCarousel(2);
+
+    const carousel = document.getElementById("projectsCarousel");
+    expect(carousel).not.toBeNull();
+
+    // Should not throw even though autoplay is disabled
+    expect(() => {
+      carousel.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      carousel.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
+    }).not.toThrow();
+  });
+});

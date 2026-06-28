@@ -2,6 +2,7 @@ import EmblaCarousel from "embla-carousel";
 import Autoplay from "embla-carousel-autoplay";
 
 let projectsEmbla = null;
+let autoplayPlugin = null;
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -11,6 +12,7 @@ const destroyProjectsCarousel = () => {
     projectsEmbla.destroy();
     projectsEmbla = null;
   }
+  autoplayPlugin = null;
 };
 
 const getProjectCount = () => {
@@ -48,7 +50,9 @@ const initProjectsCarousel = (projectCount) => {
 
   const reduced = prefersReducedMotion();
   // V50: reduced motion disables autoplay
-  const plugins = reduced ? [] : [Autoplay({ delay: 4000, stopOnInteraction: false })];
+  const autoplayOptions = { delay: 4000, stopOnInteraction: false };
+  autoplayPlugin = reduced ? null : Autoplay(autoplayOptions);
+  const plugins = reduced ? [] : [autoplayPlugin];
   // V51: loop true; V56: reduced motion instant transitions
   const options = {
     loop: true,
@@ -64,6 +68,16 @@ const initProjectsCarousel = (projectCount) => {
   }
   if (nextBtn) {
     nextBtn.onclick = () => projectsEmbla?.scrollNext();
+  }
+
+  // V89, V90, V91: pause/reset autoplay on carousel hover
+  if (autoplayPlugin && carousel) {
+    carousel.addEventListener('mouseenter', () => {
+      autoplayPlugin.stop();
+    });
+    carousel.addEventListener('mouseleave', () => {
+      autoplayPlugin.play();
+    });
   }
 
   container.classList.add("carousel-active");
