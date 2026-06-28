@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { renderProfile, renderProjects } from "../js/renderers.js";
+import { buildProjectCard, renderProfile, renderProjects } from "../js/renderers.js";
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -96,5 +96,60 @@ describe("renderProjects", () => {
     renderProjects([{ id: 1, project_name: "App", project_link: "https://app.example.com" }], {}, {});
     const badge = document.querySelector("#projectsContainer span.text-yellow-700");
     expect(badge).toBeNull();
+  });
+});
+
+describe("project image rendering", () => {
+  it("project image rendered when image_url present and non-empty in carousel cards (V81)", () => {
+    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).not.toBeNull();
+    expect(img.getAttribute("src")).toBe("https://example.com/image.jpg");
+    expect(img.getAttribute("alt")).toBe("Test Project");
+  });
+
+  it("project image not rendered in static cards (V81)", () => {
+    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const card = buildProjectCard(project, {}, {}, false);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).toBeNull();
+  });
+
+  it("missing image_url renders no image element (V83)", () => {
+    const project = { id: 1, project_name: "Test Project" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).toBeNull();
+  });
+
+  it("empty image_url renders no image element (V83)", () => {
+    const project = { id: 1, project_name: "Test Project", image_url: "" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).toBeNull();
+  });
+
+  it("whitespace-only image_url renders no image element (V83)", () => {
+    const project = { id: 1, project_name: "Test Project", image_url: "   " };
+    const card = buildProjectCard(project, {}, {}, true);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).toBeNull();
+  });
+
+  it("project images have print:hidden class (V84)", () => {
+    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).not.toBeNull();
+    expect(img.classList.contains("print:hidden")).toBe(true);
+  });
+
+  it("project images have object-fit cover and aspect ratio styling (V82)", () => {
+    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const img = card.querySelector("img.project-card-image");
+    expect(img).not.toBeNull();
+    expect(img.classList.contains("object-cover")).toBe(true);
   });
 });

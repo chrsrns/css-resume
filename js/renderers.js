@@ -417,7 +417,15 @@ const buildProjectCard = (p, keyPointsByProjectId, techByProjectId, isCarousel =
     [link, printLink, pointsList, techWrap].filter(Boolean)
   );
 
-  const article = el("article", { class: "group" }, [body]);
+  const projectImage = isCarousel && p.image_url && String(p.image_url).trim() !== ""
+    ? el("img", {
+      src: p.image_url,
+      alt: p.project_name || "Project image",
+      class: "project-card-image w-full h-48 object-cover print:hidden",
+    })
+    : null;
+
+  const article = el("article", { class: "group" }, [projectImage, body].filter(Boolean));
   const cardClass = isCarousel
     ? "carousel-card glow-on-hover rounded-lg"
     : "glow-on-hover rounded-lg";
