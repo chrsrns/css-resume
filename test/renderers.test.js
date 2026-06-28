@@ -153,3 +153,52 @@ describe("project image rendering", () => {
     expect(img.classList.contains("object-cover")).toBe(true);
   });
 });
+
+describe("clickable carousel cards", () => {
+  it("carousel card has single anchor wrapper with no nested anchors (V85)", () => {
+    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const anchors = card.querySelectorAll("a");
+    expect(anchors.length).toBe(1);
+    expect(anchors[0].getAttribute("href")).toBe("https://example.com");
+  });
+
+  it("carousel card anchor href uses correct priority: project_link (V86)", () => {
+    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com", source_code_link: "https://github.com/test" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const anchor = card.querySelector("a");
+    expect(anchor.getAttribute("href")).toBe("https://example.com");
+  });
+
+  it("carousel card anchor href uses correct priority: source_code_link fallback (V86)", () => {
+    const project = { id: 1, project_name: "Test Project", source_code_link: "https://github.com/test" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const anchor = card.querySelector("a");
+    expect(anchor.getAttribute("href")).toBe("https://github.com/test");
+  });
+
+  it("carousel card anchor href uses correct priority: # fallback (V86)", () => {
+    const project = { id: 1, project_name: "Test Project" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const anchor = card.querySelector("a");
+    expect(anchor.getAttribute("href")).toBe("#");
+  });
+
+  it("static list cards retain title link structure (V88)", () => {
+    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com" };
+    const card = buildProjectCard(project, {}, {}, false);
+    const anchors = card.querySelectorAll("a");
+    expect(anchors.length).toBe(1);
+    // In static cards, the link wraps the title (h3)
+    const titleLink = card.querySelector("h3");
+    expect(titleLink.parentElement.tagName).toBe("A");
+  });
+
+  it("carousel card anchor has print:hidden class (V87)", () => {
+    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com" };
+    const card = buildProjectCard(project, {}, {}, true);
+    const anchor = card.querySelector("a");
+    expect(anchor).not.toBeNull();
+    expect(anchor.classList.contains("print:hidden")).toBe(true);
+  });
+});

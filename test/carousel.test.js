@@ -339,4 +339,9 @@ describe("carousel card visual styling", () => {
     const css = readFileSync(resolve("css/input-tailwind.css"), "utf8");
     expect(css).toContain("width: 400px");
   });
+
+  it("carousel card has overflow-hidden CSS (T44)", () => {
+    const css = readFileSync(resolve("css/input-tailwind.css"), "utf8");
+    expect(css).toContain("overflow: hidden");
+  });
 });

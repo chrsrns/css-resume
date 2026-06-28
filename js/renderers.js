@@ -389,6 +389,9 @@ const buildProjectCard = (p, keyPointsByProjectId, techByProjectId, isCarousel =
   const link = el("a", { href }, [title]);
   const printLink = el("p", { class: "hidden text-sm print:block", text: href !== "#" ? href : "" });
 
+  // V85, V88: For carousel cards, wrap entire content in single anchor (remove title link to avoid nested anchors)
+  const cardLink = isCarousel ? el("a", { href, class: "print:hidden" }, [title]) : link;
+
   const techWrap = el("div", { class: "mt-2 flex flex-wrap gap-2" });
   const techs = (techByProjectId && techByProjectId[p.id]) || [];
   for (const t of techs.slice().sort(sortByDisplayOrder)) {
@@ -414,7 +417,7 @@ const buildProjectCard = (p, keyPointsByProjectId, techByProjectId, isCarousel =
     : null;
 
   const body = el("div", { class: `px-4 ${isCarousel ? "py-4" : "pt-4"} print:pt-2` },
-    [link, printLink, pointsList, techWrap].filter(Boolean)
+    [isCarousel ? title : cardLink, printLink, pointsList, techWrap].filter(Boolean)
   );
 
   const projectImage = isCarousel && p.image_url && String(p.image_url).trim() !== ""
@@ -426,10 +429,16 @@ const buildProjectCard = (p, keyPointsByProjectId, techByProjectId, isCarousel =
     : null;
 
   const article = el("article", { class: "group" }, [projectImage, body].filter(Boolean));
+
+  // V85, V88: Wrap entire carousel card article in single anchor for clickability
+  const cardContent = isCarousel
+    ? el("a", { href, class: "print:hidden" }, [article])
+    : article;
+
   const cardClass = isCarousel
     ? "carousel-card glow-on-hover rounded-lg"
     : "glow-on-hover rounded-lg";
-  return el("div", { class: cardClass }, [article]);
+  return el("div", { class: cardClass }, [cardContent]);
 };
 
 const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
