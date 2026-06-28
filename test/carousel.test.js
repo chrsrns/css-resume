@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderProjects } from "../js/renderers.js";
 import {
@@ -273,5 +275,16 @@ describe("reduced motion and autoplay", () => {
     expect(options.duration).toBeUndefined();
     expect(plugins).toHaveLength(1);
     expect(autoplaySpy).toHaveBeenCalledWith({ delay: 4000, stopOnInteraction: false });
+  });
+});
+
+describe("V62 browser module import map", () => {
+  it("index.html includes import map for embla-carousel bare specifiers", () => {
+    const html = readFileSync(resolve("index.html"), "utf8");
+    expect(html).toContain('<script type="importmap">');
+    expect(html).toContain('"embla-carousel"');
+    expect(html).toContain('"embla-carousel-autoplay"');
+    expect(html).toContain("cdn.jsdelivr.net/npm/embla-carousel@8.6.0");
+    expect(html).toContain("cdn.jsdelivr.net/npm/embla-carousel-autoplay@8.6.0");
   });
 });
