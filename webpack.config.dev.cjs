@@ -1,5 +1,5 @@
 const { merge } = require("webpack-merge");
-const common = require("./webpack.common.js");
+const common = require("./webpack.common.cjs");
 
 module.exports = merge(common, {
   mode: "development",
@@ -13,6 +13,7 @@ module.exports = merge(common, {
         context: ["/api"],
         target: "http://localhost:8000",
         changeOrigin: true,
+        ws: true,
       },
     ],
     static: {

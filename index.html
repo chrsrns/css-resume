@@ -42,7 +42,7 @@
         fill="currentColor" class="octo-body" />
     </svg>
   </a>
-  <div
+  <div id="sidebarCard"
     class="flex-shrink-0 flex-grow-0 basis-full overflow-hidden rounded p-8 shadow-[0_4px_10px_0_rgba(0,0,0,0.2),0_4px_20px_0_rgba(0,0,0,0.19)] sm:flex-shrink sm:flex-grow sm:basis-0">
     <div class="relative">
       <div id="profilePlaceholderOverlay"
@@ -451,7 +451,7 @@
       </div>
     </div>
   </div>
-  <div
+  <div id="mainCard"
     class="flex-shrink-0 flex-grow-0 basis-full overflow-hidden rounded p-8 shadow-[0_4px_10px_0_rgba(0,0,0,0.2),0_4px_20px_0_rgba(0,0,0,0.19)] sm:flex-shrink sm:flex-grow-[2] sm:basis-0">
     <h1 class="text-2xl">
       <i class="me-2 inline-block h-full align-middle text-yellow-600">
@@ -660,6 +660,10 @@
         https://chrsrns.github.io/personal-projects-portal/
       </p>
     </a>
+    <button id="projectsViewToggle" type="button"
+      class="mb-2 rounded bg-blue-100 px-3 py-1 text-center text-sm text-blue-700 shadow transition-all hover:shadow-lg active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none print:hidden">
+      Show Static List
+    </button>
     <div id="projectsContainer" class="relative">
       <div id="projectsPlaceholderOverlay"
         class="overlay-placeholder absolute w-full h-full bg-white overflow-hidden transition-opacity duration-300 opacity-100">
@@ -757,6 +761,22 @@
             </div>
           </article>
         </div>
+      </div>
+      <div id="projectsCarousel" class="projects-carousel overflow-visible print:hidden">
+        <div class="projects-carousel-viewport overflow-visible">
+          <div class="projects-carousel-track flex">
+          </div>
+        </div>
+        <button type="button"
+          class="projects-carousel-prev rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden"
+          aria-label="Previous project">
+          Prev
+        </button>
+        <button type="button"
+          class="projects-carousel-next rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden"
+          aria-label="Next project">
+          Next
+        </button>
       </div>
       <div class="glow-on-hover rounded-lg">
         <article class="group">
@@ -1021,6 +1041,14 @@
       API_BASE_URL: "https://chrsrns-api.domcloud.dev/api/",
       RESUME_ID: 1,
     };
+  </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "embla-carousel": "https://cdn.jsdelivr.net/npm/embla-carousel@8.6.0/esm/embla-carousel.esm.js",
+        "embla-carousel-autoplay": "https://cdn.jsdelivr.net/npm/embla-carousel-autoplay@8.6.0/esm/embla-carousel-autoplay.esm.js"
+      }
+    }
   </script>
   <script type="module" src="js/app.js"></script>
 

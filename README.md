@@ -9,7 +9,7 @@ A modern, responsive online resume web application with real-time updates and pr
 - **🎨 Skeleton Loading** – Smooth loading placeholders for better UX
 - **🖨️ Print-Optimized** – Auto-adjusts layout for PDF export (67% zoom, limited sections)
 - **🔄 Progressive Rendering** – Sections load independently for faster perceived performance
-- **🔌 Auto-Reconnect** – WebSocket reconnection with exponential backoff
+- **🔌 Auto-Reconnect** – WebSocket reconnection with linear backoff (up to 5 retries)
 - **🎯 Modular Architecture** – Clean separation of API, WebSocket, and rendering logic
 - **📦 Modern Tooling** – Webpack bundling, hot reload, and development proxy
 
@@ -108,15 +108,19 @@ css-resume/
 
 ### Expected Endpoints
 
-The application expects the following REST API endpoints:
+The application expects the following REST API endpoints, all relative to the configured `API_BASE_URL` (e.g. `/api`):
 
-- `GET /api/resumes/:id` – Fetch resume metadata
-- `GET /api/resumes/:id/education` – Education history
-- `GET /api/resumes/:id/experience` – Work experience
-- `GET /api/resumes/:id/skills` – Technical skills
-- `GET /api/resumes/:id/projects` – Portfolio projects
-- `GET /api/resumes/:id/languages` – Programming languages
-- `GET /api/resumes/:id/frameworks` – Frameworks and libraries
+- `GET /resume/:id` – Fetch resume metadata
+- `GET /resume/:id/skills` – Technical skills
+- `GET /resume/:id/education` – Education history
+- `GET /resume/:id/education/:educationId/key_points` – Key points for an education entry
+- `GET /resume/:id/work_experiences` – Work experience
+- `GET /resume/:id/work_experiences/:workExperienceId/key_points` – Key points for a work experience entry
+- `GET /resume/:id/portfolio_projects` – Portfolio projects
+- `GET /resume/:id/portfolio_projects/:portfolioProjectId/key_points` – Key points for a project
+- `GET /resume/:id/portfolio_projects/:portfolioProjectId/technologies` – Technologies used by a project
+- `GET /resume/:id/languages` – Programming languages
+- `GET /resume/:id/languages/:languageId/frameworks` – Frameworks for a language
 
 ### WebSocket Events
 
