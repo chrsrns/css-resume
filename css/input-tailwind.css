@@ -114,24 +114,42 @@
     display: none !important;
   }
 
-  body {
-    margin-top: 5px;
-    margin-left: 10px;
-    zoom: 67%;
-    transform-origin: 0 0;
-  }
-
   @page {
-    size: auto;
+    size: A4;
     margin: 0;
   }
 
-  @page :footer {
-    display: none;
+  /* Letter page size swap block */
+  /*
+  @page {
+    size: Letter;
+    margin: 0;
+  }
+  */
+
+  html {
+    font-size: 10pt;
   }
 
-  @page :header {
-    display: none;
+  body {
+    margin: 0;
+    padding: 1rem;
+    width: 210mm;
+    height: 297mm;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    min-height: unset;
+    gap: 1rem;
+  }
+
+  #sidebarCard,
+  #mainCard {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    overflow: hidden;
+    padding: 1rem;
   }
 }
 
