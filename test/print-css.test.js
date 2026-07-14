@@ -70,8 +70,16 @@ describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
     expect(printBlock).not.toMatch(/@page\s*:header/);
   });
 
-  it("V36: #sidebarCard and #mainCard have flex-grow in @media print", () => {
-    expect(printBlock).toMatch(/#sidebarCard[^{]*\{[^}]*flex-grow[^}]*\}/);
-    expect(printBlock).toMatch(/#mainCard[^{]*\{[^}]*flex-grow[^}]*\}/);
+  it("V36: #sidebarCard has flex-grow: 1 in @media print", () => {
+    const match = printBlock.match(/#sidebarCard\s*\{([^}]*)\}/s);
+    expect(match).toBeTruthy();
+    expect(match[1]).toMatch(/flex-grow:\s*1/);
   });
+
+  it("V36: #mainCard has flex-grow: 2 in @media print (1:2 ratio with sidebar)", () => {
+    const match = printBlock.match(/#mainCard\s*\{([^}]*)\}/s);
+    expect(match).toBeTruthy();
+    expect(match[1]).toMatch(/flex-grow:\s*2/);
+  });
+
 });

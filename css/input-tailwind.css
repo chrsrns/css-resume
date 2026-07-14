@@ -143,14 +143,22 @@
     gap: 1rem;
   }
 
-  #sidebarCard,
-  #mainCard {
+  #sidebarCard {
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0;
     overflow: hidden;
     padding: 1rem;
   }
+
+  #mainCard {
+    flex-grow: 2;
+    flex-shrink: 1;
+    flex-basis: 0;
+    overflow: hidden;
+    padding: 1rem;
+  }
+
 }
 
 /* Welcome Dialog Styles */
