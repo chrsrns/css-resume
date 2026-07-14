@@ -20,66 +20,73 @@ function extractMediaPrintBlock(css) {
   return "";
 }
 
+/** Remove CSS block comments (/* ... *\/) so tests don't false-pass on commented-out declarations. */
+function stripComments(css) {
+  return css.replace(/\/\*[\s\S]*?\*\//g, "");
+}
+
 const printBlock = extractMediaPrintBlock(css);
+// Raw block used only for tests that intentionally match inside comments (Letter swap).
+const printBlockActive = stripComments(printBlock);
 
 describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
   it("contains a @media print block", () => {
-    expect(printBlock.length).toBeGreaterThan(0);
+    expect(printBlockActive.length).toBeGreaterThan(0);
   });
 
   it("V30: body bound to 210mm × 297mm", () => {
-    expect(printBlock).toMatch(/width:\s*210mm/);
-    expect(printBlock).toMatch(/height:\s*297mm/);
+    expect(printBlockActive).toMatch(/width:\s*210mm/);
+    expect(printBlockActive).toMatch(/height:\s*297mm/);
   });
 
   it("V30: no zoom property in @media print", () => {
-    expect(printBlock).not.toMatch(/zoom\s*:/);
+    expect(printBlockActive).not.toMatch(/zoom\s*:/);
   });
 
   it("V31: body overflow hidden", () => {
-    expect(printBlock).toMatch(/overflow:\s*hidden/);
+    expect(printBlockActive).toMatch(/overflow:\s*hidden/);
   });
 
   it("V32: @page size A4", () => {
-    expect(printBlock).toMatch(/@page\s*\{[^}]*size:\s*A4[^}]*\}/);
+    expect(printBlockActive).toMatch(/@page\s*\{[^}]*size:\s*A4[^}]*\}/);
   });
 
   it("V32: @page margin 0", () => {
-    expect(printBlock).toMatch(/@page\s*\{[^}]*margin:\s*0[^}]*\}/);
+    expect(printBlockActive).toMatch(/@page\s*\{[^}]*margin:\s*0[^}]*\}/);
   });
 
+  // Letter swap block lives inside a comment intentionally — use raw printBlock.
   it("V32: Letter page size swap block comment present", () => {
     expect(printBlock).toMatch(/Letter page size swap block/);
     expect(printBlock).toMatch(/size:\s*Letter/);
   });
 
   it("V35: body margin 0 in @media print", () => {
-    expect(printBlock).toMatch(/margin:\s*0/);
+    expect(printBlockActive).toMatch(/margin:\s*0/);
   });
 
   it("V35: body padding 1rem in @media print", () => {
-    expect(printBlock).toMatch(/padding:\s*1rem/);
+    expect(printBlockActive).toMatch(/padding:\s*1rem/);
   });
 
   it("V34: html font-size set in @media print in pt units", () => {
-    expect(printBlock).toMatch(/html\s*\{[^}]*font-size:\s*\d+pt[^}]*\}/);
+    expect(printBlockActive).toMatch(/html\s*\{[^}]*font-size:\s*\d+pt[^}]*\}/);
   });
 
   it("V37: no :footer or :header @page pseudo-classes", () => {
-    expect(printBlock).not.toMatch(/@page\s*:footer/);
-    expect(printBlock).not.toMatch(/@page\s*:header/);
+    expect(printBlockActive).not.toMatch(/@page\s*:footer/);
+    expect(printBlockActive).not.toMatch(/@page\s*:header/);
   });
 
   it("V36: #sidebarCard has flex-grow: 1 in @media print", () => {
-    const match = printBlock.match(/#sidebarCard\s*\{([^}]*)\}/s);
+    const match = printBlockActive.match(/#sidebarCard\s*\{([^}]*)\}/s);
     expect(match).toBeTruthy();
     expect(match[1]).toMatch(/flex-grow:\s*1/);
   });
 
   it("V36: #mainCard has flex-grow: 2 in @media print (1:2 ratio with sidebar)", () => {
-    const match = printBlock.match(/#mainCard\s*\{([^}]*)\}/s);
+    const match = printBlockActive.match(/#mainCard\s*\{([^}]*)\}/s);
     expect(match).toBeTruthy();
     expect(match[1]).toMatch(/flex-grow:\s*2/);
   });
-
 });
