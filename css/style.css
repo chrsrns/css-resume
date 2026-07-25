@@ -1695,16 +1695,16 @@ video {
     margin-bottom: 0.75rem;
   }
 
+  .print\:mb-0 {
+    margin-bottom: 0px;
+  }
+
   .print\:mt-2 {
     margin-top: 0.5rem;
   }
 
   .print\:mt-4 {
     margin-top: 1rem;
-  }
-
-  .print\:mb-0 {
-    margin-bottom: 0px;
   }
 
   .print\:block {
