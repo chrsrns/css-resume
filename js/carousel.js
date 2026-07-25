@@ -20,6 +20,13 @@ const getProjectCount = () => {
   return container ? container.querySelectorAll(".static-project-card").length : 0;
 };
 
+const setCarouselNavVisible = (visible) => {
+  const prevBtn = document.getElementById("projectsCarouselPrev");
+  const nextBtn = document.getElementById("projectsCarouselNext");
+  if (prevBtn) prevBtn.classList.toggle("hidden", !visible);
+  if (nextBtn) nextBtn.classList.toggle("hidden", !visible);
+};
+
 const initProjectsCarousel = (projectCount) => {
   const carousel = document.getElementById("projectsCarousel");
   const container = document.getElementById("projectsContainer");
@@ -31,6 +38,7 @@ const initProjectsCarousel = (projectCount) => {
     container.classList.add("static-active");
     container.classList.remove("carousel-active");
     toggle?.classList.add("hidden");
+    setCarouselNavVisible(false);
     destroyProjectsCarousel();
     return;
   }
@@ -39,13 +47,14 @@ const initProjectsCarousel = (projectCount) => {
 
   // V61: static view selected -> destroy carousel and hide markup
   if (container.classList.contains("static-active")) {
+    setCarouselNavVisible(false);
     destroyProjectsCarousel();
     return;
   }
 
   const viewport = carousel.querySelector(".projects-carousel-viewport");
-  const prevBtn = carousel.querySelector(".projects-carousel-prev");
-  const nextBtn = carousel.querySelector(".projects-carousel-next");
+  const prevBtn = document.getElementById("projectsCarouselPrev");
+  const nextBtn = document.getElementById("projectsCarouselNext");
   if (!viewport) return;
 
   const reduced = prefersReducedMotion();
@@ -69,6 +78,7 @@ const initProjectsCarousel = (projectCount) => {
   if (nextBtn) {
     nextBtn.onclick = () => projectsEmbla?.scrollNext();
   }
+  setCarouselNavVisible(true);
 
   // V89, V90, V91: pause/reset autoplay on carousel hover
   if (autoplayPlugin && carousel) {
@@ -97,6 +107,7 @@ const showProjectsStaticView = () => {
   const toggle = document.getElementById("projectsViewToggle");
   container?.classList.add("static-active");
   container?.classList.remove("carousel-active");
+  setCarouselNavVisible(false);
   destroyProjectsCarousel();
   if (toggle) toggle.textContent = "Show Carousel";
 };

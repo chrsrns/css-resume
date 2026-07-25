@@ -639,31 +639,45 @@
         <li>Involved in deploying software solutions to production via AWS.</li>
       </ul>
     </div>
-    <a href="https://chrsrns.github.io/personal-projects-portal/">
-      <h1 class="relative mt-8 w-fit border-b-2 border-b-black pe-1 text-2xl print:mt-4 print:border-b-0">
-        <span class="absolute -right-4 flex h-3 w-3 print:hidden">
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
-          <span class="relative inline-flex h-3 w-3 rounded-full bg-blue-500"></span>
-        </span>
-        <i class="me-2 inline-block h-full align-middle text-yellow-600">
-          <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-            style="overflow: visible; color: currentcolor" height="1em" width="1em">
-            <path
-              d="M32 32h448c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32zm0 128h448v256c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V160zm128 80c0 8.8 7.2 16 16 16h160c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16z">
-            </path>
-          </svg>
-        </i>
-        <span class="inline-block align-middle"> Projects</span>
-      </h1>
-      <p class="hidden text-sm print:block">
-        More on Projects Portal Github Link:
-        https://chrsrns.github.io/personal-projects-portal/
-      </p>
-    </a>
-    <button id="projectsViewToggle" type="button"
-      class="mb-2 rounded bg-blue-100 px-3 py-1 text-center text-sm text-blue-700 shadow transition-all hover:shadow-lg active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none print:hidden">
-      Show Static List
-    </button>
+    <div class="mt-8 flex items-start justify-between print:mt-4 mb-2 print:mb-0">
+      <a href="https://chrsrns.github.io/personal-projects-portal/">
+        <h1 class="relative w-fit border-b-2 border-b-black pe-1 text-2xl print:border-b-0">
+          <span class="absolute -right-4 flex h-3 w-3 print:hidden">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75"></span>
+            <span class="relative inline-flex h-3 w-3 rounded-full bg-blue-500"></span>
+          </span>
+          <i class="me-2 inline-block h-full align-middle text-yellow-600">
+            <svg fill="currentColor" stroke-width="0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+              style="overflow: visible; color: currentcolor" height="1em" width="1em">
+              <path
+                d="M32 32h448c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V64c0-17.7 14.3-32 32-32zm0 128h448v256c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V160zm128 80c0 8.8 7.2 16 16 16h160c8.8 0 16-7.2 16-16s-7.2-16-16-16H176c-8.8 0-16 7.2-16 16z">
+              </path>
+            </svg>
+          </i>
+          <span class="inline-block align-middle"> Projects</span>
+        </h1>
+        <p class="hidden text-sm print:block">
+          More on Projects Portal Github Link:
+          https://chrsrns.github.io/personal-projects-portal/
+        </p>
+      </a>
+      <div class="flex items-center gap-2 print:hidden">
+        <button id="projectsCarouselPrev" type="button"
+          class="rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden hidden"
+          aria-label="Previous project">
+          Prev
+        </button>
+        <button id="projectsCarouselNext" type="button"
+          class="rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden hidden"
+          aria-label="Next project">
+          Next
+        </button>
+        <button id="projectsViewToggle" type="button"
+          class="rounded bg-blue-100 px-3 py-1 text-center text-sm text-blue-700 shadow transition-all hover:shadow-lg active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none print:hidden">
+          Show Static List
+        </button>
+      </div>
+    </div>
     <div id="projectsContainer" class="relative">
       <div id="projectsPlaceholderOverlay"
         class="overlay-placeholder absolute w-full h-full bg-white overflow-hidden transition-opacity duration-300 opacity-100">
@@ -767,16 +781,6 @@
           <div class="projects-carousel-track flex">
           </div>
         </div>
-        <button type="button"
-          class="projects-carousel-prev rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden"
-          aria-label="Previous project">
-          Prev
-        </button>
-        <button type="button"
-          class="projects-carousel-next rounded bg-blue-100 px-2 py-1 text-sm text-blue-700 print:hidden"
-          aria-label="Next project">
-          Next
-        </button>
       </div>
       <div class="glow-on-hover rounded-lg">
         <article class="group">
