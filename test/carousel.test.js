@@ -24,14 +24,19 @@ beforeEach(() => {
 
 const setProjectsHtml = () => {
   document.body.innerHTML = `
-    <button id="projectsViewToggle" type="button">Show Static List</button>
+    <div class="mt-8 flex items-start justify-between">
+      <h1>Projects</h1>
+      <div class="flex items-center gap-2">
+        <button id="projectsCarouselPrev" type="button">Prev</button>
+        <button id="projectsCarouselNext" type="button">Next</button>
+        <button id="projectsViewToggle" type="button">Show Static List</button>
+      </div>
+    </div>
     <div id="projectsContainer">
       <div id="projectsCarousel" class="projects-carousel">
         <div class="projects-carousel-viewport">
           <div class="projects-carousel-track"></div>
         </div>
-        <button type="button" class="projects-carousel-prev">Prev</button>
-        <button type="button" class="projects-carousel-next">Next</button>
       </div>
     </div>
   `;
