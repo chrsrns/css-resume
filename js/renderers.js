@@ -324,17 +324,18 @@ const renderExperience = (items, keyPointsByWorkId) => {
       : null;
     container.appendChild(range);
 
+    if (w.description) {
+      container.appendChild(
+        el("p", { class: `mt-2 ${idx >= 2 ? "print:hidden" : ""}`, text: w.description })
+      );
+    }
+
     const points = (keyPointsByWorkId && keyPointsByWorkId[w.id]) || [];
     const ul = el(
       "ul",
       { class: `ms-4 mt-2 list-disc ${idx >= 2 ? "print:hidden" : ""}` },
       points.slice().sort(sortByDisplayOrder).map((kp) => el("li", { text: kp.key_point || "" }))
     );
-
-    if (w.description) {
-      ul.appendChild(el("li", { text: w.description, class: `${idx >= 2 ? "print:hidden" : ""}` }));
-    }
-
     container.appendChild(ul);
   }
 };

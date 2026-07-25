@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { buildProjectCard, renderProfile, renderProjects } from "../js/renderers.js";
+import { buildProjectCard, renderExperience, renderProfile, renderProjects } from "../js/renderers.js";
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -16,6 +16,10 @@ const setProfileHtml = () => {
 
 const setProjectsHtml = () => {
   document.body.innerHTML = `<div id="projectsContainer"></div>`;
+};
+
+const setExperienceHtml = () => {
+  document.body.innerHTML = `<div id="experienceContainer"></div>`;
 };
 
 describe("renderProfile", () => {
@@ -200,5 +204,49 @@ describe("clickable carousel cards", () => {
     const anchor = card.querySelector("a");
     expect(anchor).not.toBeNull();
     expect(anchor.classList.contains("print:hidden")).toBe(true);
+  });
+});
+
+describe("renderExperience", () => {
+  beforeEach(() => {
+    setExperienceHtml();
+  });
+
+  it("renders key points as bullets", () => {
+    renderExperience(
+      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", end_date: "2023-12-31" }],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }, { key_point: "Built Y", display_order: 1 }] }
+    );
+    const lis = document.querySelectorAll("#experienceContainer ul li");
+    expect(lis.length).toBe(2);
+    expect(lis[0].textContent).toBe("Shipped X");
+    expect(lis[1].textContent).toBe("Built Y");
+  });
+
+  it("renders description as separate paragraph, not a bullet", () => {
+    renderExperience(
+      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", end_date: "2023-12-31", description: "Did backend work." }],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+    );
+    const lis = document.querySelectorAll("#experienceContainer ul li");
+    const ps = document.querySelectorAll("#experienceContainer p");
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toBe("Shipped X");
+    expect([...ps].some((p) => p.textContent === "Did backend work.")).toBe(true);
+    expect([...lis].some((li) => li.textContent === "Did backend work.")).toBe(false);
+  });
+
+  it("renders description before key points", () => {
+    renderExperience(
+      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", end_date: "2023-12-31", description: "Did backend work." }],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+    );
+    const container = document.getElementById("experienceContainer");
+    const children = [...container.children];
+    const pIdx = children.findIndex((c) => c.tagName === "P" && c.textContent === "Did backend work.");
+    const ulIdx = children.findIndex((c) => c.tagName === "UL");
+    expect(pIdx).toBeGreaterThan(-1);
+    expect(ulIdx).toBeGreaterThan(-1);
+    expect(pIdx).toBeLessThan(ulIdx);
   });
 });
