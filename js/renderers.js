@@ -2,7 +2,6 @@ import { dateFormat } from "./date.format.js";
 import { clamp, formatDateRange, formatYear, sortByDisplayOrder } from "./helpers.js";
 
 // DOM Manipulation Helpers
-////////////////////////////////////////////////////////
 
 const clearEl = (el, preserveIds = []) => {
   const preserveSet = new Set(preserveIds);
@@ -74,9 +73,7 @@ const el = (tag, attrs = {}, children = []) => {
   return node;
 };
 
-////////////////////////////////////////////////////////
 // Section Rendering
-////////////////////////////////////////////////////////
 
 const renderProfile = (resume) => {
   if (!resume) return;
