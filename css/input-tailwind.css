@@ -162,6 +162,19 @@
     box-shadow: none !important;
   }
 
+  /* Override body utility classes that leak into print and cause blank pages */
+  .min-h-screen {
+    min-height: 0;
+  }
+
+  .gap-4 {
+    gap: 0;
+  }
+
+  .flex-col {
+    flex-direction: row;
+  }
+
 }
 
 /* Welcome Dialog Styles */

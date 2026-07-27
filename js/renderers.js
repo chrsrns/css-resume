@@ -2,7 +2,6 @@ import { dateFormat } from "./date.format.js";
 import { clamp, formatDateRange, formatYear, sortByDisplayOrder } from "./helpers.js";
 
 // DOM Manipulation Helpers
-////////////////////////////////////////////////////////
 
 const clearEl = (el, preserveIds = []) => {
   const preserveSet = new Set(preserveIds);
@@ -74,9 +73,7 @@ const el = (tag, attrs = {}, children = []) => {
   return node;
 };
 
-////////////////////////////////////////////////////////
 // Section Rendering
-////////////////////////////////////////////////////////
 
 const renderProfile = (resume) => {
   if (!resume) return;
@@ -195,16 +192,16 @@ const renderEducation = (educations, keyPointsByEducationId) => {
   clearEl(container);
 
   for (const ed of (educations || []).slice().sort(sortByDisplayOrder)) {
-    const header = el("div", { class: "my-4 flex flex-wrap gap-2 print:my-3" }, [
+    const header = el("div", { class: "text-lg my-4 flex flex-col gap-1 sm:flex-row sm:gap-2 print:my-3" }, [
       el(
         "span",
         {
           class:
-            "inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700",
+            "w-fit h-[1lh] -ms-1 inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700",
         },
         [el("p", { class: "whitespace-nowrap text-sm", text: ed.education_stage || "" })]
       ),
-      el("h2", { class: "inline-flex text-lg font-bold", text: ed.institution_name || "" }),
+      el("h2", { class: "inline-flex font-bold", text: ed.institution_name || "" }),
     ]);
 
     const degree = ed.degree ? el("p", { class: "mt-2 font-semibold", text: ed.degree }) : null;
@@ -274,7 +271,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
           "span",
           {
             class:
-              "inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700",
+              "w-fit h-[1lh] -ms-1 sm:-ms-0 inline-flex items-center justify-center rounded bg-yellow-100 px-2.5 py-0.5 text-yellow-700",
           },
           [el("p", { class: "whitespace-nowrap text-sm", text: "Current" })]
         )
@@ -284,7 +281,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
       el(
         "h2",
         {
-          class: `mt-4 inline-flex${isCurrent ? " gap-2" : ""} text-lg font-bold print:mt-2 ${idx >= 2 ? "print:hidden" : ""}`,
+          class: `mt-4 ${isCurrent ? "flex flex-col-reverse gap-1 sm:flex-row sm:gap-2" : "inline-flex"} text-lg font-bold print:mt-2 ${idx >= 2 ? "print:hidden" : ""}`,
         },
         h2Children
       )

@@ -666,6 +666,10 @@ video {
   margin-bottom: 1rem;
 }
 
+.-ms-1 {
+  margin-inline-start: -0.25rem;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -760,6 +764,10 @@ video {
 
 .h-\[1em\] {
   height: 1em;
+}
+
+.h-\[1lh\] {
+  height: 1lh;
 }
 
 .h-\[1rem\] {
@@ -942,6 +950,10 @@ video {
   flex-direction: column;
 }
 
+.flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -964,6 +976,10 @@ video {
 
 .justify-between {
   justify-content: space-between;
+}
+
+.gap-1 {
+  gap: 0.25rem;
 }
 
 .gap-2 {
@@ -1419,6 +1435,20 @@ video {
   #mainCard {
     box-shadow: none !important;
   }
+
+  /* Override body utility classes that leak into print and cause blank pages */
+
+  .min-h-screen {
+    min-height: 0;
+  }
+
+  .gap-4 {
+    gap: 0;
+  }
+
+  .flex-col {
+    flex-direction: row;
+  }
 }
 
 /* Welcome Dialog Styles */
@@ -1674,6 +1704,10 @@ video {
 }
 
 @media (min-width: 640px) {
+  .sm\:-ms-0 {
+    margin-inline-start: -0px;
+  }
+
   .sm\:flex-shrink {
     flex-shrink: 1;
   }
@@ -1692,6 +1726,10 @@ video {
 
   .sm\:flex-row {
     flex-direction: row;
+  }
+
+  .sm\:gap-2 {
+    gap: 0.5rem;
   }
 }
 
