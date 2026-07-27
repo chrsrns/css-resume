@@ -70,7 +70,7 @@ describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
   });
 
   it("V34: html font-size set in @media print in pt units", () => {
-    expect(printBlockActive).toMatch(/html\s*\{[^}]*font-size:\s*\d+pt[^}]*\}/);
+    expect(printBlockActive).toMatch(/html\s*\{[^}]*font-size:\s*\d+(?:\.\d+)?pt[^}]*\}/);
   });
 
   it("V37: no :footer or :header @page pseudo-classes", () => {
@@ -88,5 +88,25 @@ describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
     const match = printBlockActive.match(/#mainCard\s*\{([^}]*)\}/s);
     expect(match).toBeTruthy();
     expect(match[1]).toMatch(/flex-grow:\s*2/);
+  });
+
+  it("V38: .min-h-screen reset in @media print (avoid 100vh blank page)", () => {
+    const match = printBlockActive.match(/\.min-h-screen\s*\{([^}]*)\}/s);
+    expect(match).toBeTruthy();
+    expect(match[1]).toMatch(/min-height:\s*(?:0|auto)\b/);
+    expect(match[1]).not.toMatch(/min-height:\s*100vh/);
+  });
+
+  it("V39: .gap-4 reset in @media print (avoid subpixel overflow)", () => {
+    const match = printBlockActive.match(/\.gap-4\s*\{([^}]*)\}/s);
+    expect(match).toBeTruthy();
+    expect(match[1]).toMatch(/gap:/);
+    expect(match[1]).not.toMatch(/gap:\s*1rem/);
+  });
+
+  it("V40: .flex-col forced to row in @media print", () => {
+    const match = printBlockActive.match(/\.flex-col\s*\{([^}]*)\}/s);
+    expect(match).toBeTruthy();
+    expect(match[1]).toMatch(/flex-direction:\s*row/);
   });
 });

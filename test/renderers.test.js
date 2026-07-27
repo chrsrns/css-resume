@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { buildProjectCard, renderExperience, renderProfile, renderProjects } from "../js/renderers.js";
+import { buildProjectCard, renderEducation, renderExperience, renderProfile, renderProjects } from "../js/renderers.js";
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -20,6 +20,10 @@ const setProjectsHtml = () => {
 
 const setExperienceHtml = () => {
   document.body.innerHTML = `<div id="experienceContainer"></div>`;
+};
+
+const setEducationHtml = () => {
+  document.body.innerHTML = `<div id="educationContainer"></div>`;
 };
 
 describe("renderProfile", () => {
@@ -248,5 +252,60 @@ describe("renderExperience", () => {
     expect(pIdx).toBeGreaterThan(-1);
     expect(ulIdx).toBeGreaterThan(-1);
     expect(pIdx).toBeLessThan(ulIdx);
+  });
+
+  it("stacks Current badge above title on small screens", () => {
+    renderExperience(
+      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", description: "Did backend work." }],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+    );
+    const h2 = document.querySelector("#experienceContainer h2");
+    expect(h2).not.toBeNull();
+    expect(h2.classList.contains("flex-col-reverse")).toBe(true);
+    expect(h2.classList.contains("gap-1")).toBe(true);
+    expect(h2.classList.contains("sm:flex-row")).toBe(true);
+    expect(h2.classList.contains("sm:gap-2")).toBe(true);
+  });
+
+  it("keeps Current badge source order after title for sm row layout", () => {
+    renderExperience(
+      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", description: "Did backend work." }],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+    );
+    const h2 = document.querySelector("#experienceContainer h2");
+    const children = [...h2.childNodes];
+    const textIdx = children.findIndex((c) => c.nodeType === Node.TEXT_NODE && c.textContent.includes("Engineer @ Acme"));
+    const badgeIdx = children.findIndex((c) => c.tagName === "SPAN" && c.textContent.includes("Current"));
+    expect(textIdx).toBeGreaterThan(-1);
+    expect(badgeIdx).toBeGreaterThan(-1);
+    expect(textIdx).toBeLessThan(badgeIdx);
+  });
+});
+
+describe("renderEducation", () => {
+  beforeEach(() => {
+    setEducationHtml();
+  });
+
+  it("stacks education stage and institution vertically on small screens with tight spacing", () => {
+    renderEducation(
+      [{ id: 1, education_stage: "College", institution_name: "XYZ University", start_date: "2020", end_date: "2024" }],
+      {}
+    );
+    const header = document.querySelector("#educationContainer .my-4");
+    expect(header).not.toBeNull();
+    expect(header.classList.contains("flex-col")).toBe(true);
+    expect(header.classList.contains("gap-1")).toBe(true);
+    expect(header.classList.contains("sm:flex-row")).toBe(true);
+  });
+
+  it("keeps education stage and institution on the same row at sm breakpoint and up", () => {
+    renderEducation(
+      [{ id: 1, education_stage: "College", institution_name: "XYZ University", start_date: "2020", end_date: "2024" }],
+      {}
+    );
+    const header = document.querySelector("#educationContainer .my-4");
+    expect(header.classList.contains("sm:flex-row")).toBe(true);
+    expect(header.classList.contains("sm:gap-2")).toBe(true);
   });
 });
