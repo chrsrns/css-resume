@@ -19,6 +19,7 @@ const handleResumeChange = (event) => {
 
   switch (event.action.updated) {
     case 'personalinfo':
+    case 'summary':
       refreshProfile(apiBaseUrl, resumeId);
       break;
     case 'education':
