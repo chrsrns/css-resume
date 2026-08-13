@@ -169,9 +169,12 @@ const MOCK_INJECT_SCRIPT = `
   if (summaryContainer) {
     summaryContainer.classList.remove('min-h-24', 'min-h-fit');
     const summary = document.createElement('p');
-    summary.className = 'mt-2';
+    summary.className = 'italic';
     summary.textContent = 'Software & Web Developer with experience in full-stack development and cloud systems.';
-    summaryContainer.appendChild(summary);
+    const summaryWrapper = document.createElement('div');
+    summaryWrapper.className = 'mt-4';
+    summaryWrapper.appendChild(summary);
+    summaryContainer.appendChild(summaryWrapper);
   }
 
   // --- Experience ---

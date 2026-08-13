@@ -151,7 +151,7 @@ const renderSummary = (summary) => {
   container.classList.remove("hidden");
   if (educationHeading) educationHeading.classList.add("pt-4");
 
-  const p = el("p", { class: "mt-2 italic" });
+  const p = el("p", { class: "italic" });
   const parts = summary.trim().split(/\r?\n/);
   for (let i = 0; i < parts.length; i++) {
     p.appendChild(document.createTextNode(parts[i]));
@@ -159,7 +159,8 @@ const renderSummary = (summary) => {
       p.appendChild(el("br"));
     }
   }
-  container.appendChild(p);
+  const wrapper = el("div", { class: "mt-4" }, [p]);
+  container.appendChild(wrapper);
 
   container.classList.remove("min-h-24");
   container.classList.add("min-h-fit");
