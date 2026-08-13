@@ -138,14 +138,18 @@ const renderSummary = (summary) => {
   clearEl(container);
 
   const section = document.getElementById("professionalSummarySection");
+  const educationHeading = document.getElementById("educationHeading");
+
   if (typeof summary !== "string" || !summary.trim()) {
     if (section) section.classList.add("hidden");
+    if (educationHeading) educationHeading.classList.remove("pt-4");
     return;
   }
 
   if (section) section.classList.remove("hidden");
+  if (educationHeading) educationHeading.classList.add("pt-4");
 
-  const p = el("p", { class: "mt-2" });
+  const p = el("p", { class: "mt-2 italic" });
   const parts = summary.trim().split(/\r?\n/);
   for (let i = 0; i < parts.length; i++) {
     p.appendChild(document.createTextNode(parts[i]));
