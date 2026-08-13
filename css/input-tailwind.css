@@ -175,6 +175,10 @@
     flex-direction: row;
   }
 
+  .static-project-card li:nth-child(n+4) {
+    display: none !important;
+  }
+
 }
 
 /* Welcome Dialog Styles */

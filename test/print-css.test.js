@@ -109,4 +109,10 @@ describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
     expect(match).toBeTruthy();
     expect(match[1]).toMatch(/flex-direction:\s*row/);
   });
+
+  it("project bullet lists limited to 3 items in print", () => {
+    expect(printBlockActive).toMatch(
+      /\.static-project-card\s+li:nth-child\(n\s*\+\s*4\)\s*\{[^}]*display:\s*none/s
+    );
+  });
 });
