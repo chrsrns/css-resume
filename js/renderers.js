@@ -137,19 +137,21 @@ const renderSummary = (summary) => {
 
   clearEl(container);
 
-  const section = document.getElementById("professionalSummarySection");
+  const heading = document.getElementById("professionalSummaryHeading");
   const educationHeading = document.getElementById("educationHeading");
 
   if (typeof summary !== "string" || !summary.trim()) {
-    if (section) section.classList.add("hidden");
+    if (heading) heading.classList.add("hidden");
+    container.classList.add("hidden");
     if (educationHeading) educationHeading.classList.remove("pt-4");
     return;
   }
 
-  if (section) section.classList.remove("hidden");
+  if (heading) heading.classList.remove("hidden");
+  container.classList.remove("hidden");
   if (educationHeading) educationHeading.classList.add("pt-4");
 
-  const p = el("p", { class: "mt-2 italic" });
+  const p = el("p", { class: "italic" });
   const parts = summary.trim().split(/\r?\n/);
   for (let i = 0; i < parts.length; i++) {
     p.appendChild(document.createTextNode(parts[i]));
@@ -157,7 +159,8 @@ const renderSummary = (summary) => {
       p.appendChild(el("br"));
     }
   }
-  container.appendChild(p);
+  const wrapper = el("div", { class: "mt-4" }, [p]);
+  container.appendChild(wrapper);
 };
 
 const renderSkills = (skills) => {

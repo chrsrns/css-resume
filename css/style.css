@@ -754,6 +754,10 @@ video {
   height: 0.75rem;
 }
 
+.h-\[1\.3em\] {
+  height: 1.3em;
+}
+
 .h-\[1\.4em\] {
   height: 1.4em;
 }
@@ -1188,6 +1192,10 @@ video {
   font-weight: 600;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .text-blue-700 {
   --tw-text-opacity: 1;
   color: rgb(29 78 216 / var(--tw-text-opacity));
@@ -1402,7 +1410,7 @@ video {
   */
 
   html {
-    font-size: 7.8pt;
+    font-size: 7pt;
   }
 
   body {
