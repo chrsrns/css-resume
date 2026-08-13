@@ -28,8 +28,10 @@ const setEducationHtml = () => {
 
 const setSummaryHtml = () => {
   document.body.innerHTML = `
-    <div id="professionalSummaryContainer" class="relative">
-      <div id="professionalSummaryPlaceholderOverlay" class="overlay-placeholder absolute w-full h-full bg-white opacity-100"></div>
+    <div id="professionalSummarySection">
+      <div id="professionalSummaryContainer" class="relative">
+        <div id="professionalSummaryPlaceholderOverlay" class="overlay-placeholder absolute w-full h-full bg-white opacity-100"></div>
+      </div>
     </div>
   `;
 };
@@ -359,5 +361,36 @@ describe("renderSummary", () => {
     const p = document.querySelector("#professionalSummaryContainer p");
     expect(p).not.toBeNull();
     expect(p.querySelectorAll("br").length).toBe(2);
+  });
+
+  it("shows the section when summary is present", () => {
+    const section = document.getElementById("professionalSummarySection");
+    section.classList.add("hidden");
+    renderSummary("Experienced developer.");
+    expect(section.classList.contains("hidden")).toBe(false);
+  });
+
+  it("hides the section when summary is empty", () => {
+    renderSummary("");
+    const section = document.getElementById("professionalSummarySection");
+    expect(section.classList.contains("hidden")).toBe(true);
+  });
+
+  it("hides the section when summary is null or not a string", () => {
+    renderSummary(null);
+    const section = document.getElementById("professionalSummarySection");
+    expect(section.classList.contains("hidden")).toBe(true);
+
+    section.classList.remove("hidden");
+    renderSummary({});
+    expect(section.classList.contains("hidden")).toBe(true);
+  });
+
+  it("handles CRLF newlines", () => {
+    renderSummary("Line 1\r\nLine 2");
+    const p = document.querySelector("#professionalSummaryContainer p");
+    expect(p).not.toBeNull();
+    expect(p.textContent).toBe("Line 1Line 2");
+    expect(p.querySelectorAll("br").length).toBe(1);
   });
 });

@@ -137,11 +137,16 @@ const renderSummary = (summary) => {
 
   clearEl(container);
 
-  const text = summary == null ? "" : String(summary).trim();
-  if (!text) return;
+  const section = document.getElementById("professionalSummarySection");
+  if (typeof summary !== "string" || !summary.trim()) {
+    if (section) section.classList.add("hidden");
+    return;
+  }
+
+  if (section) section.classList.remove("hidden");
 
   const p = el("p", { class: "mt-2" });
-  const parts = text.split("\n");
+  const parts = summary.trim().split(/\r?\n/);
   for (let i = 0; i < parts.length; i++) {
     p.appendChild(document.createTextNode(parts[i]));
     if (i < parts.length - 1) {

@@ -106,7 +106,11 @@ const refreshProfile = async (apiBaseUrl, resumeId) => {
   reAddSectionPlaceholder(container);
 
   const summaryContainer = document.getElementById("professionalSummaryContainer");
-  if (summaryContainer) reAddSectionPlaceholder(summaryContainer);
+  if (summaryContainer) {
+    reAddSectionPlaceholder(summaryContainer);
+    const summarySection = document.getElementById("professionalSummarySection");
+    if (summarySection) summarySection.classList.remove("hidden");
+  }
 
   fetchBody(apiBaseUrl, `/resume/${resumeId}`).then((resume) => {
     renderProfile(resume);
