@@ -1708,6 +1708,10 @@ video {
     margin-inline-start: -0px;
   }
 
+  .sm\:max-w-\[28rem\] {
+    max-width: 28rem;
+  }
+
   .sm\:flex-shrink {
     flex-shrink: 1;
   }
@@ -1757,6 +1761,10 @@ video {
 
   .print\:hidden {
     display: none;
+  }
+
+  .print\:max-w-none {
+    max-width: none;
   }
 
   .print\:border-b-0 {
