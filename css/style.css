@@ -754,6 +754,10 @@ video {
   height: 0.75rem;
 }
 
+.h-\[1\.3em\] {
+  height: 1.3em;
+}
+
 .h-\[1\.4em\] {
   height: 1.4em;
 }
@@ -784,15 +788,6 @@ video {
 
 .max-h-\[90vh\] {
   max-height: 90vh;
-}
-
-.min-h-24 {
-  min-height: 6rem;
-}
-
-.min-h-fit {
-  min-height: -moz-fit-content;
-  min-height: fit-content;
 }
 
 .min-h-screen {

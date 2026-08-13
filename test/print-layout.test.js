@@ -167,7 +167,6 @@ const MOCK_INJECT_SCRIPT = `
   // --- Professional Summary ---
   const summaryContainer = document.getElementById('professionalSummaryContainer');
   if (summaryContainer) {
-    summaryContainer.classList.remove('min-h-24', 'min-h-fit');
     const summary = document.createElement('p');
     summary.className = 'italic';
     summary.textContent = 'Software & Web Developer with experience in full-stack development and cloud systems.';

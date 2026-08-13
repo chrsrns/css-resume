@@ -161,9 +161,6 @@ const renderSummary = (summary) => {
   }
   const wrapper = el("div", { class: "mt-4" }, [p]);
   container.appendChild(wrapper);
-
-  container.classList.remove("min-h-24");
-  container.classList.add("min-h-fit");
 };
 
 const renderSkills = (skills) => {
