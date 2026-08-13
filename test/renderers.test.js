@@ -29,7 +29,7 @@ const setEducationHtml = () => {
 const setSummaryHtml = () => {
   document.body.innerHTML = `
     <div id="professionalSummarySection">
-      <div id="professionalSummaryContainer" class="relative">
+      <div id="professionalSummaryContainer" class="relative min-h-24">
         <div id="professionalSummaryPlaceholderOverlay" class="overlay-placeholder absolute w-full h-full bg-white opacity-100"></div>
       </div>
     </div>
@@ -337,6 +337,20 @@ describe("renderSummary", () => {
     renderSummary("Experienced developer.");
     expect(placeholder.classList.contains("opacity-100")).toBe(false);
     expect(placeholder.classList.contains("opacity-0")).toBe(true);
+  });
+
+  it("switches the container from min-h-24 to min-h-fit when a summary is rendered", () => {
+    const container = document.getElementById("professionalSummaryContainer");
+    renderSummary("Experienced developer.");
+    expect(container.classList.contains("min-h-24")).toBe(false);
+    expect(container.classList.contains("min-h-fit")).toBe(true);
+  });
+
+  it("does not switch to min-h-fit when summary is empty", () => {
+    const container = document.getElementById("professionalSummaryContainer");
+    renderSummary("");
+    expect(container.classList.contains("min-h-24")).toBe(true);
+    expect(container.classList.contains("min-h-fit")).toBe(false);
   });
 
   it("does not render when summary is empty", () => {

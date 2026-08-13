@@ -107,6 +107,8 @@ const refreshProfile = async (apiBaseUrl, resumeId) => {
 
   const summaryContainer = document.getElementById("professionalSummaryContainer");
   if (summaryContainer) {
+    summaryContainer.classList.remove("min-h-fit");
+    summaryContainer.classList.add("min-h-24");
     reAddSectionPlaceholder(summaryContainer);
     const summarySection = document.getElementById("professionalSummarySection");
     if (summarySection) summarySection.classList.remove("hidden");

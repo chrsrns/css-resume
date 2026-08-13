@@ -158,6 +158,9 @@ const renderSummary = (summary) => {
     }
   }
   container.appendChild(p);
+
+  container.classList.remove("min-h-24");
+  container.classList.add("min-h-fit");
 };
 
 const renderSkills = (skills) => {
