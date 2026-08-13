@@ -1,7 +1,7 @@
 import { getConfig } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
 import { destroyProjectsCarousel, initProjectsCarousel, initProjectsToggle } from "./carousel.js";
-import { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills } from "./renderers.js";
+import { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
 
 ////////////////////////////////////////////////////////
 // WebSocket Connection Helpers
@@ -103,8 +103,13 @@ const fetchBody = async (apiBaseUrl, path) => {
 const refreshProfile = async (apiBaseUrl, resumeId) => {
   const container = document.getElementById("profilePlaceholderOverlay");
   reAddSectionPlaceholder(container);
+
+  const summaryContainer = document.getElementById("professionalSummaryContainer");
+  if (summaryContainer) reAddSectionPlaceholder(summaryContainer);
+
   fetchBody(apiBaseUrl, `/resume/${resumeId}`).then((resume) => {
     renderProfile(resume);
+    renderSummary(resume?.executive_summary);
   });
 };
 
