@@ -33,6 +33,7 @@ const setSummaryHtml = () => {
         <div id="professionalSummaryPlaceholderOverlay" class="overlay-placeholder absolute w-full h-full bg-white opacity-100"></div>
       </div>
     </div>
+    <h1 id="educationHeading" class="text-2xl">Education</h1>
   `;
 };
 
@@ -392,5 +393,24 @@ describe("renderSummary", () => {
     expect(p).not.toBeNull();
     expect(p.textContent).toBe("Line 1Line 2");
     expect(p.querySelectorAll("br").length).toBe(1);
+  });
+
+  it("renders summary in italic", () => {
+    renderSummary("Experienced developer.");
+    const p = document.querySelector("#professionalSummaryContainer p");
+    expect(p.classList.contains("italic")).toBe(true);
+  });
+
+  it("adds top padding to education heading when summary is present", () => {
+    renderSummary("Experienced developer.");
+    const heading = document.getElementById("educationHeading");
+    expect(heading.classList.contains("pt-4")).toBe(true);
+  });
+
+  it("removes top padding from education heading when summary is empty", () => {
+    const heading = document.getElementById("educationHeading");
+    heading.classList.add("pt-4");
+    renderSummary("");
+    expect(heading.classList.contains("pt-4")).toBe(false);
   });
 });
