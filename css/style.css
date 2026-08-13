@@ -1188,6 +1188,10 @@ video {
   font-weight: 600;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .text-blue-700 {
   --tw-text-opacity: 1;
   color: rgb(29 78 216 / var(--tw-text-opacity));
@@ -1402,7 +1406,7 @@ video {
   */
 
   html {
-    font-size: 7.8pt;
+    font-size: 7pt;
   }
 
   body {
