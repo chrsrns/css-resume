@@ -164,6 +164,15 @@ const MOCK_INJECT_SCRIPT = `
     eduContainer.appendChild(item);
   }
 
+  // --- Professional Summary ---
+  const summaryContainer = document.getElementById('professionalSummaryContainer');
+  if (summaryContainer) {
+    const summary = document.createElement('p');
+    summary.className = 'mt-2';
+    summary.textContent = 'Software & Web Developer with experience in full-stack development and cloud systems.';
+    summaryContainer.appendChild(summary);
+  }
+
   // --- Experience ---
   const expContainer = document.getElementById('experienceContainer');
   if (expContainer) {

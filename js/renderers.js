@@ -131,6 +131,31 @@ const renderProfile = (resume) => {
   }
 };
 
+const renderSummary = (summary) => {
+  const container = document.getElementById("professionalSummaryContainer");
+  if (!container) return;
+
+  clearEl(container);
+
+  const section = document.getElementById("professionalSummarySection");
+  if (typeof summary !== "string" || !summary.trim()) {
+    if (section) section.classList.add("hidden");
+    return;
+  }
+
+  if (section) section.classList.remove("hidden");
+
+  const p = el("p", { class: "mt-2" });
+  const parts = summary.trim().split(/\r?\n/);
+  for (let i = 0; i < parts.length; i++) {
+    p.appendChild(document.createTextNode(parts[i]));
+    if (i < parts.length - 1) {
+      p.appendChild(el("br"));
+    }
+  }
+  container.appendChild(p);
+};
+
 const renderSkills = (skills) => {
   const list = document.getElementById("skillsList");
   if (!list) return;
@@ -474,4 +499,4 @@ const renderProjects = (projects, keyPointsByProjectId, techByProjectId) => {
   return { projectCount: sortedProjects.length };
 };
 
-export { buildProjectCard, clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills };
+export { buildProjectCard, clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary };

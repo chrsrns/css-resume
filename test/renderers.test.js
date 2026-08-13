@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { buildProjectCard, renderEducation, renderExperience, renderProfile, renderProjects } from "../js/renderers.js";
+import { buildProjectCard, renderEducation, renderExperience, renderProfile, renderProjects, renderSummary } from "../js/renderers.js";
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -24,6 +24,16 @@ const setExperienceHtml = () => {
 
 const setEducationHtml = () => {
   document.body.innerHTML = `<div id="educationContainer"></div>`;
+};
+
+const setSummaryHtml = () => {
+  document.body.innerHTML = `
+    <div id="professionalSummarySection">
+      <div id="professionalSummaryContainer" class="relative">
+        <div id="professionalSummaryPlaceholderOverlay" class="overlay-placeholder absolute w-full h-full bg-white opacity-100"></div>
+      </div>
+    </div>
+  `;
 };
 
 describe("renderProfile", () => {
@@ -307,5 +317,80 @@ describe("renderEducation", () => {
     const header = document.querySelector("#educationContainer .my-4");
     expect(header.classList.contains("sm:flex-row")).toBe(true);
     expect(header.classList.contains("sm:gap-2")).toBe(true);
+  });
+});
+
+describe("renderSummary", () => {
+  beforeEach(() => {
+    setSummaryHtml();
+  });
+
+  it("renders summary text into container", () => {
+    renderSummary("Experienced developer with a focus on web technologies.");
+    const container = document.getElementById("professionalSummaryContainer");
+    expect(container.textContent.trim()).toBe("Experienced developer with a focus on web technologies.");
+  });
+
+  it("hides the placeholder overlay", () => {
+    const placeholder = document.getElementById("professionalSummaryPlaceholderOverlay");
+    renderSummary("Experienced developer.");
+    expect(placeholder.classList.contains("opacity-100")).toBe(false);
+    expect(placeholder.classList.contains("opacity-0")).toBe(true);
+  });
+
+  it("does not render when summary is empty", () => {
+    renderSummary("");
+    const container = document.getElementById("professionalSummaryContainer");
+    expect(container.querySelector("p")).toBeNull();
+  });
+
+  it("does not render when summary is whitespace only", () => {
+    renderSummary("   \n  ");
+    const container = document.getElementById("professionalSummaryContainer");
+    expect(container.querySelector("p")).toBeNull();
+  });
+
+  it("does not render when summary is null", () => {
+    renderSummary(null);
+    const container = document.getElementById("professionalSummaryContainer");
+    expect(container.querySelector("p")).toBeNull();
+  });
+
+  it("renders newlines as br elements", () => {
+    renderSummary("Line 1\n\nLine 2");
+    const p = document.querySelector("#professionalSummaryContainer p");
+    expect(p).not.toBeNull();
+    expect(p.querySelectorAll("br").length).toBe(2);
+  });
+
+  it("shows the section when summary is present", () => {
+    const section = document.getElementById("professionalSummarySection");
+    section.classList.add("hidden");
+    renderSummary("Experienced developer.");
+    expect(section.classList.contains("hidden")).toBe(false);
+  });
+
+  it("hides the section when summary is empty", () => {
+    renderSummary("");
+    const section = document.getElementById("professionalSummarySection");
+    expect(section.classList.contains("hidden")).toBe(true);
+  });
+
+  it("hides the section when summary is null or not a string", () => {
+    renderSummary(null);
+    const section = document.getElementById("professionalSummarySection");
+    expect(section.classList.contains("hidden")).toBe(true);
+
+    section.classList.remove("hidden");
+    renderSummary({});
+    expect(section.classList.contains("hidden")).toBe(true);
+  });
+
+  it("handles CRLF newlines", () => {
+    renderSummary("Line 1\r\nLine 2");
+    const p = document.querySelector("#professionalSummaryContainer p");
+    expect(p).not.toBeNull();
+    expect(p.textContent).toBe("Line 1Line 2");
+    expect(p.querySelectorAll("br").length).toBe(1);
   });
 });
