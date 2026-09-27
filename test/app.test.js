@@ -226,6 +226,17 @@ const setFullPageHtml = () => {
   `;
 };
 
+const settleAllImages = async (ready) => {
+  for (let i = 0; i < 50; i++) {
+    for (const img of document.querySelectorAll("img")) {
+      img.dispatchEvent(new Event("load"));
+    }
+    if (window.__RESUME_RENDER_DONE__) break;
+    await new Promise((r) => setTimeout(r, 5));
+  }
+  await ready;
+};
+
 describe("JSON mode boot", () => {
   let fetchSpy;
   let wsSpy;
@@ -258,7 +269,7 @@ describe("JSON mode boot", () => {
       RESUME_JSON: resumeDocumentFixture(),
     };
     const { onReady } = await import("../js/app.js");
-    await onReady();
+    await settleAllImages(onReady());
 
     expect(document.getElementById("profileName").textContent).toBe("Jane Doe");
     expect(document.title).toBe("Online Resume - Jane Doe");
@@ -287,7 +298,7 @@ describe("JSON mode boot", () => {
   it("builds carousel markup and activates the carousel view", async () => {
     window.__CONFIG__ = { RESUME_JSON: resumeDocumentFixture() };
     const { onReady } = await import("../js/app.js");
-    await onReady();
+    await settleAllImages(onReady());
 
     const container = document.getElementById("projectsContainer");
     const track = document.querySelector(".projects-carousel-track");
@@ -304,8 +315,83 @@ describe("JSON mode boot", () => {
       },
     };
     const { onReady } = await import("../js/app.js");
-    await onReady();
+    await settleAllImages(onReady());
     expect(document.getElementById("profileName").textContent).toBe("Jane Doe");
+  });
+});
+
+describe("JSON mode render completion", () => {
+  let fetchSpy;
+  let wsSpy;
+
+  beforeEach(() => {
+    vi.resetModules();
+    wsSpy = vi.fn();
+    vi.doMock("../js/websocket.js", () => ({
+      createWebSocketWithReconnect: wsSpy,
+    }));
+    fetchSpy = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ body: [] }),
+    }));
+    vi.stubGlobal("fetch", fetchSpy);
+    vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
+    setFullPageHtml();
+  });
+
+  afterEach(() => {
+    vi.doUnmock("../js/websocket.js");
+    vi.unstubAllGlobals();
+    restoreLocation();
+    delete window.__CONFIG__;
+    delete window.__RESUME_RENDER_DONE__;
+  });
+
+  it("sets __RESUME_RENDER_DONE__ and hides overlays after rendering", async () => {
+    window.__CONFIG__ = { RESUME_JSON: resumeDocumentFixture() };
+    const { onReady } = await import("../js/app.js");
+    await settleAllImages(onReady());
+
+    expect(window.__RESUME_RENDER_DONE__).toBe(true);
+    for (const overlay of document.querySelectorAll(
+      ".overlay-placeholder",
+    )) {
+      expect(overlay.classList.contains("hidden")).toBe(true);
+    }
+  });
+
+  it("does not set __RESUME_RENDER_DONE__ in API mode", async () => {
+    window.__CONFIG__ = { API_BASE_URL: "/api", RESUME_ID: 1 };
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+    expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
+  });
+
+  it("waits for rendered images to settle before setting the flag", async () => {
+    const doc = resumeDocumentFixture();
+    doc.portfolio_projects[0].image_url = "https://example.com/card.png";
+    window.__CONFIG__ = { RESUME_JSON: doc };
+    const { onReady } = await import("../js/app.js");
+    const ready = onReady();
+
+    await new Promise((r) => setTimeout(r, 50));
+    expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
+
+    const pendingImgs = [...document.querySelectorAll("img")].filter(
+      (img) => img.getAttribute("src"),
+    );
+    expect(pendingImgs.length).toBeGreaterThan(1);
+
+    // settle one image at a time; flag must wait for all of them
+    pendingImgs[0].dispatchEvent(new Event("load"));
+    await new Promise((r) => setTimeout(r, 20));
+    expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
+
+    for (const img of pendingImgs.slice(1)) {
+      img.dispatchEvent(new Event("error"));
+    }
+    await ready;
+    expect(window.__RESUME_RENDER_DONE__).toBe(true);
   });
 });
 

@@ -1,7 +1,7 @@
 import { getConfig } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
-import { loadJsonDocument, normalizeResumeDocument, renderResumeDocument, resolveJsonSource, showJsonError } from "./json-mode.js";
-import { clearEl, el, forceStaticProjectsView, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
+import { loadJsonDocument, normalizeResumeDocument, renderResumeDocument, resolveJsonSource, showJsonError, waitForRenderedImages } from "./json-mode.js";
+import { clearEl, el, forceStaticProjectsView, hideOverlayPlaceholders, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
 
 let carouselModulePromise = null;
 const loadCarousel = () => {
@@ -317,11 +317,14 @@ const runJsonMode = async (source) => {
     const raw = await loadJsonDocument(source);
     const doc = normalizeResumeDocument(raw);
     const { projectCount } = renderResumeDocument(doc);
+    hideOverlayPlaceholders();
     if (carouselModule) {
       carouselModule.initProjectsCarousel(projectCount);
     } else {
       forceStaticProjectsView();
     }
+    await waitForRenderedImages();
+    window.__RESUME_RENDER_DONE__ = true;
   } catch (error) {
     console.error("JSON mode failed:", error);
     showJsonError(error instanceof Error ? error.message : String(error));

@@ -133,6 +133,22 @@ const renderResumeDocument = (doc) => {
   return { projectCount: result?.projectCount || 0 };
 };
 
+const waitForRenderedImages = () => {
+  const imgs = [...document.querySelectorAll("img")].filter((img) =>
+    img.getAttribute("src"),
+  );
+  return Promise.all(
+    imgs.map(
+      (img) =>
+        new Promise((resolve) => {
+          if (img.complete) return resolve();
+          img.addEventListener("load", resolve, { once: true });
+          img.addEventListener("error", resolve, { once: true });
+        }),
+    ),
+  );
+};
+
 const showJsonError = (message) => {
   const banner = document.getElementById("jsonErrorBanner");
   if (banner) {
@@ -149,4 +165,5 @@ export {
   renderResumeDocument,
   resolveJsonSource,
   showJsonError,
+  waitForRenderedImages,
 };
