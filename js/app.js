@@ -1,5 +1,6 @@
 import { getConfig } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
+import { loadJsonDocument, normalizeResumeDocument, renderResumeDocument, resolveJsonSource } from "./json-mode.js";
 import { clearEl, el, forceStaticProjectsView, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
 
 let carouselModulePromise = null;
@@ -309,6 +310,23 @@ const initWelcomeDialog = () => {
 
 let websocket = null;
 
+const runJsonMode = async (source) => {
+  const carouselModule = await loadCarousel();
+  carouselModule?.initProjectsToggle();
+  try {
+    const raw = await loadJsonDocument(source);
+    const doc = normalizeResumeDocument(raw);
+    const { projectCount } = renderResumeDocument(doc);
+    if (carouselModule) {
+      carouselModule.initProjectsCarousel(projectCount);
+    } else {
+      forceStaticProjectsView();
+    }
+  } catch (error) {
+    console.error("JSON mode failed:", error);
+  }
+};
+
 const onReady = async () => {
   // Initialize welcome dialog
   initWelcomeDialog();
@@ -318,6 +336,12 @@ const onReady = async () => {
     btn.onclick = function () {
       window.print();
     };
+  }
+
+  const jsonSource = resolveJsonSource();
+  if (jsonSource) {
+    await runJsonMode(jsonSource);
+    return;
   }
 
   const carouselModule = await loadCarousel();
