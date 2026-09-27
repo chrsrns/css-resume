@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { buildProjectCard, renderEducation, renderExperience, renderProfile, renderProjects, renderSummary } from "../js/renderers.js";
+import {
+  buildProjectCard,
+  renderEducation,
+  renderExperience,
+  renderProfile,
+  renderProjects,
+  renderSummary,
+} from "../js/renderers.js";
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -44,32 +51,50 @@ describe("renderProfile", () => {
 
   it("sets name and document title", () => {
     renderProfile({ name: "Ada Lovelace" });
-    expect(document.getElementById("profileName").textContent).toBe("Ada Lovelace");
+    expect(document.getElementById("profileName").textContent).toBe(
+      "Ada Lovelace",
+    );
     expect(document.title).toBe("Online Resume - Ada Lovelace");
   });
 
   it("splits location into two parts", () => {
     renderProfile({ location: "London, England, UK" });
-    expect(document.getElementById("profileLocationPart1").textContent).toBe("London, ");
-    expect(document.getElementById("profileLocationPart2").textContent).toBe("England, UK");
+    expect(document.getElementById("profileLocationPart1").textContent).toBe(
+      "London, ",
+    );
+    expect(document.getElementById("profileLocationPart2").textContent).toBe(
+      "England, UK",
+    );
   });
 
   it("splits email into user and domain parts", () => {
     renderProfile({ email: "ada@example.com" });
-    expect(document.getElementById("profileEmailText1").textContent).toBe("ada");
-    expect(document.getElementById("profileEmailText2").textContent).toBe("@example.com ");
-    expect(document.getElementById("profileEmailLink").getAttribute("href")).toBe("mailto:ada@example.com");
+    expect(document.getElementById("profileEmailText1").textContent).toBe(
+      "ada",
+    );
+    expect(document.getElementById("profileEmailText2").textContent).toBe(
+      "@example.com ",
+    );
+    expect(
+      document.getElementById("profileEmailLink").getAttribute("href"),
+    ).toBe("mailto:ada@example.com");
   });
 
   it("sets github link and text", () => {
     renderProfile({ github_url: "https://github.com/ada" });
-    expect(document.getElementById("profileGithubLink").getAttribute("href")).toBe("https://github.com/ada");
-    expect(document.getElementById("profileGithubText").textContent).toBe("https://github.com/ada");
+    expect(
+      document.getElementById("profileGithubLink").getAttribute("href"),
+    ).toBe("https://github.com/ada");
+    expect(document.getElementById("profileGithubText").textContent).toBe(
+      "https://github.com/ada",
+    );
   });
 
   it("sets mobile number", () => {
     renderProfile({ mobile_number: "+1 555 0100" });
-    expect(document.getElementById("profileMobile").textContent).toBe("+1 555 0100");
+    expect(document.getElementById("profileMobile").textContent).toBe(
+      "+1 555 0100",
+    );
   });
 
   it("hides the profile placeholder overlay", () => {
@@ -86,13 +111,34 @@ describe("renderProjects", () => {
   });
 
   it("uses project_link as the primary href", () => {
-    renderProjects([{ id: 1, project_name: "App", project_link: "https://app.example.com", source_code_link: "https://github.com/app" }], {}, {});
+    renderProjects(
+      [
+        {
+          id: 1,
+          project_name: "App",
+          project_link: "https://app.example.com",
+          source_code_link: "https://github.com/app",
+        },
+      ],
+      {},
+      {},
+    );
     const link = document.querySelector("#projectsContainer a");
     expect(link.getAttribute("href")).toBe("https://app.example.com");
   });
 
   it("falls back to source_code_link when project_link is missing", () => {
-    renderProjects([{ id: 1, project_name: "Lib", source_code_link: "https://github.com/lib" }], {}, {});
+    renderProjects(
+      [
+        {
+          id: 1,
+          project_name: "Lib",
+          source_code_link: "https://github.com/lib",
+        },
+      ],
+      {},
+      {},
+    );
     const link = document.querySelector("#projectsContainer a");
     expect(link.getAttribute("href")).toBe("https://github.com/lib");
   });
@@ -104,22 +150,109 @@ describe("renderProjects", () => {
   });
 
   it("shows the 'No Preview' badge when project_link is missing or empty", () => {
-    renderProjects([{ id: 1, project_name: "Draft", project_link: "" }], {}, {});
-    const badge = document.querySelector("#projectsContainer span.text-yellow-700");
+    renderProjects(
+      [{ id: 1, project_name: "Draft", project_link: "" }],
+      {},
+      {},
+    );
+    const badge = document.querySelector(
+      "#projectsContainer span.text-yellow-700",
+    );
     expect(badge).not.toBeNull();
     expect(badge.textContent).toBe("No Preview");
   });
 
   it("does not show the 'No Preview' badge when project_link is present", () => {
-    renderProjects([{ id: 1, project_name: "App", project_link: "https://app.example.com" }], {}, {});
-    const badge = document.querySelector("#projectsContainer span.text-yellow-700");
+    renderProjects(
+      [{ id: 1, project_name: "App", project_link: "https://app.example.com" }],
+      {},
+      {},
+    );
+    const badge = document.querySelector(
+      "#projectsContainer span.text-yellow-700",
+    );
     expect(badge).toBeNull();
+  });
+
+  it("renders all projects when no screen cap is set", () => {
+    renderProjects(
+      [
+        { id: 1, project_name: "One" },
+        { id: 2, project_name: "Two" },
+        { id: 3, project_name: "Three" },
+      ],
+      {},
+      {},
+    );
+    const container = document.getElementById("projectsContainer");
+    expect(container.querySelectorAll(".static-project-card").length).toBe(3);
+  });
+
+  it("caps static cards and carousel slides with screenCap", () => {
+    document.body.innerHTML = `
+      <div id="projectsContainer">
+        <div id="projectsCarousel" class="projects-carousel">
+          <div class="projects-carousel-viewport">
+            <div class="projects-carousel-track"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    const projects = [
+      { id: 1, project_name: "One" },
+      { id: 2, project_name: "Two" },
+      { id: 3, project_name: "Three" },
+    ];
+    const result = renderProjects(projects, {}, {}, { screenCap: 2 });
+    const container = document.getElementById("projectsContainer");
+    const track = document.querySelector(".projects-carousel-track");
+
+    expect(container.querySelectorAll(".static-project-card").length).toBe(2);
+    expect(track.querySelectorAll(".projects-carousel-slide").length).toBe(2);
+    expect(result.projectCount).toBe(2);
+  });
+
+  it("ignores invalid screenCap values", () => {
+    const projects = [
+      { id: 1, project_name: "One" },
+      { id: 2, project_name: "Two" },
+    ];
+    renderProjects(projects, {}, {}, { screenCap: -1 });
+    const container = document.getElementById("projectsContainer");
+    expect(container.querySelectorAll(".static-project-card").length).toBe(2);
+  });
+
+  it("injects a print style when printCap differs from default", () => {
+    const projects = Array.from({ length: 7 }, (_, i) => ({
+      id: i + 1,
+      project_name: `Project ${i + 1}`,
+    }));
+    renderProjects(projects, {}, {}, { printCap: 3 });
+    const style = document.getElementById("projectsPrintLimitStyle");
+    expect(style).not.toBeNull();
+    expect(style.textContent).toMatch(
+      /@media print\s*\{[^}]*#projectsContainer>\.glow-on-hover:nth-child\(n\s*\+\s*4\s+of\s+\.glow-on-hover\)\s*\{[^}]*display:\s*none/s,
+    );
+  });
+
+  it("removes the print style when printCap equals default 6", () => {
+    const projects = Array.from({ length: 7 }, (_, i) => ({
+      id: i + 1,
+      project_name: `Project ${i + 1}`,
+    }));
+    renderProjects(projects, {}, {}, { printCap: 3 });
+    renderProjects(projects, {}, {}, { printCap: 6 });
+    expect(document.getElementById("projectsPrintLimitStyle")).toBeNull();
   });
 });
 
 describe("project image rendering", () => {
   it("project image rendered when image_url present and non-empty in carousel cards (V81)", () => {
-    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      image_url: "https://example.com/image.jpg",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const img = card.querySelector("img.project-card-image");
     expect(img).not.toBeNull();
@@ -128,7 +261,11 @@ describe("project image rendering", () => {
   });
 
   it("project image not rendered in static cards (V81)", () => {
-    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      image_url: "https://example.com/image.jpg",
+    };
     const card = buildProjectCard(project, {}, {}, false);
     const img = card.querySelector("img.project-card-image");
     expect(img).toBeNull();
@@ -156,7 +293,11 @@ describe("project image rendering", () => {
   });
 
   it("project images have print:hidden class (V84)", () => {
-    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      image_url: "https://example.com/image.jpg",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const img = card.querySelector("img.project-card-image");
     expect(img).not.toBeNull();
@@ -164,7 +305,11 @@ describe("project image rendering", () => {
   });
 
   it("project images have object-fit cover and aspect ratio styling (V82)", () => {
-    const project = { id: 1, project_name: "Test Project", image_url: "https://example.com/image.jpg" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      image_url: "https://example.com/image.jpg",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const img = card.querySelector("img.project-card-image");
     expect(img).not.toBeNull();
@@ -174,7 +319,11 @@ describe("project image rendering", () => {
 
 describe("clickable carousel cards", () => {
   it("carousel card has single anchor wrapper with no nested anchors (V85)", () => {
-    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      project_link: "https://example.com",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const anchors = card.querySelectorAll("a");
     expect(anchors.length).toBe(1);
@@ -182,14 +331,23 @@ describe("clickable carousel cards", () => {
   });
 
   it("carousel card anchor href uses correct priority: project_link (V86)", () => {
-    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com", source_code_link: "https://github.com/test" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      project_link: "https://example.com",
+      source_code_link: "https://github.com/test",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const anchor = card.querySelector("a");
     expect(anchor.getAttribute("href")).toBe("https://example.com");
   });
 
   it("carousel card anchor href uses correct priority: source_code_link fallback (V86)", () => {
-    const project = { id: 1, project_name: "Test Project", source_code_link: "https://github.com/test" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      source_code_link: "https://github.com/test",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const anchor = card.querySelector("a");
     expect(anchor.getAttribute("href")).toBe("https://github.com/test");
@@ -203,7 +361,11 @@ describe("clickable carousel cards", () => {
   });
 
   it("static list cards retain title link structure (V88)", () => {
-    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      project_link: "https://example.com",
+    };
     const card = buildProjectCard(project, {}, {}, false);
     const anchors = card.querySelectorAll("a");
     expect(anchors.length).toBe(1);
@@ -213,7 +375,11 @@ describe("clickable carousel cards", () => {
   });
 
   it("carousel card anchor has print:hidden class (V87)", () => {
-    const project = { id: 1, project_name: "Test Project", project_link: "https://example.com" };
+    const project = {
+      id: 1,
+      project_name: "Test Project",
+      project_link: "https://example.com",
+    };
     const card = buildProjectCard(project, {}, {}, true);
     const anchor = card.querySelector("a");
     expect(anchor).not.toBeNull();
@@ -228,8 +394,21 @@ describe("renderExperience", () => {
 
   it("renders key points as bullets", () => {
     renderExperience(
-      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", end_date: "2023-12-31" }],
-      { 1: [{ key_point: "Shipped X", display_order: 0 }, { key_point: "Built Y", display_order: 1 }] }
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01-01",
+          end_date: "2023-12-31",
+        },
+      ],
+      {
+        1: [
+          { key_point: "Shipped X", display_order: 0 },
+          { key_point: "Built Y", display_order: 1 },
+        ],
+      },
     );
     const lis = document.querySelectorAll("#experienceContainer ul li");
     expect(lis.length).toBe(2);
@@ -239,25 +418,49 @@ describe("renderExperience", () => {
 
   it("renders description as separate paragraph, not a bullet", () => {
     renderExperience(
-      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", end_date: "2023-12-31", description: "Did backend work." }],
-      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01-01",
+          end_date: "2023-12-31",
+          description: "Did backend work.",
+        },
+      ],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] },
     );
     const lis = document.querySelectorAll("#experienceContainer ul li");
     const ps = document.querySelectorAll("#experienceContainer p");
     expect(lis.length).toBe(1);
     expect(lis[0].textContent).toBe("Shipped X");
-    expect([...ps].some((p) => p.textContent === "Did backend work.")).toBe(true);
-    expect([...lis].some((li) => li.textContent === "Did backend work.")).toBe(false);
+    expect([...ps].some((p) => p.textContent === "Did backend work.")).toBe(
+      true,
+    );
+    expect([...lis].some((li) => li.textContent === "Did backend work.")).toBe(
+      false,
+    );
   });
 
   it("renders description before key points", () => {
     renderExperience(
-      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", end_date: "2023-12-31", description: "Did backend work." }],
-      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01-01",
+          end_date: "2023-12-31",
+          description: "Did backend work.",
+        },
+      ],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] },
     );
     const container = document.getElementById("experienceContainer");
     const children = [...container.children];
-    const pIdx = children.findIndex((c) => c.tagName === "P" && c.textContent === "Did backend work.");
+    const pIdx = children.findIndex(
+      (c) => c.tagName === "P" && c.textContent === "Did backend work.",
+    );
     const ulIdx = children.findIndex((c) => c.tagName === "UL");
     expect(pIdx).toBeGreaterThan(-1);
     expect(ulIdx).toBeGreaterThan(-1);
@@ -266,8 +469,16 @@ describe("renderExperience", () => {
 
   it("stacks Current badge above title on small screens", () => {
     renderExperience(
-      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", description: "Did backend work." }],
-      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01-01",
+          description: "Did backend work.",
+        },
+      ],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] },
     );
     const h2 = document.querySelector("#experienceContainer h2");
     expect(h2).not.toBeNull();
@@ -279,13 +490,27 @@ describe("renderExperience", () => {
 
   it("keeps Current badge source order after title for sm row layout", () => {
     renderExperience(
-      [{ id: 1, job_title: "Engineer", company_name: "Acme", start_date: "2023-01-01", description: "Did backend work." }],
-      { 1: [{ key_point: "Shipped X", display_order: 0 }] }
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01-01",
+          description: "Did backend work.",
+        },
+      ],
+      { 1: [{ key_point: "Shipped X", display_order: 0 }] },
     );
     const h2 = document.querySelector("#experienceContainer h2");
     const children = [...h2.childNodes];
-    const textIdx = children.findIndex((c) => c.nodeType === Node.TEXT_NODE && c.textContent.includes("Engineer @ Acme"));
-    const badgeIdx = children.findIndex((c) => c.tagName === "SPAN" && c.textContent.includes("Current"));
+    const textIdx = children.findIndex(
+      (c) =>
+        c.nodeType === Node.TEXT_NODE &&
+        c.textContent.includes("Engineer @ Acme"),
+    );
+    const badgeIdx = children.findIndex(
+      (c) => c.tagName === "SPAN" && c.textContent.includes("Current"),
+    );
     expect(textIdx).toBeGreaterThan(-1);
     expect(badgeIdx).toBeGreaterThan(-1);
     expect(textIdx).toBeLessThan(badgeIdx);
@@ -299,8 +524,16 @@ describe("renderEducation", () => {
 
   it("stacks education stage and institution vertically on small screens with tight spacing", () => {
     renderEducation(
-      [{ id: 1, education_stage: "College", institution_name: "XYZ University", start_date: "2020", end_date: "2024" }],
-      {}
+      [
+        {
+          id: 1,
+          education_stage: "College",
+          institution_name: "XYZ University",
+          start_date: "2020",
+          end_date: "2024",
+        },
+      ],
+      {},
     );
     const header = document.querySelector("#educationContainer .my-4");
     expect(header).not.toBeNull();
@@ -311,8 +544,16 @@ describe("renderEducation", () => {
 
   it("keeps education stage and institution on the same row at sm breakpoint and up", () => {
     renderEducation(
-      [{ id: 1, education_stage: "College", institution_name: "XYZ University", start_date: "2020", end_date: "2024" }],
-      {}
+      [
+        {
+          id: 1,
+          education_stage: "College",
+          institution_name: "XYZ University",
+          start_date: "2020",
+          end_date: "2024",
+        },
+      ],
+      {},
     );
     const header = document.querySelector("#educationContainer .my-4");
     expect(header.classList.contains("sm:flex-row")).toBe(true);
@@ -328,11 +569,15 @@ describe("renderSummary", () => {
   it("renders summary text into container", () => {
     renderSummary("Experienced developer with a focus on web technologies.");
     const container = document.getElementById("professionalSummaryContainer");
-    expect(container.textContent.trim()).toBe("Experienced developer with a focus on web technologies.");
+    expect(container.textContent.trim()).toBe(
+      "Experienced developer with a focus on web technologies.",
+    );
   });
 
   it("hides the placeholder overlay", () => {
-    const placeholder = document.getElementById("professionalSummaryPlaceholderOverlay");
+    const placeholder = document.getElementById(
+      "professionalSummaryPlaceholderOverlay",
+    );
     renderSummary("Experienced developer.");
     expect(placeholder.classList.contains("opacity-100")).toBe(false);
     expect(placeholder.classList.contains("opacity-0")).toBe(true);
