@@ -589,6 +589,14 @@ const setPrintCapStyle = (printLimit) => {
   style.textContent = rule;
 };
 
+const hideOverlayPlaceholders = () => {
+  for (const overlay of document.querySelectorAll(".overlay-placeholder")) {
+    overlay.classList.remove("opacity-100");
+    overlay.classList.add("opacity-0");
+    overlay.classList.add("hidden");
+  }
+};
+
 const forceStaticProjectsView = () => {
   const container = document.getElementById("projectsContainer");
   if (!container) return;
@@ -667,6 +675,7 @@ export {
   clearEl,
   el,
   forceStaticProjectsView,
+  hideOverlayPlaceholders,
   reAddSectionPlaceholder,
   renderEducation,
   renderExperience,

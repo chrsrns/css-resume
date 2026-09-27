@@ -1,5 +1,11 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { resolveJsonSource } from "../js/json-mode.js";
+import {
+  JsonDocumentError,
+  normalizeResumeDocument,
+  resolveJsonSource,
+} from "../js/json-mode.js";
 
 describe("resolveJsonSource", () => {
   it("returns null when no JSON source is configured", () => {
@@ -105,5 +111,61 @@ describe("resolveJsonSource", () => {
         config: { RESUME_JSON: "", RESUME_JSON_URL: "  " },
       }),
     ).toBeNull();
+  });
+});
+
+describe("normalizeResumeDocument", () => {
+  const bareDoc = { resume: { name: "Jane" } };
+
+  it("accepts a bare document and defaults schema_version to 1", () => {
+    expect(normalizeResumeDocument(bareDoc)).toBe(bareDoc);
+  });
+
+  it("accepts an envelope with schema_version 1", () => {
+    const env = { schema_version: 1, generator: "x", document: bareDoc };
+    expect(normalizeResumeDocument(env)).toBe(bareDoc);
+  });
+
+  it("rejects an envelope with a schema_version other than 1", () => {
+    const env = { schema_version: 2, generator: "x", document: bareDoc };
+    expect(() => normalizeResumeDocument(env)).toThrow(JsonDocumentError);
+  });
+
+  it("rejects a bare document whose top-level schema_version is not 1", () => {
+    const doc = { ...bareDoc, schema_version: 3 };
+    expect(() => normalizeResumeDocument(doc)).toThrow(JsonDocumentError);
+  });
+
+  it("accepts a bare document carrying schema_version 1", () => {
+    const doc = { ...bareDoc, schema_version: 1 };
+    expect(normalizeResumeDocument(doc)).toBe(doc);
+  });
+
+  it("rejects non-object values", () => {
+    for (const bad of [null, undefined, 42, "text", [1, 2]]) {
+      expect(() => normalizeResumeDocument(bad)).toThrow(JsonDocumentError);
+    }
+  });
+
+  it("rejects a document without a resume object", () => {
+    expect(() => normalizeResumeDocument({ schema_version: 1 })).toThrow(
+      JsonDocumentError,
+    );
+    expect(() =>
+      normalizeResumeDocument({ document: { schema_version: 1 } }),
+    ).toThrow(JsonDocumentError);
+    expect(() =>
+      normalizeResumeDocument({ schema_version: 1, document: null }),
+    ).toThrow(JsonDocumentError);
+  });
+});
+
+describe("jsonErrorBanner markup", () => {
+  it("index.html contains a hidden print:hidden #jsonErrorBanner", () => {
+    const html = readFileSync(resolve("index.html"), "utf8");
+    const match = html.match(/<div[^>]*id="jsonErrorBanner"[^>]*>/);
+    expect(match).not.toBeNull();
+    expect(match[0]).toContain("hidden");
+    expect(match[0]).toContain("print:hidden");
   });
 });

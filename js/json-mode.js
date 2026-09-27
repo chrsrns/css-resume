@@ -2,6 +2,7 @@
 // (URL fragment, query parameter, or page config) instead of the API.
 
 import {
+  hideOverlayPlaceholders,
   renderEducation,
   renderExperience,
   renderLanguages,
@@ -132,10 +133,20 @@ const renderResumeDocument = (doc) => {
   return { projectCount: result?.projectCount || 0 };
 };
 
+const showJsonError = (message) => {
+  const banner = document.getElementById("jsonErrorBanner");
+  if (banner) {
+    banner.textContent = `Resume JSON error: ${message}`;
+    banner.classList.remove("hidden");
+  }
+  hideOverlayPlaceholders();
+};
+
 export {
   JsonDocumentError,
   loadJsonDocument,
   normalizeResumeDocument,
   renderResumeDocument,
   resolveJsonSource,
+  showJsonError,
 };

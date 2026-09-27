@@ -186,6 +186,7 @@ const resumeDocumentFixture = () => ({
 
 const setFullPageHtml = () => {
   document.body.innerHTML = `
+    <div id="jsonErrorBanner" class="hidden print:hidden"></div>
     <div id="profilePlaceholderOverlay" class="overlay-placeholder opacity-100"></div>
     <h1 id="profileName"></h1>
     <img id="profileImage" />
@@ -305,5 +306,130 @@ describe("JSON mode boot", () => {
     const { onReady } = await import("../js/app.js");
     await onReady();
     expect(document.getElementById("profileName").textContent).toBe("Jane Doe");
+  });
+});
+
+const originalLocationDescriptor = Object.getOwnPropertyDescriptor(
+  window,
+  "location",
+);
+
+const stubLocation = (location) => {
+  Object.defineProperty(window, "location", {
+    value: location,
+    configurable: true,
+    writable: true,
+  });
+};
+
+const restoreLocation = () => {
+  Object.defineProperty(window, "location", originalLocationDescriptor);
+};
+
+describe("JSON mode error state", () => {
+  let fetchSpy;
+  let wsSpy;
+
+  beforeEach(() => {
+    vi.resetModules();
+    wsSpy = vi.fn();
+    vi.doMock("../js/websocket.js", () => ({
+      createWebSocketWithReconnect: wsSpy,
+    }));
+    fetchSpy = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ body: [] }),
+    }));
+    vi.stubGlobal("fetch", fetchSpy);
+    vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
+    setFullPageHtml();
+  });
+
+  afterEach(() => {
+    vi.doUnmock("../js/websocket.js");
+    vi.unstubAllGlobals();
+    restoreLocation();
+    delete window.__CONFIG__;
+    delete window.__RESUME_RENDER_DONE__;
+  });
+
+  it("shows the error banner on malformed RESUME_JSON and hides overlays", async () => {
+    window.__CONFIG__ = { RESUME_JSON: "{not json" };
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(banner.textContent.length).toBeGreaterThan(0);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(wsSpy).not.toHaveBeenCalled();
+    expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
+
+    for (const overlay of document.querySelectorAll(".overlay-placeholder")) {
+      expect(overlay.classList.contains("hidden")).toBe(true);
+    }
+  });
+
+  it("shows the error banner on a schema_version mismatch", async () => {
+    window.__CONFIG__ = {
+      RESUME_JSON: {
+        schema_version: 2,
+        generator: "x",
+        document: resumeDocumentFixture(),
+      },
+    };
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("shows the error banner on an invalid document shape", async () => {
+    window.__CONFIG__ = { RESUME_JSON: { skills: [] } };
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+  });
+
+  it("does not fall through to a lower-precedence source on failure", async () => {
+    window.__CONFIG__ = {
+      RESUME_JSON: "{not json",
+      RESUME_JSON_URL: "https://example.com/valid.json",
+    };
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(document.getElementById("profileName").textContent).toBe("");
+  });
+
+  it("shows the error banner when the ?json-url fetch fails", async () => {
+    fetchSpy.mockResolvedValue({
+      ok: false,
+      status: 404,
+      statusText: "Not Found",
+    });
+    stubLocation({
+      search: "?json-url=https%3A%2F%2Fexample.com%2Fdoc.json",
+      hash: "",
+      href: "http://localhost/?json-url=https%3A%2F%2Fexample.com%2Fdoc.json",
+    });
+    window.__CONFIG__ = {};
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(fetchSpy.mock.calls.length).toBeGreaterThan(0);
+    for (const call of fetchSpy.mock.calls) {
+      expect(call[0]).toBe("https://example.com/doc.json");
+    }
+    expect(wsSpy).not.toHaveBeenCalled();
   });
 });
