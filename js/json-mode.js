@@ -57,8 +57,110 @@ const resolveJsonSource = ({ search, hash, config } = {}) => {
 const isPlainObject = (value) =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 
+const MAX_GUNZIP_BYTES = 16 * 1024 * 1024;
+
+const decodeBase64Url = (value) => {
+  if (typeof value !== "string") {
+    throw new JsonDocumentError("fragment payload must be a string");
+  }
+  let s = value;
+  const padMatch = s.match(/=+$/);
+  if (padMatch) {
+    if (padMatch[0].length > 2) {
+      throw new JsonDocumentError("invalid base64url padding");
+    }
+    s = s.slice(0, -padMatch[0].length);
+  }
+  if (s.length === 0 || !/^[A-Za-z0-9_-]+$/.test(s)) {
+    throw new JsonDocumentError("fragment payload is not valid base64url");
+  }
+  const remainder = s.length % 4;
+  if (remainder === 1) {
+    throw new JsonDocumentError("invalid base64url length");
+  }
+  const b64 =
+    (s + "===".slice(0, (4 - remainder) % 4))
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+  let binary;
+  try {
+    binary = atob(b64);
+  } catch {
+    throw new JsonDocumentError("fragment payload failed base64 decode");
+  }
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+const gunzipBytes = async (bytes) => {
+  const Decompression = globalThis.DecompressionStream;
+  if (typeof Decompression !== "function") {
+    throw new JsonDocumentError(
+      "#json.gz requires the DecompressionStream API, which is unavailable",
+    );
+  }
+  const input = new ReadableStream({
+    start(controller) {
+      controller.enqueue(bytes);
+      controller.close();
+    },
+  });
+  const reader = input
+    .pipeThrough(new Decompression("gzip"))
+    .getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_GUNZIP_BYTES) {
+        await reader.cancel();
+        throw new JsonDocumentError(
+          "decompressed #json.gz payload exceeds 16 MB",
+        );
+      }
+      chunks.push(value);
+    }
+  } catch (error) {
+    if (error instanceof JsonDocumentError) throw error;
+    throw new JsonDocumentError(
+      `#json.gz decompression failed: ${error instanceof Error ? error.message : error}`,
+    );
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out;
+};
+
+const parseFragmentJson = (bytes, label) => {
+  const text = new TextDecoder().decode(bytes);
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new JsonDocumentError(`${label} did not decode to valid JSON`);
+  }
+};
+
 const loadJsonDocument = async (source) => {
   switch (source.type) {
+    case "fragment": {
+      const bytes = decodeBase64Url(source.value);
+      return parseFragmentJson(bytes, "#json");
+    }
+    case "fragment-gz": {
+      const compressed = decodeBase64Url(source.value);
+      const bytes = await gunzipBytes(compressed);
+      return parseFragmentJson(bytes, "#json.gz");
+    }
     case "inline":
       if (typeof source.value === "string") {
         try {
@@ -159,6 +261,7 @@ const showJsonError = (message) => {
 };
 
 export {
+  decodeBase64Url,
   JsonDocumentError,
   loadJsonDocument,
   normalizeResumeDocument,

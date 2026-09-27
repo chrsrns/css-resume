@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  decodeBase64Url,
   JsonDocumentError,
   normalizeResumeDocument,
   resolveJsonSource,
@@ -167,5 +168,38 @@ describe("jsonErrorBanner markup", () => {
     expect(match).not.toBeNull();
     expect(match[0]).toContain("hidden");
     expect(match[0]).toContain("print:hidden");
+  });
+});
+
+describe("decodeBase64Url", () => {
+  const text = "hello";
+
+  it("decodes unpadded base64url", () => {
+    const bytes = decodeBase64Url(Buffer.from(text).toString("base64url"));
+    expect(new TextDecoder().decode(bytes)).toBe(text);
+  });
+
+  it("accepts up to two trailing padding characters", () => {
+    const padded = Buffer.from("a").toString("base64"); // "YQ=="
+    expect(padded.endsWith("==")).toBe(true);
+    const noPad = padded.slice(0, -2);
+    const bytes1 = decodeBase64Url(noPad);
+    const bytes2 = decodeBase64Url(noPad + "=");
+    const bytes3 = decodeBase64Url(noPad + "==");
+    for (const b of [bytes1, bytes2, bytes3]) {
+      expect(new TextDecoder().decode(b)).toBe("a");
+    }
+  });
+
+  it("rejects standard base64 characters and whitespace", () => {
+    for (const bad of ["abc+def", "abc/def", "abc def", "abc%20"]) {
+      expect(() => decodeBase64Url(bad)).toThrow(JsonDocumentError);
+    }
+  });
+
+  it("rejects impossible lengths and excess padding", () => {
+    expect(() => decodeBase64Url("a")).toThrow(JsonDocumentError); // len % 4 == 1
+    expect(() => decodeBase64Url("ab===")).toThrow(JsonDocumentError);
+    expect(() => decodeBase64Url("")).toThrow(JsonDocumentError);
   });
 });

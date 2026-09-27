@@ -1,3 +1,4 @@
+import { gzipSync } from "node:zlib";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 class FakeIntersectionObserver {
@@ -517,5 +518,136 @@ describe("JSON mode error state", () => {
       expect(call[0]).toBe("https://example.com/doc.json");
     }
     expect(wsSpy).not.toHaveBeenCalled();
+  });
+});
+
+const toFragmentJson = (doc) =>
+  Buffer.from(JSON.stringify(doc), "utf8").toString("base64url");
+
+const toFragmentJsonGzip = (doc) =>
+  gzipSync(JSON.stringify(doc)).toString("base64url");
+
+describe("JSON fragment sources", () => {
+  let fetchSpy;
+  let wsSpy;
+
+  beforeEach(() => {
+    vi.resetModules();
+    wsSpy = vi.fn();
+    vi.doMock("../js/websocket.js", () => ({
+      createWebSocketWithReconnect: wsSpy,
+    }));
+    fetchSpy = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ body: [] }),
+    }));
+    vi.stubGlobal("fetch", fetchSpy);
+    vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
+    setFullPageHtml();
+  });
+
+  afterEach(() => {
+    vi.doUnmock("../js/websocket.js");
+    vi.unstubAllGlobals();
+    restoreLocation();
+    delete window.__CONFIG__;
+    delete window.__RESUME_RENDER_DONE__;
+  });
+
+  const boot = async (hash) => {
+    stubLocation({ search: "", hash, href: `http://localhost/${hash}` });
+    window.__CONFIG__ = {};
+    const { onReady } = await import("../js/app.js");
+    const ready = onReady();
+    await settleAllImages(ready);
+    return ready;
+  };
+
+  it("renders a document from the #json fragment with no fetch", async () => {
+    await boot(`#json=${toFragmentJson(resumeDocumentFixture())}`);
+
+    expect(document.getElementById("profileName").textContent).toBe("Jane Doe");
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(wsSpy).not.toHaveBeenCalled();
+    expect(window.__RESUME_RENDER_DONE__).toBe(true);
+  });
+
+  it("renders a document from the #json.gz fragment (gzip round-trip)", async () => {
+    await boot(`#json.gz=${toFragmentJsonGzip(resumeDocumentFixture())}`);
+
+    expect(document.getElementById("profileName").textContent).toBe("Jane Doe");
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(window.__RESUME_RENDER_DONE__).toBe(true);
+  });
+
+  it("shows the error banner for an invalid #json payload", async () => {
+    await boot("#json=not!base64url");
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
+  });
+
+  it("shows the error banner for #json that decodes to bad JSON", async () => {
+    const bad = Buffer.from("{nope", "utf8").toString("base64url");
+    await boot(`#json=${bad}`);
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+  });
+
+  it("shows the error banner when DecompressionStream is unavailable", async () => {
+    vi.stubGlobal("DecompressionStream", undefined);
+    await boot(`#json.gz=${toFragmentJsonGzip(resumeDocumentFixture())}`);
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
+  });
+
+  it("shows the error banner for corrupt gzip data", async () => {
+    const corrupt = Buffer.from("not gzip at all", "utf8").toString(
+      "base64url",
+    );
+    await boot(`#json.gz=${corrupt}`);
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+  });
+
+  it("shows the error banner when decompressed output exceeds 16 MB", async () => {
+    const huge = JSON.stringify({
+      resume: { name: "Jane", email: "x" },
+      pad: "x".repeat(17 * 1024 * 1024),
+    });
+    await boot(`#json.gz=${gzipSync(huge).toString("base64url")}`);
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(banner.textContent).toContain("16 MB");
+  });
+
+  it("rejects a fragment payload containing standard-base64 characters", async () => {
+    await boot(`#json=${toFragmentJson(resumeDocumentFixture())}+`);
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+  });
+
+  it("does not fall through to RESUME_JSON when the fragment fails", async () => {
+    stubLocation({
+      search: "",
+      hash: "#json=%%%bad",
+      href: "http://localhost/#json=%%%bad",
+    });
+    window.__CONFIG__ = { RESUME_JSON: resumeDocumentFixture() };
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+
+    const banner = document.getElementById("jsonErrorBanner");
+    expect(banner.classList.contains("hidden")).toBe(false);
+    expect(document.getElementById("profileName").textContent).toBe("");
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
