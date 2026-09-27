@@ -4,6 +4,7 @@ import {
   clamp,
   formatDateRange,
   formatYear,
+  parseIsoPartialDateLocal,
   sortByDisplayOrder,
 } from "./helpers.js";
 
@@ -381,12 +382,12 @@ const renderExperience = (items, keyPointsByWorkId) => {
       ),
     );
 
-    const startDateStr = dateFormat(new Date(w.start_date), "mmm d, yyyy");
-    const endDateStr = w.end_date
-      ? dateFormat(new Date(w.end_date), "mmm d, yyyy")
-      : "now";
-
-    const rangeText = `${startDateStr} - ${endDateStr}`;
+    const startDate = parseIsoPartialDateLocal(w.start_date);
+    const endDate = w.end_date ? parseIsoPartialDateLocal(w.end_date) : null;
+    const rangeText =
+      startDate && (!w.end_date || endDate)
+        ? `${dateFormat(startDate, "mmm d, yyyy")} - ${w.end_date ? dateFormat(endDate, "mmm d, yyyy") : "now"}`
+        : "";
 
     const range = rangeText
       ? el("div", { class: `mt-1 ${idx >= 2 ? "print:hidden" : ""}` }, [
@@ -413,7 +414,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
           el("span", { text: rangeText }),
         ])
       : null;
-    container.appendChild(range);
+    if (range) container.appendChild(range);
 
     if (w.description) {
       container.appendChild(
@@ -588,6 +589,27 @@ const setPrintCapStyle = (printLimit) => {
   style.textContent = rule;
 };
 
+const hideOverlayPlaceholders = () => {
+  for (const overlay of document.querySelectorAll(".overlay-placeholder")) {
+    overlay.classList.remove("opacity-100");
+    overlay.classList.add("opacity-0");
+    overlay.classList.add("hidden");
+  }
+};
+
+const forceStaticProjectsView = () => {
+  const container = document.getElementById("projectsContainer");
+  if (!container) return;
+  container.classList.add("static-active");
+  container.classList.remove("carousel-active");
+  const toggle = document.getElementById("projectsViewToggle");
+  toggle?.classList.add("hidden");
+  const prevBtn = document.getElementById("projectsCarouselPrev");
+  const nextBtn = document.getElementById("projectsCarouselNext");
+  prevBtn?.classList.add("hidden");
+  nextBtn?.classList.add("hidden");
+};
+
 const renderProjects = (
   projects,
   keyPointsByProjectId,
@@ -652,6 +674,8 @@ export {
   buildProjectCard,
   clearEl,
   el,
+  forceStaticProjectsView,
+  hideOverlayPlaceholders,
   reAddSectionPlaceholder,
   renderEducation,
   renderExperience,

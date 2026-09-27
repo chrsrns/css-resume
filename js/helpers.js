@@ -27,4 +27,26 @@ export const formatYear = (value) => {
   return s;
 };
 
+export const parseIsoPartialDateLocal = (value) => {
+  if (value == null) return "";
+  const s = String(value).trim();
+  if (!s) return "";
+
+  const match = s.match(/^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/);
+  if (match) {
+    const year = Number(match[1]);
+    const month = match[2] ? Number(match[2]) : 1;
+    const day = match[3] ? Number(match[3]) : 1;
+    const d = new Date(year, month - 1, day);
+    return d.getFullYear() === year &&
+      d.getMonth() === month - 1 &&
+      d.getDate() === day
+      ? d
+      : "";
+  }
+
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? "" : d;
+};
+
 export const clamp = (value, min, max) => Math.max(min, Math.min(max, value));

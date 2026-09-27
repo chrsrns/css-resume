@@ -1,7 +1,15 @@
 import { getConfig } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
-import { destroyProjectsCarousel, initProjectsCarousel, initProjectsToggle } from "./carousel.js";
-import { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
+import { loadJsonDocument, normalizeResumeDocument, renderResumeDocument, resolveJsonSource, showJsonError, waitForRenderedImages } from "./json-mode.js";
+import { clearEl, el, forceStaticProjectsView, hideOverlayPlaceholders, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
+
+let carouselModulePromise = null;
+const loadCarousel = () => {
+  if (!carouselModulePromise) {
+    carouselModulePromise = import("./carousel.js").catch(() => null);
+  }
+  return carouselModulePromise;
+};
 
 ////////////////////////////////////////////////////////
 // WebSocket Connection Helpers
@@ -195,10 +203,15 @@ const refreshPortfolioProjects = async (apiBaseUrl, resumeId) => {
 
     const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
     const projectTechById = Object.fromEntries(projectTechPairs);
+    const cm = await loadCarousel();
     // V55: destroy old Embla instance before re-rendering
-    destroyProjectsCarousel();
+    cm?.destroyProjectsCarousel();
     const result = renderProjects(projects, projectKeyPointsById, projectTechById);
-    initProjectsCarousel(result?.projectCount || 0);
+    if (cm) {
+      cm.initProjectsCarousel(result?.projectCount || 0);
+    } else {
+      forceStaticProjectsView();
+    }
   });
 };
 
@@ -297,6 +310,27 @@ const initWelcomeDialog = () => {
 
 let websocket = null;
 
+const runJsonMode = async (source) => {
+  const carouselModule = await loadCarousel();
+  carouselModule?.initProjectsToggle();
+  try {
+    const raw = await loadJsonDocument(source);
+    const doc = normalizeResumeDocument(raw);
+    const { projectCount } = renderResumeDocument(doc);
+    hideOverlayPlaceholders();
+    if (carouselModule) {
+      carouselModule.initProjectsCarousel(projectCount);
+    } else {
+      forceStaticProjectsView();
+    }
+    await waitForRenderedImages();
+    window.__RESUME_RENDER_DONE__ = true;
+  } catch (error) {
+    console.error("JSON mode failed:", error);
+    showJsonError(error instanceof Error ? error.message : String(error));
+  }
+};
+
 const onReady = async () => {
   // Initialize welcome dialog
   initWelcomeDialog();
@@ -308,7 +342,14 @@ const onReady = async () => {
     };
   }
 
-  initProjectsToggle();
+  const jsonSource = resolveJsonSource();
+  if (jsonSource) {
+    await runJsonMode(jsonSource);
+    return;
+  }
+
+  const carouselModule = await loadCarousel();
+  carouselModule?.initProjectsToggle();
 
   const { apiBaseUrl, resumeId } = getConfig();
   if (!Number.isFinite(resumeId)) return;
@@ -338,3 +379,5 @@ if (document.readyState === "loading") {
 } else {
   void onReady();
 }
+
+export { onReady };
