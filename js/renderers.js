@@ -4,6 +4,7 @@ import {
   clamp,
   formatDateRange,
   formatYear,
+  parseIsoPartialDateLocal,
   sortByDisplayOrder,
 } from "./helpers.js";
 
@@ -381,12 +382,12 @@ const renderExperience = (items, keyPointsByWorkId) => {
       ),
     );
 
-    const startDateStr = dateFormat(new Date(w.start_date), "mmm d, yyyy");
-    const endDateStr = w.end_date
-      ? dateFormat(new Date(w.end_date), "mmm d, yyyy")
-      : "now";
-
-    const rangeText = `${startDateStr} - ${endDateStr}`;
+    const startDate = parseIsoPartialDateLocal(w.start_date);
+    const endDate = w.end_date ? parseIsoPartialDateLocal(w.end_date) : null;
+    const rangeText =
+      startDate && (!w.end_date || endDate)
+        ? `${dateFormat(startDate, "mmm d, yyyy")} - ${w.end_date ? dateFormat(endDate, "mmm d, yyyy") : "now"}`
+        : "";
 
     const range = rangeText
       ? el("div", { class: `mt-1 ${idx >= 2 ? "print:hidden" : ""}` }, [
@@ -413,7 +414,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
           el("span", { text: rangeText }),
         ])
       : null;
-    container.appendChild(range);
+    if (range) container.appendChild(range);
 
     if (w.description) {
       container.appendChild(

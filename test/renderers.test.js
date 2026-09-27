@@ -515,6 +515,59 @@ describe("renderExperience", () => {
     expect(badgeIdx).toBeGreaterThan(-1);
     expect(textIdx).toBeLessThan(badgeIdx);
   });
+
+  it("formats ISO partial dates as local midnight", () => {
+    renderExperience(
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01",
+          end_date: "2023-12",
+        },
+      ],
+      {},
+    );
+    const container = document.getElementById("experienceContainer");
+    expect(container.textContent).toContain("Jan 1, 2023");
+    expect(container.textContent).toContain("Dec 1, 2023");
+  });
+
+  it("skips the date range node when start_date is unparseable", () => {
+    renderExperience(
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "not-a-date",
+          end_date: "2023-12-31",
+        },
+      ],
+      {},
+    );
+    const container = document.getElementById("experienceContainer");
+    expect(container.querySelector("svg")).toBeNull();
+    expect(container.textContent).not.toContain("NaN");
+  });
+
+  it("skips the date range node when end_date is unparseable", () => {
+    renderExperience(
+      [
+        {
+          id: 1,
+          job_title: "Engineer",
+          company_name: "Acme",
+          start_date: "2023-01-01",
+          end_date: "bogus",
+        },
+      ],
+      {},
+    );
+    const container = document.getElementById("experienceContainer");
+    expect(container.querySelector("svg")).toBeNull();
+  });
 });
 
 describe("renderEducation", () => {
