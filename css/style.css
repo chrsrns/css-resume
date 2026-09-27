@@ -1283,14 +1283,18 @@ video {
 
 .carousel-card {
   border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
   transition: all 0.2s ease;
   overflow: hidden;
 }
 
 .carousel-card:hover {
   border-color: #3b82f6;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transform: translateY(-2px);
 }
 
@@ -1382,7 +1386,7 @@ video {
     /*Firefox*/
   }
 
-  #projectsContainer>.glow-on-hover:nth-child(n+7) {
+  #projectsContainer > .glow-on-hover:nth-child(n + 7 of .glow-on-hover) {
     display: none !important;
   }
 
@@ -1458,7 +1462,7 @@ video {
     flex-direction: row;
   }
 
-  .static-project-card li:nth-child(n+4) {
+  .static-project-card li:nth-child(n + 4) {
     display: none !important;
   }
 }
@@ -1495,7 +1499,9 @@ video {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
@@ -1528,7 +1534,9 @@ video {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 140ms ease, color 140ms ease;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
 }
 
 .close-button:hover {
@@ -1592,12 +1600,17 @@ video {
   border-radius: 0.5rem;
   background: #f9fafb;
   text-decoration: none;
-  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
 }
 
 .card:hover {
   border-color: #4f46e5;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transform: translateY(-2px);
 }
 
