@@ -1,7 +1,14 @@
 import { getConfig } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
-import { destroyProjectsCarousel, initProjectsCarousel, initProjectsToggle } from "./carousel.js";
-import { clearEl, el, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
+import { clearEl, el, forceStaticProjectsView, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
+
+let carouselModulePromise = null;
+const loadCarousel = () => {
+  if (!carouselModulePromise) {
+    carouselModulePromise = import("./carousel.js").catch(() => null);
+  }
+  return carouselModulePromise;
+};
 
 ////////////////////////////////////////////////////////
 // WebSocket Connection Helpers
@@ -195,10 +202,15 @@ const refreshPortfolioProjects = async (apiBaseUrl, resumeId) => {
 
     const projectKeyPointsById = Object.fromEntries(projectKeyPointsPairs);
     const projectTechById = Object.fromEntries(projectTechPairs);
+    const cm = await loadCarousel();
     // V55: destroy old Embla instance before re-rendering
-    destroyProjectsCarousel();
+    cm?.destroyProjectsCarousel();
     const result = renderProjects(projects, projectKeyPointsById, projectTechById);
-    initProjectsCarousel(result?.projectCount || 0);
+    if (cm) {
+      cm.initProjectsCarousel(result?.projectCount || 0);
+    } else {
+      forceStaticProjectsView();
+    }
   });
 };
 
@@ -308,7 +320,8 @@ const onReady = async () => {
     };
   }
 
-  initProjectsToggle();
+  const carouselModule = await loadCarousel();
+  carouselModule?.initProjectsToggle();
 
   const { apiBaseUrl, resumeId } = getConfig();
   if (!Number.isFinite(resumeId)) return;
@@ -338,3 +351,5 @@ if (document.readyState === "loading") {
 } else {
   void onReady();
 }
+
+export { onReady };

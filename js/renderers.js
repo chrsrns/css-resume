@@ -589,6 +589,19 @@ const setPrintCapStyle = (printLimit) => {
   style.textContent = rule;
 };
 
+const forceStaticProjectsView = () => {
+  const container = document.getElementById("projectsContainer");
+  if (!container) return;
+  container.classList.add("static-active");
+  container.classList.remove("carousel-active");
+  const toggle = document.getElementById("projectsViewToggle");
+  toggle?.classList.add("hidden");
+  const prevBtn = document.getElementById("projectsCarouselPrev");
+  const nextBtn = document.getElementById("projectsCarouselNext");
+  prevBtn?.classList.add("hidden");
+  nextBtn?.classList.add("hidden");
+};
+
 const renderProjects = (
   projects,
   keyPointsByProjectId,
@@ -653,6 +666,7 @@ export {
   buildProjectCard,
   clearEl,
   el,
+  forceStaticProjectsView,
   reAddSectionPlaceholder,
   renderEducation,
   renderExperience,
