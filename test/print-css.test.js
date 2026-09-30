@@ -70,7 +70,9 @@ describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
   });
 
   it("V34: html font-size set in @media print in pt units", () => {
-    expect(printBlockActive).toMatch(/html\s*\{[^}]*font-size:\s*\d+(?:\.\d+)?pt[^}]*\}/);
+    expect(printBlockActive).toMatch(
+      /html\s*\{[^}]*font-size:\s*\d+(?:\.\d+)?pt[^}]*\}/,
+    );
   });
 
   it("V37: no :footer or :header @page pseudo-classes", () => {
@@ -112,7 +114,13 @@ describe("print CSS contract (V30, V31, V32, V34, V35, V37)", () => {
 
   it("project bullet lists limited to 3 items in print", () => {
     expect(printBlockActive).toMatch(
-      /\.static-project-card\s+li:nth-child\(n\s*\+\s*4\)\s*\{[^}]*display:\s*none/s
+      /\.static-project-card\s+li:nth-child\(n\s*\+\s*4\)\s*\{[^}]*display:\s*none/s,
+    );
+  });
+
+  it("project card print cap uses nth-child-of to ignore placeholder and carousel", () => {
+    expect(printBlockActive).toMatch(
+      /#projectsContainer\s*>\s*\.glow-on-hover\s*:nth-child\(\s*n\s*\+\s*7\s+of\s+\.glow-on-hover\s*\)\s*\{[^}]*display:\s*none/s,
     );
   });
 });

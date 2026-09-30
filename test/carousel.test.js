@@ -290,8 +290,9 @@ describe("V62 browser module import map", () => {
     expect(html).toContain('<script type="importmap">');
     expect(html).toContain('"embla-carousel"');
     expect(html).toContain('"embla-carousel-autoplay"');
-    expect(html).toContain("cdn.jsdelivr.net/npm/embla-carousel@8.6.0");
-    expect(html).toContain("cdn.jsdelivr.net/npm/embla-carousel-autoplay@8.6.0");
+    expect(html).toContain("js/vendor/embla-carousel.esm.js");
+    expect(html).toContain("js/vendor/embla-carousel-autoplay.esm.js");
+    expect(html).not.toContain("cdn.jsdelivr.net");
   });
 });
 

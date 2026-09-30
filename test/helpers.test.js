@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clamp, formatDateRange, formatYear, sortByDisplayOrder } from "../js/helpers.js";
+import { clamp, formatDateRange, formatYear, parseIsoPartialDateLocal, sortByDisplayOrder } from "../js/helpers.js";
 
 describe("sortByDisplayOrder", () => {
   it("sorts by display_order ascending", () => {
@@ -74,5 +74,59 @@ describe("clamp", () => {
 
   it("clamps to max when above", () => {
     expect(clamp(150, 0, 100)).toBe(100);
+  });
+});
+
+describe("parseIsoPartialDateLocal", () => {
+  it("parses YYYY as local midnight January 1", () => {
+    const d = parseIsoPartialDateLocal("2020");
+    expect(d.getTime()).toBe(new Date(2020, 0, 1).getTime());
+    expect(d.getFullYear()).toBe(2020);
+    expect(d.getMonth()).toBe(0);
+    expect(d.getDate()).toBe(1);
+  });
+
+  it("parses YYYY-MM as local midnight first of month", () => {
+    const d = parseIsoPartialDateLocal("2020-01");
+    expect(d.getTime()).toBe(new Date(2020, 0, 1).getTime());
+    expect(d.getFullYear()).toBe(2020);
+    expect(d.getMonth()).toBe(0);
+    expect(d.getDate()).toBe(1);
+  });
+
+  it("parses YYYY-MM-DD as local midnight, not UTC", () => {
+    const d = parseIsoPartialDateLocal("2020-01-15");
+    expect(d.getTime()).toBe(new Date(2020, 0, 15).getTime());
+    expect(d.getFullYear()).toBe(2020);
+    expect(d.getMonth()).toBe(0);
+    expect(d.getDate()).toBe(15);
+  });
+
+  it("uses local components so negative-offset timezones do not shift the day", () => {
+    const d = parseIsoPartialDateLocal("2020-01-01");
+    expect(d.getFullYear()).toBe(2020);
+    expect(d.getMonth()).toBe(0);
+    expect(d.getDate()).toBe(1);
+  });
+
+  it("falls back to native Date for non-ISO strings", () => {
+    const d = parseIsoPartialDateLocal("January 15, 2020");
+    expect(d instanceof Date).toBe(true);
+    expect(Number.isNaN(d.getTime())).toBe(false);
+  });
+
+  it("returns empty string for unparseable or empty values", () => {
+    expect(parseIsoPartialDateLocal("not a date")).toBe("");
+    expect(parseIsoPartialDateLocal("")).toBe("");
+    expect(parseIsoPartialDateLocal("   ")).toBe("");
+    expect(parseIsoPartialDateLocal(null)).toBe("");
+    expect(parseIsoPartialDateLocal(undefined)).toBe("");
+  });
+
+  it("rejects out-of-range ISO components instead of rolling over", () => {
+    expect(parseIsoPartialDateLocal("2020-13")).toBe("");
+    expect(parseIsoPartialDateLocal("2020-00")).toBe("");
+    expect(parseIsoPartialDateLocal("2020-02-30")).toBe("");
+    expect(parseIsoPartialDateLocal("2020-01-32")).toBe("");
   });
 });
