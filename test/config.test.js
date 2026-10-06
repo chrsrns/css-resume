@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolveProjectLimits } from "../js/config.js";
+import { getConfig, resolveProjectLimits, resolveResumeId } from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
@@ -96,5 +96,41 @@ describe("resolveProjectLimits", () => {
       screenLimit: undefined,
       printLimit: 6,
     });
+  });
+});
+
+describe("resolveResumeId", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("?resume_id overrides RESUME_ID", () => {
+    stubConfig({ RESUME_ID: 1 });
+    expect(resolveResumeId("?resume_id=7")).toBe(7);
+  });
+
+  it("ignores empty, zero, negative, NaN, Infinity, fractional, and non-numeric values", () => {
+    stubConfig({ RESUME_ID: 5 });
+    for (const bad of ["", "0", "-3", "abc", "NaN", "Infinity", "2.5"]) {
+      expect(resolveResumeId(`?resume_id=${bad}`)).toBe(5);
+    }
+  });
+
+  it("returns RESUME_ID when the param is absent", () => {
+    stubConfig({ RESUME_ID: 42 });
+    expect(resolveResumeId("")).toBe(42);
+    expect(resolveResumeId("?projects=3")).toBe(42);
+  });
+
+  it("passes the RESUME_ID fallback through unvalidated", () => {
+    stubConfig({ RESUME_ID: 0 });
+    expect(resolveResumeId("?resume_id=abc")).toBe(0);
+    stubConfig({ RESUME_ID: "bogus" });
+    expect(Number.isNaN(resolveResumeId(""))).toBe(true);
+  });
+
+  it("does not throw when window.location is absent", () => {
+    stubConfig({ RESUME_ID: 3 });
+    expect(resolveResumeId()).toBe(3);
   });
 });
