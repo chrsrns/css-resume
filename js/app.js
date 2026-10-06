@@ -20,6 +20,11 @@ const handleResumeChange = (event) => {
   const apiBaseUrl = getConfig().apiBaseUrl;
   const resumeId = resolveResumeId();
 
+  // Ignore change events for a resume other than the one being displayed
+  if (event.resume_id != null && Number(event.resume_id) !== resumeId) {
+    return;
+  }
+
   // Check if action is valid
   // For the purposes of this function, we only care about the 'updated' property
   if (event.action === null || typeof event.action !== 'object' || !('updated' in event.action)) {
@@ -35,7 +40,7 @@ const handleResumeChange = (event) => {
       refreshEducation(apiBaseUrl, resumeId);
       break;
     case 'frameworks':
-      refreshFrameworks(apiBaseUrl, resumeId);
+      refreshLanguages(apiBaseUrl, resumeId);
       break;
     case 'languages':
       refreshLanguages(apiBaseUrl, resumeId);
