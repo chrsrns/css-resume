@@ -498,3 +498,113 @@ describe("JSON fragment sources", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("API mode ?resume_id override", () => {
+  let fetchSpy;
+  let wsSpy;
+
+  beforeEach(() => {
+    vi.resetModules();
+    wsSpy = vi.fn();
+    vi.doMock("../js/websocket.js", () => ({
+      createWebSocketWithReconnect: wsSpy,
+    }));
+    fetchSpy = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({ body: [] }),
+    }));
+    vi.stubGlobal("fetch", fetchSpy);
+    vi.stubGlobal("IntersectionObserver", FakeIntersectionObserver);
+    setFullPageHtml();
+  });
+
+  afterEach(() => {
+    vi.doUnmock("../js/websocket.js");
+    vi.unstubAllGlobals();
+    restoreLocation();
+    delete window.__CONFIG__;
+    delete window.__RESUME_RENDER_DONE__;
+  });
+
+  const bootApi = async (
+    search,
+    config = { API_BASE_URL: "/api", RESUME_ID: 1 },
+  ) => {
+    stubLocation({ search, hash: "", href: `http://localhost/${search}` });
+    window.__CONFIG__ = config;
+    const { onReady } = await import("../js/app.js");
+    await onReady();
+  };
+
+  it("fetches every section and subscribes with the ?resume_id override", async () => {
+    await bootApi("?resume_id=7");
+
+    expect(fetchSpy).toHaveBeenCalled();
+    for (const [url] of fetchSpy.mock.calls) {
+      expect(url).toContain("/resume/7");
+    }
+    expect(wsSpy).toHaveBeenCalledWith("/api", 7, null, expect.any(Function));
+  });
+
+  it("ignores an invalid ?resume_id and falls back to RESUME_ID", async () => {
+    await bootApi("?resume_id=abc");
+
+    expect(fetchSpy).toHaveBeenCalled();
+    for (const [url] of fetchSpy.mock.calls) {
+      expect(url).toContain("/resume/1");
+    }
+    expect(wsSpy).toHaveBeenCalledWith("/api", 1, null, expect.any(Function));
+  });
+
+  it("a resume.changed refresh fetches the resolved id", async () => {
+    await bootApi("?resume_id=7");
+    fetchSpy.mockClear();
+
+    const handler = wsSpy.mock.calls[0][3];
+    handler({
+      data: JSON.stringify({
+        type: "resume.changed",
+        resume_id: 7,
+        action: { updated: "skills" },
+      }),
+    });
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(fetchSpy).toHaveBeenCalled();
+    for (const [url] of fetchSpy.mock.calls) {
+      expect(url).toContain("/resume/7/skills");
+    }
+  });
+
+  it("ignores resume.changed events for a different resume id", async () => {
+    await bootApi("?resume_id=7");
+    fetchSpy.mockClear();
+
+    const handler = wsSpy.mock.calls[0][3];
+    handler({
+      data: JSON.stringify({
+        type: "resume.changed",
+        resume_id: 99,
+        action: { updated: "skills" },
+      }),
+    });
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("a JSON source beats ?resume_id", async () => {
+    stubLocation({
+      search: "?resume_id=9",
+      hash: "",
+      href: "http://localhost/?resume_id=9",
+    });
+    window.__CONFIG__ = { RESUME_JSON: resumeDocumentFixture() };
+    const { onReady } = await import("../js/app.js");
+    await settleAllImages(onReady());
+
+    expect(document.getElementById("profileName").textContent).toBe("Jane Doe");
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(wsSpy).not.toHaveBeenCalled();
+  });
+});
