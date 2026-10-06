@@ -11,9 +11,9 @@ const loadCarousel = () => {
   return carouselModulePromise;
 };
 
-////////////////////////////////////////////////////////
+// ====================================================
 // WebSocket Connection Helpers
-////////////////////////////////////////////////////////
+// ====================================================
 
 const handleResumeChange = (event) => {
   console.log(`Resume ${event.resume_id} changed:`, event.action);
@@ -78,9 +78,9 @@ const handleWebSocketMessage = (event) => {
 
 
 
-////////////////////////////////////////////////////////
+// ====================================================
 // API Access Helpers
-////////////////////////////////////////////////////////
+// ====================================================
 
 const buildUrl = (apiBaseUrl, path) => {
   const base = apiBaseUrl.endsWith("/") ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
@@ -111,9 +111,9 @@ const fetchBody = async (apiBaseUrl, path) => {
   return data.body;
 };
 
-////////////////////////////////////////////////////////
+// ====================================================
 // Main Initialization
-////////////////////////////////////////////////////////
+// ====================================================
 
 const refreshProfile = async (apiBaseUrl, resumeId) => {
   const container = document.getElementById("profilePlaceholderOverlay");
@@ -240,9 +240,9 @@ const refreshLanguages = async (apiBaseUrl, resumeId) => {
   });
 };
 
-////////////////////////////////////////////////////////
+// ====================================================
 // Welcome Dialog
-////////////////////////////////////////////////////////
+// ====================================================
 
 const initWelcomeDialog = () => {
   const dialog = document.getElementById('welcomeDialog');
@@ -310,9 +310,9 @@ const initWelcomeDialog = () => {
   });
 };
 
-////////////////////////////////////////////////////////
+// ====================================================
 // Main Initialization
-////////////////////////////////////////////////////////
+// ====================================================
 
 let websocket = null;
 
