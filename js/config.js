@@ -17,6 +17,16 @@ export const getConfig = () => {
   };
 };
 
+export const resolveResumeId = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configResumeId = getConfig().resumeId,
+) => {
+  const params = new URLSearchParams(search);
+  return toPositiveInteger(params.get("resume_id")) ?? configResumeId;
+};
+
 export const resolveProjectLimits = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search

@@ -1,4 +1,4 @@
-import { getConfig } from "./config.js";
+import { getConfig, resolveResumeId } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
 import { loadJsonDocument, normalizeResumeDocument, renderResumeDocument, resolveJsonSource, showJsonError, waitForRenderedImages } from "./json-mode.js";
 import { clearEl, el, forceStaticProjectsView, hideOverlayPlaceholders, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
@@ -17,7 +17,8 @@ const loadCarousel = () => {
 
 const handleResumeChange = (event) => {
   console.log(`Resume ${event.resume_id} changed:`, event.action);
-  const { apiBaseUrl, resumeId } = getConfig();
+  const apiBaseUrl = getConfig().apiBaseUrl;
+  const resumeId = resolveResumeId();
 
   // Check if action is valid
   // For the purposes of this function, we only care about the 'updated' property
@@ -351,7 +352,8 @@ const onReady = async () => {
   const carouselModule = await loadCarousel();
   carouselModule?.initProjectsToggle();
 
-  const { apiBaseUrl, resumeId } = getConfig();
+  const { apiBaseUrl } = getConfig();
+  const resumeId = resolveResumeId();
   if (!Number.isFinite(resumeId)) return;
 
   const refreshers = [
