@@ -47,6 +47,11 @@ window.__CONFIG__ = {
 };
 ```
 
+The `?resume_id=<id>` query parameter overrides `RESUME_ID` for a single
+visit — handy for previewing a different public resume without changing
+config. Only positive integers are accepted; anything else falls back to
+`RESUME_ID`. The parameter is ignored when a JSON resume source is in use.
+
 ### Development Proxy
 
 The webpack dev server proxies `/api` requests to `http://localhost:8000` by default. Modify `webpack.config.dev.js` to change the backend URL:
