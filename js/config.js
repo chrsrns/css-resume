@@ -40,6 +40,20 @@ export const resolveSkillsInline = (
   return configSkillsInline !== false;
 };
 
+export const resolveProfileImageSize = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configSize = ((typeof window !== "undefined" && window.__CONFIG__) || {})
+    .PROFILE_IMAGE_SIZE,
+) => {
+  const params = new URLSearchParams(search);
+  return (
+    toPositiveInteger(params.get("profileImageSize")) ??
+    toPositiveInteger(configSize)
+  );
+};
+
 export const resolveProjectLimits = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search

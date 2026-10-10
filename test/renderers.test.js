@@ -756,8 +756,8 @@ describe("renderProfile image size", () => {
     renderProfile({ name: "Ada" });
     const img = document.getElementById("profileImage");
     expect(img.style.width).toBe("120px");
-    expect(img.style.aspectRatio).toBe("1 / 1");
-    expect(img.style.objectFit).toBe("cover");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("1 / 1");
+    expect(img.style.getPropertyValue("object-fit")).toBe("cover");
   });
 
   it("applies PROFILE_IMAGE_SIZE when the query param is absent", () => {
@@ -771,11 +771,11 @@ describe("renderProfile image size", () => {
     renderProfile({ name: "Ada" });
     const img = document.getElementById("profileImage");
     expect(img.style.width).toBe("");
-    expect(img.style.aspectRatio).toBe("");
-    expect(img.style.objectFit).toBe("");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("");
+    expect(img.style.getPropertyValue("object-fit")).toBe("");
     // The Tailwind preflight `img { max-width: 100% }` rule supplies the
     // persistent cap; no inline max-width is applied.
-    expect(img.style.maxWidth).toBe("");
+    expect(img.style.getPropertyValue("max-width")).toBe("");
   });
 
   it("ignores invalid sizes and keeps the image unsized", () => {
@@ -783,8 +783,8 @@ describe("renderProfile image size", () => {
     renderProfile({ name: "Ada" });
     const img = document.getElementById("profileImage");
     expect(img.style.width).toBe("");
-    expect(img.style.aspectRatio).toBe("");
-    expect(img.style.objectFit).toBe("");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("");
+    expect(img.style.getPropertyValue("object-fit")).toBe("");
   });
 
   it("removes inline size styles when a sized render becomes unsized", () => {
@@ -795,8 +795,8 @@ describe("renderProfile image size", () => {
     stubLocation({ search: "" });
     renderProfile({ name: "Ada" });
     expect(img.style.width).toBe("");
-    expect(img.style.aspectRatio).toBe("");
-    expect(img.style.objectFit).toBe("");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("");
+    expect(img.style.getPropertyValue("object-fit")).toBe("");
   });
 
   it("updates the size when the resolved value changes between renders", () => {

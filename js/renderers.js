@@ -1,5 +1,9 @@
 import { dateFormat } from "./date.format.js";
-import { resolveProjectLimits, resolveSkillsInline } from "./config.js";
+import {
+  resolveProfileImageSize,
+  resolveProjectLimits,
+  resolveSkillsInline,
+} from "./config.js";
 import {
   clamp,
   formatDateRange,
@@ -113,6 +117,19 @@ const renderProfile = (resume) => {
   const imgEl = document.getElementById("profileImage");
   if (imgEl && resume.profile_image_url)
     imgEl.setAttribute("src", resume.profile_image_url);
+
+  if (imgEl) {
+    const size = resolveProfileImageSize();
+    if (size == null) {
+      imgEl.style.removeProperty("width");
+      imgEl.style.removeProperty("aspect-ratio");
+      imgEl.style.removeProperty("object-fit");
+    } else {
+      imgEl.style.setProperty("width", `${size}px`);
+      imgEl.style.setProperty("aspect-ratio", "1 / 1");
+      imgEl.style.setProperty("object-fit", "cover");
+    }
+  }
 
   const location = resume.location || "";
   if (location) {
