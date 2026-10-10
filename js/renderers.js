@@ -1,5 +1,6 @@
 import { dateFormat } from "./date.format.js";
 import {
+  resolvePillsInline,
   resolveProfileImageSize,
   resolveProjectLimits,
   resolveSkillsInline,
@@ -250,9 +251,26 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
       el("h3", { class: "py-2", text: lang.language_name || "" }),
     );
 
-    const wrap = el("div", { class: "flex flex-wrap gap-2" });
     const fws =
       (frameworksByLanguageId && frameworksByLanguageId[lang.id]) || [];
+
+    if (resolvePillsInline()) {
+      const names = fws
+        .slice()
+        .sort(sortByDisplayOrder)
+        .map((fw) => String(fw.framework_name ?? "").trim())
+        .filter((name) => name !== "");
+      const wrap = el("div");
+      if (names.length) {
+        wrap.appendChild(
+          el("p", { class: "text-sm", text: names.join(" • ") }),
+        );
+      }
+      container.appendChild(wrap);
+      continue;
+    }
+
+    const wrap = el("div", { class: "flex flex-wrap gap-2" });
     for (const fw of fws.slice().sort(sortByDisplayOrder)) {
       wrap.appendChild(
         el(
@@ -534,24 +552,39 @@ const buildProjectCard = (
     ? el("a", { href, class: "print:hidden" }, [title])
     : link;
 
-  const techWrap = el("div", { class: "mt-2 flex flex-wrap gap-2" });
   const techs = (techByProjectId && techByProjectId[p.id]) || [];
-  for (const t of techs.slice().sort(sortByDisplayOrder)) {
-    techWrap.appendChild(
-      el(
-        "span",
-        {
-          class:
-            "inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700",
-        },
-        [
-          el("p", {
-            class: "whitespace-nowrap text-sm",
-            text: t.technology_name || "",
-          }),
-        ],
-      ),
-    );
+  let techWrap;
+  if (resolvePillsInline()) {
+    techWrap = el("div", { class: "mt-2" });
+    const names = techs
+      .slice()
+      .sort(sortByDisplayOrder)
+      .map((t) => String(t.technology_name ?? "").trim())
+      .filter((name) => name !== "");
+    if (names.length) {
+      techWrap.appendChild(
+        el("p", { class: "text-sm", text: names.join(" • ") }),
+      );
+    }
+  } else {
+    techWrap = el("div", { class: "mt-2 flex flex-wrap gap-2" });
+    for (const t of techs.slice().sort(sortByDisplayOrder)) {
+      techWrap.appendChild(
+        el(
+          "span",
+          {
+            class:
+              "inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700",
+          },
+          [
+            el("p", {
+              class: "whitespace-nowrap text-sm",
+              text: t.technology_name || "",
+            }),
+          ],
+        ),
+      );
+    }
   }
 
   const points = (keyPointsByProjectId && keyPointsByProjectId[p.id]) || [];

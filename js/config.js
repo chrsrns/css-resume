@@ -40,6 +40,19 @@ export const resolveSkillsInline = (
   return configSkillsInline !== false;
 };
 
+export const resolvePillsInline = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configPillsInline = ((typeof window !== "undefined" &&
+    window.__CONFIG__) || {}).PILLS_INLINE,
+) => {
+  const query = new URLSearchParams(search).get("pillsInline");
+  if (query === "0") return false;
+  if (query === "1") return true;
+  return configPillsInline !== false;
+};
+
 export const resolveProfileImageSize = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
