@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolveProfileImageSize, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
+import { getConfig, resolvePillsInline, resolveProfileImageSize, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
@@ -231,5 +231,55 @@ describe("resolveProfileImageSize", () => {
     stubConfig({ PROFILE_IMAGE_SIZE: 72 });
     expect(resolveProfileImageSize("?profileImageSize=64")).toBe(64);
     expect(resolveProfileImageSize("")).toBe(72);
+  });
+});
+
+describe("resolvePillsInline", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns inline mode when the param is absent and no config is set", () => {
+    stubConfig({});
+    expect(resolvePillsInline("")).toBe(true);
+  });
+
+  it("returns inline mode for ?pillsInline=1", () => {
+    stubConfig({ PILLS_INLINE: false });
+    expect(resolvePillsInline("?pillsInline=1")).toBe(true);
+  });
+
+  it("returns pill mode for ?pillsInline=0", () => {
+    stubConfig({ PILLS_INLINE: true });
+    expect(resolvePillsInline("?pillsInline=0")).toBe(false);
+  });
+
+  it("falls back to config for invalid, empty, or other values", () => {
+    stubConfig({ PILLS_INLINE: false });
+    for (const bad of ["abc", "2", "", "10", "true"]) {
+      expect(resolvePillsInline(`?pillsInline=${bad}`)).toBe(false);
+    }
+    stubConfig({ PILLS_INLINE: true });
+    for (const bad of ["abc", "2", "", "10", "false"]) {
+      expect(resolvePillsInline(`?pillsInline=${bad}`)).toBe(true);
+    }
+  });
+
+  it("returns pill mode only when PILLS_INLINE is false", () => {
+    stubConfig({ PILLS_INLINE: false });
+    expect(resolvePillsInline("")).toBe(false);
+    stubConfig({ PILLS_INLINE: true });
+    expect(resolvePillsInline("")).toBe(true);
+    stubConfig({ PILLS_INLINE: 0 });
+    expect(resolvePillsInline("")).toBe(true);
+    stubConfig({});
+    expect(resolvePillsInline("")).toBe(true);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ PILLS_INLINE: false });
+    expect(resolvePillsInline("?pillsInline=1")).toBe(true);
+    expect(resolvePillsInline("?pillsInline=0")).toBe(false);
+    expect(resolvePillsInline("")).toBe(false);
   });
 });

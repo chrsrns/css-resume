@@ -971,3 +971,239 @@ describe("renderSkills mode flips", () => {
     expect(lis[0].textContent).toBe("JavaScript • Rust • Python");
   });
 });
+
+const projectWithTechs = (techs) => ({
+  project: { id: 1, project_name: "App" },
+  techByProjectId: { 1: techs },
+});
+
+const techsFixture = () => [
+  { id: 1, technology_name: "TypeScript", display_order: 2 },
+  { id: 2, technology_name: "Tailwind", display_order: 3 },
+  { id: 3, technology_name: "React", display_order: 1 },
+];
+
+const PILL_SPAN_CLASS =
+  "inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700";
+
+const techWrap = (card) => card.querySelector("div.mt-2");
+
+describe("project card techs inline mode", () => {
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders a bullet-joined tech string in a plain mt-2 wrapper", () => {
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId);
+    const wrap = techWrap(card);
+    expect(wrap).not.toBeNull();
+    expect(wrap.className).toBe("mt-2");
+    const p = wrap.querySelector("p.text-sm");
+    expect(p).not.toBeNull();
+    expect(p.textContent).toBe("React • TypeScript • Tailwind");
+    expect(wrap.querySelector("span")).toBeNull();
+  });
+
+  it("renders the same inline shape in carousel cards", () => {
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId, true);
+    const wrap = techWrap(card);
+    expect(wrap.className).toBe("mt-2");
+    expect(wrap.querySelector("p.text-sm").textContent).toBe(
+      "React • TypeScript • Tailwind",
+    );
+  });
+
+  it("trims names and skips empty or whitespace-only technology_name", () => {
+    const { project, techByProjectId } = projectWithTechs([
+      { id: 1, technology_name: "  React  ", display_order: 1 },
+      { id: 2, technology_name: "", display_order: 2 },
+      { id: 3, technology_name: "   ", display_order: 3 },
+      { id: 4, technology_name: "Vite", display_order: 4 },
+    ]);
+    const card = buildProjectCard(project, {}, techByProjectId);
+    expect(techWrap(card).querySelector("p.text-sm").textContent).toBe(
+      "React • Vite",
+    );
+  });
+
+  it("renders the wrapper without a paragraph when all names are empty", () => {
+    const { project, techByProjectId } = projectWithTechs([
+      { id: 1, technology_name: "" },
+      { id: 2, technology_name: "  " },
+    ]);
+    const card = buildProjectCard(project, {}, techByProjectId);
+    const wrap = techWrap(card);
+    expect(wrap).not.toBeNull();
+    expect(wrap.querySelector("p")).toBeNull();
+    expect(wrap.querySelector("span")).toBeNull();
+  });
+});
+
+describe("project card techs pill mode", () => {
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders pill spans when ?pillsInline=0", () => {
+    stubLocation({ search: "?pillsInline=0" });
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId);
+    const wrap = techWrap(card);
+    expect(wrap.className).toBe("mt-2 flex flex-wrap gap-2");
+    const pills = wrap.querySelectorAll("span");
+    expect(pills.length).toBe(3);
+    expect(pills[0].className).toBe(PILL_SPAN_CLASS);
+    const inner = pills[0].querySelector("p");
+    expect(inner.className).toBe("whitespace-nowrap text-sm");
+    expect(inner.textContent).toBe("React");
+  });
+
+  it("renders pill spans when PILLS_INLINE is false", () => {
+    window.__CONFIG__ = { PILLS_INLINE: false };
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId, true);
+    const wrap = techWrap(card);
+    expect(wrap.className).toBe("mt-2 flex flex-wrap gap-2");
+    expect(wrap.querySelectorAll("span").length).toBe(3);
+  });
+});
+
+const setLanguagesHtml = () => {
+  document.body.innerHTML = `<div id="languagesContainer" class="relative"></div>`;
+};
+
+const languagesFixture = () => [
+  { id: 1, language_name: "JavaScript", display_order: 1 },
+  { id: 2, language_name: "Python", display_order: 2 },
+];
+
+const frameworksFixture = () => ({
+  1: [
+    { id: 1, framework_name: "Express", display_order: 2 },
+    { id: 2, framework_name: "React", display_order: 1 },
+  ],
+  2: [{ id: 3, framework_name: "Django", display_order: 1 }],
+});
+
+const languageGroups = () =>
+  [...document.getElementById("languagesContainer").children].filter(
+    (c) => c.tagName === "DIV",
+  );
+
+describe("renderLanguages inline mode", () => {
+  beforeEach(() => {
+    setLanguagesHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders a bullet-joined framework string per language", () => {
+    renderLanguages(languagesFixture(), frameworksFixture());
+    const headings = document.querySelectorAll("#languagesContainer h3");
+    const groups = languageGroups();
+    expect(headings.length).toBe(2);
+    expect(headings[0].textContent).toBe("JavaScript");
+    expect(groups.length).toBe(2);
+    expect(groups[0].className).toBe("");
+    const p = groups[0].querySelector("p.text-sm");
+    expect(p).not.toBeNull();
+    expect(p.textContent).toBe("React • Express");
+    expect(groups[1].querySelector("p.text-sm").textContent).toBe("Django");
+    expect(groups[0].querySelector("span")).toBeNull();
+  });
+
+  it("trims names and skips empty or whitespace-only framework_name", () => {
+    renderLanguages(languagesFixture(), {
+      1: [
+        { id: 1, framework_name: "  React ", display_order: 1 },
+        { id: 2, framework_name: " ", display_order: 2 },
+        { id: 3, framework_name: "", display_order: 3 },
+      ],
+      2: [],
+    });
+    const groups = languageGroups();
+    expect(groups[0].querySelector("p.text-sm").textContent).toBe("React");
+  });
+
+  it("keeps the language heading and an empty wrapper for zero frameworks", () => {
+    renderLanguages([{ id: 1, language_name: "Go", display_order: 1 }], {});
+    const headings = document.querySelectorAll("#languagesContainer h3");
+    const groups = languageGroups();
+    expect(headings.length).toBe(1);
+    expect(headings[0].textContent).toBe("Go");
+    expect(groups.length).toBe(1);
+    expect(groups[0].querySelector("p")).toBeNull();
+  });
+});
+
+describe("renderLanguages pill mode", () => {
+  beforeEach(() => {
+    setLanguagesHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders pill spans when ?pillsInline=0", () => {
+    stubLocation({ search: "?pillsInline=0" });
+    renderLanguages(languagesFixture(), frameworksFixture());
+    const groups = languageGroups();
+    expect(groups[0].className).toBe("flex flex-wrap gap-2");
+    const pills = groups[0].querySelectorAll("span");
+    expect(pills.length).toBe(2);
+    expect(pills[0].className).toBe(PILL_SPAN_CLASS);
+    expect(pills[0].querySelector("p").className).toBe(
+      "whitespace-nowrap text-sm",
+    );
+    expect(pills[0].querySelector("p").textContent).toBe("React");
+  });
+
+  it("renders pill spans when PILLS_INLINE is false", () => {
+    window.__CONFIG__ = { PILLS_INLINE: false };
+    renderLanguages(languagesFixture(), frameworksFixture());
+    const groups = languageGroups();
+    expect(groups[0].className).toBe("flex flex-wrap gap-2");
+    expect(groups[1].className).toBe("flex flex-wrap gap-2");
+    expect(groups[0].querySelectorAll("span").length).toBe(2);
+  });
+});
+
+describe("pills mode flips", () => {
+  beforeEach(() => {
+    setLanguagesHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("switches frameworks inline to pills when the query changes", () => {
+    renderLanguages(languagesFixture(), frameworksFixture());
+    expect(languageGroups()[0].querySelector("p.text-sm")).not.toBeNull();
+    stubLocation({ search: "?pillsInline=0" });
+    renderLanguages(languagesFixture(), frameworksFixture());
+    expect(languageGroups()[0].querySelectorAll("span").length).toBe(2);
+  });
+
+  it("switches project techs pills to inline when the query changes", () => {
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    stubLocation({ search: "?pillsInline=0" });
+    const pillsCard = buildProjectCard(project, {}, techByProjectId);
+    expect(techWrap(pillsCard).querySelectorAll("span").length).toBe(3);
+    stubLocation({ search: "?pillsInline=1" });
+    const inlineCard = buildProjectCard(project, {}, techByProjectId);
+    expect(techWrap(inlineCard).querySelector("p.text-sm").textContent).toBe(
+      "React • TypeScript • Tailwind",
+    );
+  });
+});
