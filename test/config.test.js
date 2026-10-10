@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolveProjectLimits, resolveResumeId } from "../js/config.js";
+import { getConfig, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
@@ -132,5 +132,55 @@ describe("resolveResumeId", () => {
   it("does not throw when window.location is absent", () => {
     stubConfig({ RESUME_ID: 3 });
     expect(resolveResumeId()).toBe(3);
+  });
+});
+
+describe("resolveSkillsInline", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns inline mode when the param is absent and no config is set", () => {
+    stubConfig({});
+    expect(resolveSkillsInline("")).toBe(true);
+  });
+
+  it("returns inline mode for ?skillsInline=1", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    expect(resolveSkillsInline("?skillsInline=1")).toBe(true);
+  });
+
+  it("returns bars mode for ?skillsInline=0", () => {
+    stubConfig({ SKILLS_INLINE: true });
+    expect(resolveSkillsInline("?skillsInline=0")).toBe(false);
+  });
+
+  it("falls back to config for invalid, empty, or other values", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    for (const bad of ["abc", "2", "", "10", "true"]) {
+      expect(resolveSkillsInline(`?skillsInline=${bad}`)).toBe(false);
+    }
+    stubConfig({ SKILLS_INLINE: true });
+    for (const bad of ["abc", "2", "", "10", "false"]) {
+      expect(resolveSkillsInline(`?skillsInline=${bad}`)).toBe(true);
+    }
+  });
+
+  it("returns bars mode only when SKILLS_INLINE is false", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    expect(resolveSkillsInline("")).toBe(false);
+    stubConfig({ SKILLS_INLINE: true });
+    expect(resolveSkillsInline("")).toBe(true);
+    stubConfig({ SKILLS_INLINE: 0 });
+    expect(resolveSkillsInline("")).toBe(true);
+    stubConfig({});
+    expect(resolveSkillsInline("")).toBe(true);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    expect(resolveSkillsInline("?skillsInline=1")).toBe(true);
+    expect(resolveSkillsInline("?skillsInline=0")).toBe(false);
+    expect(resolveSkillsInline("")).toBe(false);
   });
 });

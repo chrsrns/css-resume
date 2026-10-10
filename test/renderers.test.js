@@ -1,12 +1,31 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   buildProjectCard,
   renderEducation,
   renderExperience,
+  renderLanguages,
   renderProfile,
   renderProjects,
+  renderSkills,
   renderSummary,
 } from "../js/renderers.js";
+
+const originalLocationDescriptor = Object.getOwnPropertyDescriptor(
+  window,
+  "location",
+);
+
+const stubLocation = (location) => {
+  Object.defineProperty(window, "location", {
+    value: location,
+    configurable: true,
+    writable: true,
+  });
+};
+
+const restoreLocation = () => {
+  Object.defineProperty(window, "location", originalLocationDescriptor);
+};
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -718,5 +737,167 @@ describe("renderSummary", () => {
     heading.classList.add("pt-4");
     renderSummary("");
     expect(heading.classList.contains("pt-4")).toBe(false);
+  });
+});
+
+const setSkillsHtml = () => {
+  document.body.innerHTML = `<ul id="skillsList" class="relative"></ul>`;
+};
+
+const skillsFixture = () => [
+  { id: 1, skill_name: "Rust", confidence_percentage: 70, display_order: 2 },
+  { id: 2, skill_name: "Python", confidence_percentage: 60, display_order: 3 },
+  {
+    id: 3,
+    skill_name: "JavaScript",
+    confidence_percentage: 80,
+    display_order: 1,
+  },
+];
+
+const directLis = () =>
+  [...document.getElementById("skillsList").children].filter(
+    (c) => c.tagName === "LI",
+  );
+
+describe("renderSkills inline mode", () => {
+  beforeEach(() => {
+    setSkillsHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders a single bullet-joined li by default", () => {
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].classList.contains("py-2")).toBe(true);
+    expect(lis[0].textContent).toBe("JavaScript • Rust • Python");
+  });
+
+  it("sorts names by display_order", () => {
+    renderSkills(skillsFixture());
+    expect(directLis()[0].textContent).toBe("JavaScript • Rust • Python");
+  });
+
+  it("trims names and skips empty or whitespace-only skill_name", () => {
+    renderSkills([
+      { id: 1, skill_name: "  Rust  ", display_order: 1 },
+      { id: 2, skill_name: "", display_order: 2 },
+      { id: 3, skill_name: "   ", display_order: 3 },
+      { id: 4, skill_name: "Go", display_order: 4 },
+    ]);
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toBe("Rust • Go");
+  });
+
+  it("renders no li when every skill_name is empty or whitespace", () => {
+    renderSkills([
+      { id: 1, skill_name: "" },
+      { id: 2, skill_name: "   " },
+      { id: 3 },
+    ]);
+    expect(directLis().length).toBe(0);
+  });
+
+  it("renders no li for an empty skills list", () => {
+    renderSkills([]);
+    expect(directLis().length).toBe(0);
+  });
+
+  it("renders no progress bars or percentage labels inline", () => {
+    renderSkills(skillsFixture());
+    const li = directLis()[0];
+    expect(li.querySelector("div")).toBeNull();
+    expect(li.textContent).not.toContain("%");
+  });
+});
+
+describe("renderSkills bars mode", () => {
+  beforeEach(() => {
+    setSkillsHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders per-skill bar lis when ?skillsInline=0", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(3);
+    expect(lis[0].textContent).toContain("JavaScript");
+    expect(lis[0].textContent).toContain("80%");
+    expect(lis[1].textContent).toContain("70%");
+    expect(lis[2].textContent).toContain("60%");
+  });
+
+  it("renders bars when SKILLS_INLINE is false", () => {
+    window.__CONFIG__ = { SKILLS_INLINE: false };
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(3);
+    expect(lis[0].querySelector(".bg-blue-600")).not.toBeNull();
+  });
+
+  it("clamps confidence percentages to 0-100", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills([
+      { id: 1, skill_name: "A", confidence_percentage: 150 },
+      { id: 2, skill_name: "B", confidence_percentage: -20 },
+    ]);
+    const lis = directLis();
+    expect(lis[0].textContent).toContain("100%");
+    expect(lis[1].textContent).toContain("0%");
+  });
+
+  it("renders 0% when confidence_percentage is missing", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills([{ id: 1, skill_name: "A" }]);
+    expect(directLis()[0].textContent).toContain("0%");
+  });
+
+  it("still renders a bar for an empty skill_name", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills([{ id: 1, skill_name: "", confidence_percentage: 50 }]);
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toContain("50%");
+  });
+});
+
+describe("renderSkills mode flips", () => {
+  beforeEach(() => {
+    setSkillsHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("switches inline to bars when the query changes between renders", () => {
+    renderSkills(skillsFixture());
+    expect(directLis().length).toBe(1);
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills(skillsFixture());
+    expect(directLis().length).toBe(3);
+  });
+
+  it("switches bars to inline when the query changes between renders", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills(skillsFixture());
+    expect(directLis().length).toBe(3);
+    stubLocation({ search: "?skillsInline=1" });
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toBe("JavaScript • Rust • Python");
   });
 });
