@@ -248,7 +248,10 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
 
   for (const lang of (languages || []).slice().sort(sortByDisplayOrder)) {
     container.appendChild(
-      el("h3", { class: "py-2", text: lang.language_name || "" }),
+      el("h3", {
+        class: "py-2 font-semibold",
+        text: lang.language_name || "",
+      }),
     );
 
     const fws =

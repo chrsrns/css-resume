@@ -1110,6 +1110,7 @@ describe("renderLanguages inline mode", () => {
     const groups = languageGroups();
     expect(headings.length).toBe(2);
     expect(headings[0].textContent).toBe("JavaScript");
+    expect(headings[0].className).toBe("py-2 font-semibold");
     expect(groups.length).toBe(2);
     expect(groups[0].className).toBe("");
     const p = groups[0].querySelector("p.text-base");
@@ -1138,6 +1139,7 @@ describe("renderLanguages inline mode", () => {
     const groups = languageGroups();
     expect(headings.length).toBe(1);
     expect(headings[0].textContent).toBe("Go");
+    expect(headings[0].className).toBe("py-2 font-semibold");
     expect(groups.length).toBe(1);
     expect(groups[0].querySelector("p")).toBeNull();
   });
@@ -1156,6 +1158,8 @@ describe("renderLanguages pill mode", () => {
   it("renders pill spans when ?pillsInline=0", () => {
     stubLocation({ search: "?pillsInline=0" });
     renderLanguages(languagesFixture(), frameworksFixture());
+    const headings = document.querySelectorAll("#languagesContainer h3");
+    expect(headings[0].className).toBe("py-2 font-semibold");
     const groups = languageGroups();
     expect(groups[0].className).toBe("flex flex-wrap gap-2");
     const pills = groups[0].querySelectorAll("span");

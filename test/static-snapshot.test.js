@@ -40,6 +40,7 @@ describe("index.html static snapshots mirror inline render markup", () => {
       "Dart",
       "SQL Databases",
     ]);
+    headings.forEach((h) => expect(h.className).toBe("py-2 font-semibold"));
     expect(groups.length).toBe(headings.length);
 
     const expected = [
