@@ -1,5 +1,5 @@
 import { dateFormat } from "./date.format.js";
-import { resolveProjectLimits } from "./config.js";
+import { resolveProjectLimits, resolveSkillsInline } from "./config.js";
 import {
   clamp,
   formatDateRange,
@@ -185,6 +185,20 @@ const renderSkills = (skills) => {
   if (!list) return;
 
   clearEl(list);
+
+  if (resolveSkillsInline()) {
+    const names = (skills || [])
+      .slice()
+      .sort(sortByDisplayOrder)
+      .map((s) => String(s.skill_name ?? "").trim())
+      .filter((name) => name !== "");
+    if (names.length) {
+      list.appendChild(
+        el("li", { class: "py-2", text: names.join(" • ") }),
+      );
+    }
+    return;
+  }
 
   for (const s of (skills || []).slice().sort(sortByDisplayOrder)) {
     const pct = clamp(Number(s.confidence_percentage || 0), 0, 100);

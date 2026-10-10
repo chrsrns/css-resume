@@ -27,6 +27,19 @@ export const resolveResumeId = (
   return toPositiveInteger(params.get("resume_id")) ?? configResumeId;
 };
 
+export const resolveSkillsInline = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configSkillsInline = ((typeof window !== "undefined" &&
+    window.__CONFIG__) || {}).SKILLS_INLINE,
+) => {
+  const query = new URLSearchParams(search).get("skillsInline");
+  if (query === "0") return false;
+  if (query === "1") return true;
+  return configSkillsInline !== false;
+};
+
 export const resolveProjectLimits = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
