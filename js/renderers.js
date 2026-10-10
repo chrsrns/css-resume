@@ -263,7 +263,7 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
       const wrap = el("div");
       if (names.length) {
         wrap.appendChild(
-          el("p", { class: "text-sm", text: names.join(" • ") }),
+          el("p", { class: "text-base", text: names.join(" • ") }),
         );
       }
       container.appendChild(wrap);
@@ -563,7 +563,7 @@ const buildProjectCard = (
       .filter((name) => name !== "");
     if (names.length) {
       techWrap.appendChild(
-        el("p", { class: "text-sm", text: names.join(" • ") }),
+        el("p", { class: "text-base", text: names.join(" • ") }),
       );
     }
   } else {

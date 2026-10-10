@@ -1000,7 +1000,7 @@ describe("project card techs inline mode", () => {
     const wrap = techWrap(card);
     expect(wrap).not.toBeNull();
     expect(wrap.className).toBe("mt-2");
-    const p = wrap.querySelector("p.text-sm");
+    const p = wrap.querySelector("p.text-base");
     expect(p).not.toBeNull();
     expect(p.textContent).toBe("React • TypeScript • Tailwind");
     expect(wrap.querySelector("span")).toBeNull();
@@ -1011,7 +1011,7 @@ describe("project card techs inline mode", () => {
     const card = buildProjectCard(project, {}, techByProjectId, true);
     const wrap = techWrap(card);
     expect(wrap.className).toBe("mt-2");
-    expect(wrap.querySelector("p.text-sm").textContent).toBe(
+    expect(wrap.querySelector("p.text-base").textContent).toBe(
       "React • TypeScript • Tailwind",
     );
   });
@@ -1024,7 +1024,7 @@ describe("project card techs inline mode", () => {
       { id: 4, technology_name: "Vite", display_order: 4 },
     ]);
     const card = buildProjectCard(project, {}, techByProjectId);
-    expect(techWrap(card).querySelector("p.text-sm").textContent).toBe(
+    expect(techWrap(card).querySelector("p.text-base").textContent).toBe(
       "React • Vite",
     );
   });
@@ -1112,10 +1112,10 @@ describe("renderLanguages inline mode", () => {
     expect(headings[0].textContent).toBe("JavaScript");
     expect(groups.length).toBe(2);
     expect(groups[0].className).toBe("");
-    const p = groups[0].querySelector("p.text-sm");
+    const p = groups[0].querySelector("p.text-base");
     expect(p).not.toBeNull();
     expect(p.textContent).toBe("React • Express");
-    expect(groups[1].querySelector("p.text-sm").textContent).toBe("Django");
+    expect(groups[1].querySelector("p.text-base").textContent).toBe("Django");
     expect(groups[0].querySelector("span")).toBeNull();
   });
 
@@ -1129,7 +1129,7 @@ describe("renderLanguages inline mode", () => {
       2: [],
     });
     const groups = languageGroups();
-    expect(groups[0].querySelector("p.text-sm").textContent).toBe("React");
+    expect(groups[0].querySelector("p.text-base").textContent).toBe("React");
   });
 
   it("keeps the language heading and an empty wrapper for zero frameworks", () => {
@@ -1189,7 +1189,7 @@ describe("pills mode flips", () => {
 
   it("switches frameworks inline to pills when the query changes", () => {
     renderLanguages(languagesFixture(), frameworksFixture());
-    expect(languageGroups()[0].querySelector("p.text-sm")).not.toBeNull();
+    expect(languageGroups()[0].querySelector("p.text-base")).not.toBeNull();
     stubLocation({ search: "?pillsInline=0" });
     renderLanguages(languagesFixture(), frameworksFixture());
     expect(languageGroups()[0].querySelectorAll("span").length).toBe(2);
@@ -1202,7 +1202,7 @@ describe("pills mode flips", () => {
     expect(techWrap(pillsCard).querySelectorAll("span").length).toBe(3);
     stubLocation({ search: "?pillsInline=1" });
     const inlineCard = buildProjectCard(project, {}, techByProjectId);
-    expect(techWrap(inlineCard).querySelector("p.text-sm").textContent).toBe(
+    expect(techWrap(inlineCard).querySelector("p.text-base").textContent).toBe(
       "React • TypeScript • Tailwind",
     );
   });

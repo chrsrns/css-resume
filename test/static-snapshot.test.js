@@ -52,7 +52,7 @@ describe("index.html static snapshots mirror inline render markup", () => {
     ];
     groups.forEach((wrap, i) => {
       expect(wrap.className).toBe("");
-      const p = wrap.querySelector("p.text-sm");
+      const p = wrap.querySelector("p.text-base");
       expect(p).not.toBeNull();
       expect(p.textContent.trim()).toBe(expected[i]);
     });
@@ -78,7 +78,7 @@ describe("index.html static snapshots mirror inline render markup", () => {
       const wrap = card.querySelector("div.mt-2");
       expect(wrap).not.toBeNull();
       expect(wrap.className).toBe("mt-2");
-      const p = wrap.querySelector("p.text-sm");
+      const p = wrap.querySelector("p.text-base");
       expect(p).not.toBeNull();
       expect(p.textContent.trim()).toBe(expected[i]);
       expect(wrap.querySelector("span")).toBeNull();
