@@ -211,9 +211,7 @@ const renderSkills = (skills) => {
       .map((s) => String(s.skill_name ?? "").trim())
       .filter((name) => name !== "");
     if (names.length) {
-      list.appendChild(
-        el("li", { class: "py-2", text: names.join(" • ") }),
-      );
+      list.appendChild(el("li", { class: "py-2", text: names.join(" • ") }));
     }
     return;
   }
@@ -249,7 +247,7 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
   for (const lang of (languages || []).slice().sort(sortByDisplayOrder)) {
     container.appendChild(
       el("h3", {
-        class: "py-2 font-semibold",
+        class: "pt-2 pb-1",
         text: lang.language_name || "",
       }),
     );
@@ -263,10 +261,13 @@ const renderLanguages = (languages, frameworksByLanguageId) => {
         .sort(sortByDisplayOrder)
         .map((fw) => String(fw.framework_name ?? "").trim())
         .filter((name) => name !== "");
-      const wrap = el("div");
+      const wrap = el("div", { class: "mb-1" });
       if (names.length) {
         wrap.appendChild(
-          el("p", { class: "text-base", text: names.join(" • ") }),
+          el("p", {
+            class: "text-base text-neutral-700",
+            text: names.join(" • "),
+          }),
         );
       }
       container.appendChild(wrap);
@@ -566,7 +567,10 @@ const buildProjectCard = (
       .filter((name) => name !== "");
     if (names.length) {
       techWrap.appendChild(
-        el("p", { class: "text-base", text: names.join(" • ") }),
+        el("p", {
+          class: "text-base text-neutral-700",
+          text: names.join(" • "),
+        }),
       );
     }
   } else {

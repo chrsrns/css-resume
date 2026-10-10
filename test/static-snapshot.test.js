@@ -40,7 +40,7 @@ describe("index.html static snapshots mirror inline render markup", () => {
       "Dart",
       "SQL Databases",
     ]);
-    headings.forEach((h) => expect(h.className).toBe("py-2 font-semibold"));
+    headings.forEach((h) => expect(h.className).toBe("pt-2 pb-1"));
     expect(groups.length).toBe(headings.length);
 
     const expected = [
@@ -52,9 +52,10 @@ describe("index.html static snapshots mirror inline render markup", () => {
       "MySQL • PostgreSQL • SQLite",
     ];
     groups.forEach((wrap, i) => {
-      expect(wrap.className).toBe("");
+      expect(wrap.className).toBe("mb-1");
       const p = wrap.querySelector("p.text-base");
       expect(p).not.toBeNull();
+      expect(p.className).toBe("text-base text-neutral-700");
       expect(p.textContent.trim()).toBe(expected[i]);
     });
     expect(container.querySelector(".bg-blue-100")).toBeNull();
@@ -81,6 +82,7 @@ describe("index.html static snapshots mirror inline render markup", () => {
       expect(wrap.className).toBe("mt-2");
       const p = wrap.querySelector("p.text-base");
       expect(p).not.toBeNull();
+      expect(p.className).toBe("text-base text-neutral-700");
       expect(p.textContent.trim()).toBe(expected[i]);
       expect(wrap.querySelector("span")).toBeNull();
     });

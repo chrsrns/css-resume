@@ -1002,6 +1002,7 @@ describe("project card techs inline mode", () => {
     expect(wrap.className).toBe("mt-2");
     const p = wrap.querySelector("p.text-base");
     expect(p).not.toBeNull();
+    expect(p.className).toBe("text-base text-neutral-700");
     expect(p.textContent).toBe("React • TypeScript • Tailwind");
     expect(wrap.querySelector("span")).toBeNull();
   });
@@ -1110,11 +1111,12 @@ describe("renderLanguages inline mode", () => {
     const groups = languageGroups();
     expect(headings.length).toBe(2);
     expect(headings[0].textContent).toBe("JavaScript");
-    expect(headings[0].className).toBe("py-2 font-semibold");
+    expect(headings[0].className).toBe("pt-2 pb-1");
     expect(groups.length).toBe(2);
-    expect(groups[0].className).toBe("");
+    expect(groups[0].className).toBe("mb-1");
     const p = groups[0].querySelector("p.text-base");
     expect(p).not.toBeNull();
+    expect(p.className).toBe("text-base text-neutral-700");
     expect(p.textContent).toBe("React • Express");
     expect(groups[1].querySelector("p.text-base").textContent).toBe("Django");
     expect(groups[0].querySelector("span")).toBeNull();
@@ -1139,7 +1141,7 @@ describe("renderLanguages inline mode", () => {
     const groups = languageGroups();
     expect(headings.length).toBe(1);
     expect(headings[0].textContent).toBe("Go");
-    expect(headings[0].className).toBe("py-2 font-semibold");
+    expect(headings[0].className).toBe("pt-2 pb-1");
     expect(groups.length).toBe(1);
     expect(groups[0].querySelector("p")).toBeNull();
   });
@@ -1159,7 +1161,7 @@ describe("renderLanguages pill mode", () => {
     stubLocation({ search: "?pillsInline=0" });
     renderLanguages(languagesFixture(), frameworksFixture());
     const headings = document.querySelectorAll("#languagesContainer h3");
-    expect(headings[0].className).toBe("py-2 font-semibold");
+    expect(headings[0].className).toBe("pt-2 pb-1");
     const groups = languageGroups();
     expect(groups[0].className).toBe("flex flex-wrap gap-2");
     const pills = groups[0].querySelectorAll("span");
