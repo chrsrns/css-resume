@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
+import { getConfig, resolveProfileImageSize, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
@@ -182,5 +182,54 @@ describe("resolveSkillsInline", () => {
     expect(resolveSkillsInline("?skillsInline=1")).toBe(true);
     expect(resolveSkillsInline("?skillsInline=0")).toBe(false);
     expect(resolveSkillsInline("")).toBe(false);
+  });
+});
+
+describe("resolveProfileImageSize", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns undefined when no size is configured", () => {
+    stubConfig({});
+    expect(resolveProfileImageSize("")).toBeUndefined();
+  });
+
+  it("reads a positive integer from ?profileImageSize", () => {
+    stubConfig({});
+    expect(resolveProfileImageSize("?profileImageSize=128")).toBe(128);
+  });
+
+  it("prefers the query param over PROFILE_IMAGE_SIZE", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 64 });
+    expect(resolveProfileImageSize("?profileImageSize=128")).toBe(128);
+  });
+
+  it("falls back to PROFILE_IMAGE_SIZE when the query is absent", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 96 });
+    expect(resolveProfileImageSize("")).toBe(96);
+    expect(resolveProfileImageSize("?skillsInline=1")).toBe(96);
+  });
+
+  it("ignores zero, negative, NaN, Infinity, fractional, and non-numeric values", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 48 });
+    for (const bad of ["0", "-3", "abc", "NaN", "Infinity", "2.5", ""]) {
+      expect(resolveProfileImageSize(`?profileImageSize=${bad}`)).toBe(48);
+    }
+    stubConfig({ PROFILE_IMAGE_SIZE: -10 });
+    expect(resolveProfileImageSize("?profileImageSize=abc")).toBeUndefined();
+    stubConfig({ PROFILE_IMAGE_SIZE: 3.5 });
+    expect(resolveProfileImageSize("")).toBeUndefined();
+  });
+
+  it("accepts numeric coercions like exponent strings", () => {
+    stubConfig({});
+    expect(resolveProfileImageSize("?profileImageSize=1e2")).toBe(100);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 72 });
+    expect(resolveProfileImageSize("?profileImageSize=64")).toBe(64);
+    expect(resolveProfileImageSize("")).toBe(72);
   });
 });

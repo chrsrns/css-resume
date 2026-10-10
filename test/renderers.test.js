@@ -740,6 +740,76 @@ describe("renderSummary", () => {
   });
 });
 
+describe("renderProfile image size", () => {
+  beforeEach(() => {
+    document.title = "Online Resume";
+    setProfileHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("applies square pixel sizing when ?profileImageSize is valid", () => {
+    stubLocation({ search: "?profileImageSize=120" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("120px");
+    expect(img.style.aspectRatio).toBe("1 / 1");
+    expect(img.style.objectFit).toBe("cover");
+  });
+
+  it("applies PROFILE_IMAGE_SIZE when the query param is absent", () => {
+    window.__CONFIG__ = { PROFILE_IMAGE_SIZE: 80 };
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("80px");
+  });
+
+  it("leaves the image unsized when no size resolves", () => {
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("");
+    expect(img.style.aspectRatio).toBe("");
+    expect(img.style.objectFit).toBe("");
+    // The Tailwind preflight `img { max-width: 100% }` rule supplies the
+    // persistent cap; no inline max-width is applied.
+    expect(img.style.maxWidth).toBe("");
+  });
+
+  it("ignores invalid sizes and keeps the image unsized", () => {
+    stubLocation({ search: "?profileImageSize=abc" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("");
+    expect(img.style.aspectRatio).toBe("");
+    expect(img.style.objectFit).toBe("");
+  });
+
+  it("removes inline size styles when a sized render becomes unsized", () => {
+    stubLocation({ search: "?profileImageSize=150" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("150px");
+    stubLocation({ search: "" });
+    renderProfile({ name: "Ada" });
+    expect(img.style.width).toBe("");
+    expect(img.style.aspectRatio).toBe("");
+    expect(img.style.objectFit).toBe("");
+  });
+
+  it("updates the size when the resolved value changes between renders", () => {
+    stubLocation({ search: "?profileImageSize=100" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("100px");
+    stubLocation({ search: "?profileImageSize=200" });
+    renderProfile({ name: "Ada" });
+    expect(img.style.width).toBe("200px");
+  });
+});
+
 const setSkillsHtml = () => {
   document.body.innerHTML = `<ul id="skillsList" class="relative"></ul>`;
 };
