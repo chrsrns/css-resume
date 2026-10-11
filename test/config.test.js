@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolveProjectLimits, resolveResumeId } from "../js/config.js";
+import { getConfig, resolvePillsInline, resolveProfileImageSize, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
@@ -132,5 +132,154 @@ describe("resolveResumeId", () => {
   it("does not throw when window.location is absent", () => {
     stubConfig({ RESUME_ID: 3 });
     expect(resolveResumeId()).toBe(3);
+  });
+});
+
+describe("resolveSkillsInline", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns inline mode when the param is absent and no config is set", () => {
+    stubConfig({});
+    expect(resolveSkillsInline("")).toBe(true);
+  });
+
+  it("returns inline mode for ?skillsInline=1", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    expect(resolveSkillsInline("?skillsInline=1")).toBe(true);
+  });
+
+  it("returns bars mode for ?skillsInline=0", () => {
+    stubConfig({ SKILLS_INLINE: true });
+    expect(resolveSkillsInline("?skillsInline=0")).toBe(false);
+  });
+
+  it("falls back to config for invalid, empty, or other values", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    for (const bad of ["abc", "2", "", "10", "true"]) {
+      expect(resolveSkillsInline(`?skillsInline=${bad}`)).toBe(false);
+    }
+    stubConfig({ SKILLS_INLINE: true });
+    for (const bad of ["abc", "2", "", "10", "false"]) {
+      expect(resolveSkillsInline(`?skillsInline=${bad}`)).toBe(true);
+    }
+  });
+
+  it("returns bars mode only when SKILLS_INLINE is false", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    expect(resolveSkillsInline("")).toBe(false);
+    stubConfig({ SKILLS_INLINE: true });
+    expect(resolveSkillsInline("")).toBe(true);
+    stubConfig({ SKILLS_INLINE: 0 });
+    expect(resolveSkillsInline("")).toBe(true);
+    stubConfig({});
+    expect(resolveSkillsInline("")).toBe(true);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ SKILLS_INLINE: false });
+    expect(resolveSkillsInline("?skillsInline=1")).toBe(true);
+    expect(resolveSkillsInline("?skillsInline=0")).toBe(false);
+    expect(resolveSkillsInline("")).toBe(false);
+  });
+});
+
+describe("resolveProfileImageSize", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns undefined when no size is configured", () => {
+    stubConfig({});
+    expect(resolveProfileImageSize("")).toBeUndefined();
+  });
+
+  it("reads a positive integer from ?profileImageSize", () => {
+    stubConfig({});
+    expect(resolveProfileImageSize("?profileImageSize=128")).toBe(128);
+  });
+
+  it("prefers the query param over PROFILE_IMAGE_SIZE", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 64 });
+    expect(resolveProfileImageSize("?profileImageSize=128")).toBe(128);
+  });
+
+  it("falls back to PROFILE_IMAGE_SIZE when the query is absent", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 96 });
+    expect(resolveProfileImageSize("")).toBe(96);
+    expect(resolveProfileImageSize("?skillsInline=1")).toBe(96);
+  });
+
+  it("ignores zero, negative, NaN, Infinity, fractional, and non-numeric values", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 48 });
+    for (const bad of ["0", "-3", "abc", "NaN", "Infinity", "2.5", ""]) {
+      expect(resolveProfileImageSize(`?profileImageSize=${bad}`)).toBe(48);
+    }
+    stubConfig({ PROFILE_IMAGE_SIZE: -10 });
+    expect(resolveProfileImageSize("?profileImageSize=abc")).toBeUndefined();
+    stubConfig({ PROFILE_IMAGE_SIZE: 3.5 });
+    expect(resolveProfileImageSize("")).toBeUndefined();
+  });
+
+  it("accepts numeric coercions like exponent strings", () => {
+    stubConfig({});
+    expect(resolveProfileImageSize("?profileImageSize=1e2")).toBe(100);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ PROFILE_IMAGE_SIZE: 72 });
+    expect(resolveProfileImageSize("?profileImageSize=64")).toBe(64);
+    expect(resolveProfileImageSize("")).toBe(72);
+  });
+});
+
+describe("resolvePillsInline", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns inline mode when the param is absent and no config is set", () => {
+    stubConfig({});
+    expect(resolvePillsInline("")).toBe(true);
+  });
+
+  it("returns inline mode for ?pillsInline=1", () => {
+    stubConfig({ PILLS_INLINE: false });
+    expect(resolvePillsInline("?pillsInline=1")).toBe(true);
+  });
+
+  it("returns pill mode for ?pillsInline=0", () => {
+    stubConfig({ PILLS_INLINE: true });
+    expect(resolvePillsInline("?pillsInline=0")).toBe(false);
+  });
+
+  it("falls back to config for invalid, empty, or other values", () => {
+    stubConfig({ PILLS_INLINE: false });
+    for (const bad of ["abc", "2", "", "10", "true"]) {
+      expect(resolvePillsInline(`?pillsInline=${bad}`)).toBe(false);
+    }
+    stubConfig({ PILLS_INLINE: true });
+    for (const bad of ["abc", "2", "", "10", "false"]) {
+      expect(resolvePillsInline(`?pillsInline=${bad}`)).toBe(true);
+    }
+  });
+
+  it("returns pill mode only when PILLS_INLINE is false", () => {
+    stubConfig({ PILLS_INLINE: false });
+    expect(resolvePillsInline("")).toBe(false);
+    stubConfig({ PILLS_INLINE: true });
+    expect(resolvePillsInline("")).toBe(true);
+    stubConfig({ PILLS_INLINE: 0 });
+    expect(resolvePillsInline("")).toBe(true);
+    stubConfig({});
+    expect(resolvePillsInline("")).toBe(true);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ PILLS_INLINE: false });
+    expect(resolvePillsInline("?pillsInline=1")).toBe(true);
+    expect(resolvePillsInline("?pillsInline=0")).toBe(false);
+    expect(resolvePillsInline("")).toBe(false);
   });
 });

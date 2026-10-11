@@ -27,6 +27,46 @@ export const resolveResumeId = (
   return toPositiveInteger(params.get("resume_id")) ?? configResumeId;
 };
 
+export const resolveSkillsInline = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configSkillsInline = ((typeof window !== "undefined" &&
+    window.__CONFIG__) || {}).SKILLS_INLINE,
+) => {
+  const query = new URLSearchParams(search).get("skillsInline");
+  if (query === "0") return false;
+  if (query === "1") return true;
+  return configSkillsInline !== false;
+};
+
+export const resolvePillsInline = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configPillsInline = ((typeof window !== "undefined" &&
+    window.__CONFIG__) || {}).PILLS_INLINE,
+) => {
+  const query = new URLSearchParams(search).get("pillsInline");
+  if (query === "0") return false;
+  if (query === "1") return true;
+  return configPillsInline !== false;
+};
+
+export const resolveProfileImageSize = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configSize = ((typeof window !== "undefined" && window.__CONFIG__) || {})
+    .PROFILE_IMAGE_SIZE,
+) => {
+  const params = new URLSearchParams(search);
+  return (
+    toPositiveInteger(params.get("profileImageSize")) ??
+    toPositiveInteger(configSize)
+  );
+};
+
 export const resolveProjectLimits = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
