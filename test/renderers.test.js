@@ -1,12 +1,31 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   buildProjectCard,
   renderEducation,
   renderExperience,
+  renderLanguages,
   renderProfile,
   renderProjects,
+  renderSkills,
   renderSummary,
 } from "../js/renderers.js";
+
+const originalLocationDescriptor = Object.getOwnPropertyDescriptor(
+  window,
+  "location",
+);
+
+const stubLocation = (location) => {
+  Object.defineProperty(window, "location", {
+    value: location,
+    configurable: true,
+    writable: true,
+  });
+};
+
+const restoreLocation = () => {
+  Object.defineProperty(window, "location", originalLocationDescriptor);
+};
 
 const setProfileHtml = () => {
   document.body.innerHTML = `
@@ -718,5 +737,479 @@ describe("renderSummary", () => {
     heading.classList.add("pt-4");
     renderSummary("");
     expect(heading.classList.contains("pt-4")).toBe(false);
+  });
+});
+
+describe("renderProfile image size", () => {
+  beforeEach(() => {
+    document.title = "Online Resume";
+    setProfileHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("applies square pixel sizing when ?profileImageSize is valid", () => {
+    stubLocation({ search: "?profileImageSize=120" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("120px");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("1 / 1");
+    expect(img.style.getPropertyValue("object-fit")).toBe("cover");
+  });
+
+  it("applies PROFILE_IMAGE_SIZE when the query param is absent", () => {
+    window.__CONFIG__ = { PROFILE_IMAGE_SIZE: 80 };
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("80px");
+  });
+
+  it("leaves the image unsized when no size resolves", () => {
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("");
+    expect(img.style.getPropertyValue("object-fit")).toBe("");
+    // The Tailwind preflight `img { max-width: 100% }` rule supplies the
+    // persistent cap; no inline max-width is applied.
+    expect(img.style.getPropertyValue("max-width")).toBe("");
+  });
+
+  it("ignores invalid sizes and keeps the image unsized", () => {
+    stubLocation({ search: "?profileImageSize=abc" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("");
+    expect(img.style.getPropertyValue("object-fit")).toBe("");
+  });
+
+  it("removes inline size styles when a sized render becomes unsized", () => {
+    stubLocation({ search: "?profileImageSize=150" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("150px");
+    stubLocation({ search: "" });
+    renderProfile({ name: "Ada" });
+    expect(img.style.width).toBe("");
+    expect(img.style.getPropertyValue("aspect-ratio")).toBe("");
+    expect(img.style.getPropertyValue("object-fit")).toBe("");
+  });
+
+  it("updates the size when the resolved value changes between renders", () => {
+    stubLocation({ search: "?profileImageSize=100" });
+    renderProfile({ name: "Ada" });
+    const img = document.getElementById("profileImage");
+    expect(img.style.width).toBe("100px");
+    stubLocation({ search: "?profileImageSize=200" });
+    renderProfile({ name: "Ada" });
+    expect(img.style.width).toBe("200px");
+  });
+});
+
+const setSkillsHtml = () => {
+  document.body.innerHTML = `<ul id="skillsList" class="relative"></ul>`;
+};
+
+const skillsFixture = () => [
+  { id: 1, skill_name: "Rust", confidence_percentage: 70, display_order: 2 },
+  { id: 2, skill_name: "Python", confidence_percentage: 60, display_order: 3 },
+  {
+    id: 3,
+    skill_name: "JavaScript",
+    confidence_percentage: 80,
+    display_order: 1,
+  },
+];
+
+const directLis = () =>
+  [...document.getElementById("skillsList").children].filter(
+    (c) => c.tagName === "LI",
+  );
+
+describe("renderSkills inline mode", () => {
+  beforeEach(() => {
+    setSkillsHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders a single bullet-joined li by default", () => {
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].classList.contains("py-2")).toBe(true);
+    expect(lis[0].textContent).toBe("JavaScript • Rust • Python");
+  });
+
+  it("sorts names by display_order", () => {
+    renderSkills(skillsFixture());
+    expect(directLis()[0].textContent).toBe("JavaScript • Rust • Python");
+  });
+
+  it("trims names and skips empty or whitespace-only skill_name", () => {
+    renderSkills([
+      { id: 1, skill_name: "  Rust  ", display_order: 1 },
+      { id: 2, skill_name: "", display_order: 2 },
+      { id: 3, skill_name: "   ", display_order: 3 },
+      { id: 4, skill_name: "Go", display_order: 4 },
+    ]);
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toBe("Rust • Go");
+  });
+
+  it("renders no li when every skill_name is empty or whitespace", () => {
+    renderSkills([
+      { id: 1, skill_name: "" },
+      { id: 2, skill_name: "   " },
+      { id: 3 },
+    ]);
+    expect(directLis().length).toBe(0);
+  });
+
+  it("renders no li for an empty skills list", () => {
+    renderSkills([]);
+    expect(directLis().length).toBe(0);
+  });
+
+  it("renders no progress bars or percentage labels inline", () => {
+    renderSkills(skillsFixture());
+    const li = directLis()[0];
+    expect(li.querySelector("div")).toBeNull();
+    expect(li.textContent).not.toContain("%");
+  });
+});
+
+describe("renderSkills bars mode", () => {
+  beforeEach(() => {
+    setSkillsHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders per-skill bar lis when ?skillsInline=0", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(3);
+    expect(lis[0].textContent).toContain("JavaScript");
+    expect(lis[0].textContent).toContain("80%");
+    expect(lis[1].textContent).toContain("70%");
+    expect(lis[2].textContent).toContain("60%");
+  });
+
+  it("renders bars when SKILLS_INLINE is false", () => {
+    window.__CONFIG__ = { SKILLS_INLINE: false };
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(3);
+    expect(lis[0].querySelector(".bg-blue-600")).not.toBeNull();
+  });
+
+  it("clamps confidence percentages to 0-100", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills([
+      { id: 1, skill_name: "A", confidence_percentage: 150 },
+      { id: 2, skill_name: "B", confidence_percentage: -20 },
+    ]);
+    const lis = directLis();
+    expect(lis[0].textContent).toContain("100%");
+    expect(lis[1].textContent).toContain("0%");
+  });
+
+  it("renders 0% when confidence_percentage is missing", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills([{ id: 1, skill_name: "A" }]);
+    expect(directLis()[0].textContent).toContain("0%");
+  });
+
+  it("still renders a bar for an empty skill_name", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills([{ id: 1, skill_name: "", confidence_percentage: 50 }]);
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toContain("50%");
+  });
+});
+
+describe("renderSkills mode flips", () => {
+  beforeEach(() => {
+    setSkillsHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("switches inline to bars when the query changes between renders", () => {
+    renderSkills(skillsFixture());
+    expect(directLis().length).toBe(1);
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills(skillsFixture());
+    expect(directLis().length).toBe(3);
+  });
+
+  it("switches bars to inline when the query changes between renders", () => {
+    stubLocation({ search: "?skillsInline=0" });
+    renderSkills(skillsFixture());
+    expect(directLis().length).toBe(3);
+    stubLocation({ search: "?skillsInline=1" });
+    renderSkills(skillsFixture());
+    const lis = directLis();
+    expect(lis.length).toBe(1);
+    expect(lis[0].textContent).toBe("JavaScript • Rust • Python");
+  });
+});
+
+const projectWithTechs = (techs) => ({
+  project: { id: 1, project_name: "App" },
+  techByProjectId: { 1: techs },
+});
+
+const techsFixture = () => [
+  { id: 1, technology_name: "TypeScript", display_order: 2 },
+  { id: 2, technology_name: "Tailwind", display_order: 3 },
+  { id: 3, technology_name: "React", display_order: 1 },
+];
+
+const PILL_SPAN_CLASS =
+  "inline-flex items-center justify-center rounded-full bg-blue-100 px-2.5 py-0.5 text-blue-700";
+
+const techWrap = (card) => card.querySelector("div.mt-2");
+
+describe("project card techs inline mode", () => {
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders a bullet-joined tech string in a plain mt-2 wrapper", () => {
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId);
+    const wrap = techWrap(card);
+    expect(wrap).not.toBeNull();
+    expect(wrap.className).toBe("mt-2");
+    const p = wrap.querySelector("p.text-base");
+    expect(p).not.toBeNull();
+    expect(p.className).toBe("text-base text-neutral-700");
+    expect(p.textContent).toBe("React • TypeScript • Tailwind");
+    expect(wrap.querySelector("span")).toBeNull();
+  });
+
+  it("renders the same inline shape in carousel cards", () => {
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId, true);
+    const wrap = techWrap(card);
+    expect(wrap.className).toBe("mt-2");
+    expect(wrap.querySelector("p.text-base").textContent).toBe(
+      "React • TypeScript • Tailwind",
+    );
+  });
+
+  it("trims names and skips empty or whitespace-only technology_name", () => {
+    const { project, techByProjectId } = projectWithTechs([
+      { id: 1, technology_name: "  React  ", display_order: 1 },
+      { id: 2, technology_name: "", display_order: 2 },
+      { id: 3, technology_name: "   ", display_order: 3 },
+      { id: 4, technology_name: "Vite", display_order: 4 },
+    ]);
+    const card = buildProjectCard(project, {}, techByProjectId);
+    expect(techWrap(card).querySelector("p.text-base").textContent).toBe(
+      "React • Vite",
+    );
+  });
+
+  it("renders the wrapper without a paragraph when all names are empty", () => {
+    const { project, techByProjectId } = projectWithTechs([
+      { id: 1, technology_name: "" },
+      { id: 2, technology_name: "  " },
+    ]);
+    const card = buildProjectCard(project, {}, techByProjectId);
+    const wrap = techWrap(card);
+    expect(wrap).not.toBeNull();
+    expect(wrap.querySelector("p")).toBeNull();
+    expect(wrap.querySelector("span")).toBeNull();
+  });
+});
+
+describe("project card techs pill mode", () => {
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders pill spans when ?pillsInline=0", () => {
+    stubLocation({ search: "?pillsInline=0" });
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId);
+    const wrap = techWrap(card);
+    expect(wrap.className).toBe("mt-2 flex flex-wrap gap-2");
+    const pills = wrap.querySelectorAll("span");
+    expect(pills.length).toBe(3);
+    expect(pills[0].className).toBe(PILL_SPAN_CLASS);
+    const inner = pills[0].querySelector("p");
+    expect(inner.className).toBe("whitespace-nowrap text-sm");
+    expect(inner.textContent).toBe("React");
+  });
+
+  it("renders pill spans when PILLS_INLINE is false", () => {
+    window.__CONFIG__ = { PILLS_INLINE: false };
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    const card = buildProjectCard(project, {}, techByProjectId, true);
+    const wrap = techWrap(card);
+    expect(wrap.className).toBe("mt-2 flex flex-wrap gap-2");
+    expect(wrap.querySelectorAll("span").length).toBe(3);
+  });
+});
+
+const setLanguagesHtml = () => {
+  document.body.innerHTML = `<div id="languagesContainer" class="relative"></div>`;
+};
+
+const languagesFixture = () => [
+  { id: 1, language_name: "JavaScript", display_order: 1 },
+  { id: 2, language_name: "Python", display_order: 2 },
+];
+
+const frameworksFixture = () => ({
+  1: [
+    { id: 1, framework_name: "Express", display_order: 2 },
+    { id: 2, framework_name: "React", display_order: 1 },
+  ],
+  2: [{ id: 3, framework_name: "Django", display_order: 1 }],
+});
+
+const languageGroups = () =>
+  [...document.getElementById("languagesContainer").children].filter(
+    (c) => c.tagName === "DIV",
+  );
+
+describe("renderLanguages inline mode", () => {
+  beforeEach(() => {
+    setLanguagesHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders a bullet-joined framework string per language", () => {
+    renderLanguages(languagesFixture(), frameworksFixture());
+    const headings = document.querySelectorAll("#languagesContainer h3");
+    const groups = languageGroups();
+    expect(headings.length).toBe(2);
+    expect(headings[0].textContent).toBe("JavaScript");
+    expect(headings[0].className).toBe("pt-2 pb-1");
+    expect(groups.length).toBe(2);
+    expect(groups[0].className).toBe("mb-1");
+    const p = groups[0].querySelector("p.text-base");
+    expect(p).not.toBeNull();
+    expect(p.className).toBe("text-base text-neutral-700");
+    expect(p.textContent).toBe("React • Express");
+    expect(groups[1].querySelector("p.text-base").textContent).toBe("Django");
+    expect(groups[0].querySelector("span")).toBeNull();
+  });
+
+  it("trims names and skips empty or whitespace-only framework_name", () => {
+    renderLanguages(languagesFixture(), {
+      1: [
+        { id: 1, framework_name: "  React ", display_order: 1 },
+        { id: 2, framework_name: " ", display_order: 2 },
+        { id: 3, framework_name: "", display_order: 3 },
+      ],
+      2: [],
+    });
+    const groups = languageGroups();
+    expect(groups[0].querySelector("p.text-base").textContent).toBe("React");
+  });
+
+  it("keeps the language heading and an empty wrapper for zero frameworks", () => {
+    renderLanguages([{ id: 1, language_name: "Go", display_order: 1 }], {});
+    const headings = document.querySelectorAll("#languagesContainer h3");
+    const groups = languageGroups();
+    expect(headings.length).toBe(1);
+    expect(headings[0].textContent).toBe("Go");
+    expect(headings[0].className).toBe("pt-2 pb-1");
+    expect(groups.length).toBe(1);
+    expect(groups[0].querySelector("p")).toBeNull();
+  });
+});
+
+describe("renderLanguages pill mode", () => {
+  beforeEach(() => {
+    setLanguagesHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("renders pill spans when ?pillsInline=0", () => {
+    stubLocation({ search: "?pillsInline=0" });
+    renderLanguages(languagesFixture(), frameworksFixture());
+    const headings = document.querySelectorAll("#languagesContainer h3");
+    expect(headings[0].className).toBe("pt-2 pb-1");
+    const groups = languageGroups();
+    expect(groups[0].className).toBe("flex flex-wrap gap-2");
+    const pills = groups[0].querySelectorAll("span");
+    expect(pills.length).toBe(2);
+    expect(pills[0].className).toBe(PILL_SPAN_CLASS);
+    expect(pills[0].querySelector("p").className).toBe(
+      "whitespace-nowrap text-sm",
+    );
+    expect(pills[0].querySelector("p").textContent).toBe("React");
+  });
+
+  it("renders pill spans when PILLS_INLINE is false", () => {
+    window.__CONFIG__ = { PILLS_INLINE: false };
+    renderLanguages(languagesFixture(), frameworksFixture());
+    const groups = languageGroups();
+    expect(groups[0].className).toBe("flex flex-wrap gap-2");
+    expect(groups[1].className).toBe("flex flex-wrap gap-2");
+    expect(groups[0].querySelectorAll("span").length).toBe(2);
+  });
+});
+
+describe("pills mode flips", () => {
+  beforeEach(() => {
+    setLanguagesHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  it("switches frameworks inline to pills when the query changes", () => {
+    renderLanguages(languagesFixture(), frameworksFixture());
+    expect(languageGroups()[0].querySelector("p.text-base")).not.toBeNull();
+    stubLocation({ search: "?pillsInline=0" });
+    renderLanguages(languagesFixture(), frameworksFixture());
+    expect(languageGroups()[0].querySelectorAll("span").length).toBe(2);
+  });
+
+  it("switches project techs pills to inline when the query changes", () => {
+    const { project, techByProjectId } = projectWithTechs(techsFixture());
+    stubLocation({ search: "?pillsInline=0" });
+    const pillsCard = buildProjectCard(project, {}, techByProjectId);
+    expect(techWrap(pillsCard).querySelectorAll("span").length).toBe(3);
+    stubLocation({ search: "?pillsInline=1" });
+    const inlineCard = buildProjectCard(project, {}, techByProjectId);
+    expect(techWrap(inlineCard).querySelector("p.text-base").textContent).toBe(
+      "React • TypeScript • Tailwind",
+    );
   });
 });

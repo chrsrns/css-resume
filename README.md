@@ -52,6 +52,27 @@ visit — handy for previewing a different public resume without changing
 config. Only positive integers are accepted; anything else falls back to
 `RESUME_ID`. The parameter is ignored when a JSON resume source is in use.
 
+### Render modes
+
+Three query parameters control how sections render. They apply in API
+mode, JSON mode, on screen, and in print/PDF output.
+
+- `?skillsInline=<0|1>` — `1` renders skills as a single bullet-separated
+  string (`JavaScript • Python • Rust`); `0` renders the classic
+  per-skill progress bars. Any other value (or a missing parameter)
+  falls back to `SKILLS_INLINE` in `window.__CONFIG__`; `false` means
+  bars, anything else means inline (the default).
+- `?pillsInline=<0|1>` — `1` renders project technologies and the
+  per-language framework lists as bullet-separated strings; `0` renders
+  the pill-style tags. Falls back to `PILLS_INLINE` (`false` = pills,
+  otherwise inline — the default).
+- `?profileImageSize=<px>` — sets the profile image to a square `N`
+  pixel size (width `Npx`, 1:1 aspect ratio, `object-fit: cover`). Only
+  positive integers are accepted; invalid values fall back to
+  `PROFILE_IMAGE_SIZE` in `window.__CONFIG__`, and when neither is
+  valid the image renders at its intrinsic size capped by the layout
+  width.
+
 ### Development Proxy
 
 The webpack dev server proxies `/api` requests to `http://localhost:8000` by default. Modify `webpack.config.dev.js` to change the backend URL:
