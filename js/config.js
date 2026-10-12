@@ -67,6 +67,19 @@ export const resolveProfileImageSize = (
   );
 };
 
+export const resolveProfileImageVisible = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configProfileImage = ((typeof window !== "undefined" &&
+    window.__CONFIG__) || {}).PROFILE_IMAGE,
+) => {
+  const query = new URLSearchParams(search).get("profileImage");
+  if (query === "0") return false;
+  if (query === "1") return true;
+  return configProfileImage !== false;
+};
+
 export const resolveProjectLimits = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
