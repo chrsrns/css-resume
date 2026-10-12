@@ -107,3 +107,18 @@ export const resolveProjectLimits = (
 
   return { screenLimit, printLimit };
 };
+
+export const resolveExperiencePrintLimit = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configLimit = ((typeof window !== "undefined" && window.__CONFIG__) || {})
+    .EXPERIENCE_PRINT_LIMIT,
+) => {
+  const params = new URLSearchParams(search);
+  return (
+    toPositiveInteger(params.get("printExperiences")) ??
+    toPositiveInteger(configLimit) ??
+    2
+  );
+};

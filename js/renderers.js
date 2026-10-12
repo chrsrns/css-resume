@@ -1,5 +1,6 @@
 import { dateFormat } from "./date.format.js";
 import {
+  resolveExperiencePrintLimit,
   resolvePillsInline,
   resolveProfileImageSize,
   resolveProfileImageVisible,
@@ -412,6 +413,8 @@ const renderExperience = (items, keyPointsByWorkId) => {
 
   clearEl(container);
 
+  const printCap = resolveExperiencePrintLimit();
+
   for (const [idx, w] of (items || [])
     .slice()
     .sort(sortByDisplayOrder)
@@ -438,7 +441,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
       el(
         "h2",
         {
-          class: `mt-4 ${isCurrent ? "flex flex-col-reverse gap-1 sm:flex-row sm:gap-2" : "inline-flex"} text-lg font-bold print:mt-2 ${idx >= 2 ? "print:hidden" : ""}`,
+          class: `mt-4 ${isCurrent ? "flex flex-col-reverse gap-1 sm:flex-row sm:gap-2" : "inline-flex"} text-lg font-bold print:mt-2 ${idx >= printCap ? "print:hidden" : ""}`,
         },
         h2Children,
       ),
@@ -452,7 +455,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
         : "";
 
     const range = rangeText
-      ? el("div", { class: `mt-1 ${idx >= 2 ? "print:hidden" : ""}` }, [
+      ? el("div", { class: `mt-1 ${idx >= printCap ? "print:hidden" : ""}` }, [
           el("span", { class: "inline-block" }, [
             el(
               "svg",
@@ -481,7 +484,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
     if (w.description) {
       container.appendChild(
         el("p", {
-          class: `mt-2 ${idx >= 2 ? "print:hidden" : ""}`,
+          class: `mt-2 ${idx >= printCap ? "print:hidden" : ""}`,
           text: w.description,
         }),
       );
@@ -490,7 +493,7 @@ const renderExperience = (items, keyPointsByWorkId) => {
     const points = (keyPointsByWorkId && keyPointsByWorkId[w.id]) || [];
     const ul = el(
       "ul",
-      { class: `ms-4 mt-2 list-disc ${idx >= 2 ? "print:hidden" : ""}` },
+      { class: `ms-4 mt-2 list-disc ${idx >= printCap ? "print:hidden" : ""}` },
       points
         .slice()
         .sort(sortByDisplayOrder)
