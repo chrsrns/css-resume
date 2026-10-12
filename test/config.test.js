@@ -1,5 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolvePillsInline, resolveProfileImageSize, resolveProfileImageVisible, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
+import {
+  getConfig,
+  resolvePillsInline,
+  resolveProfileImageSize,
+  resolveProfileImageVisible,
+  resolveProjectLimits,
+  resolveResumeId,
+  resolveSkillsInline,
+} from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });

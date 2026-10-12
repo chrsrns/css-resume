@@ -31,8 +31,10 @@ export const resolveSkillsInline = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
     : "",
-  configSkillsInline = ((typeof window !== "undefined" &&
-    window.__CONFIG__) || {}).SKILLS_INLINE,
+  configSkillsInline = (
+    (typeof window !== "undefined" && window.__CONFIG__) ||
+    {}
+  ).SKILLS_INLINE,
 ) => {
   const query = new URLSearchParams(search).get("skillsInline");
   if (query === "0") return false;
@@ -44,8 +46,10 @@ export const resolvePillsInline = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
     : "",
-  configPillsInline = ((typeof window !== "undefined" &&
-    window.__CONFIG__) || {}).PILLS_INLINE,
+  configPillsInline = (
+    (typeof window !== "undefined" && window.__CONFIG__) ||
+    {}
+  ).PILLS_INLINE,
 ) => {
   const query = new URLSearchParams(search).get("pillsInline");
   if (query === "0") return false;
@@ -71,8 +75,10 @@ export const resolveProfileImageVisible = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
     : "",
-  configProfileImage = ((typeof window !== "undefined" &&
-    window.__CONFIG__) || {}).PROFILE_IMAGE,
+  configProfileImage = (
+    (typeof window !== "undefined" && window.__CONFIG__) ||
+    {}
+  ).PROFILE_IMAGE,
 ) => {
   const query = new URLSearchParams(search).get("profileImage");
   if (query === "0") return false;
