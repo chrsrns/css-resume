@@ -54,7 +54,7 @@ config. Only positive integers are accepted; anything else falls back to
 
 ### Render modes
 
-Three query parameters control how sections render. They apply in API
+Four query parameters control how sections render. They apply in API
 mode, JSON mode, on screen, and in print/PDF output.
 
 - `?skillsInline=<0|1>` — `1` renders skills as a single bullet-separated
@@ -72,6 +72,12 @@ mode, JSON mode, on screen, and in print/PDF output.
   `PROFILE_IMAGE_SIZE` in `window.__CONFIG__`, and when neither is
   valid the image renders at its intrinsic size capped by the layout
   width.
+- `?profileImage=<0|1>` — `0` hides the profile image entirely;
+  `1` enables it. Falls back to `PROFILE_IMAGE` (`false` = hidden,
+  otherwise enabled — the default). With visibility enabled, a
+  missing or blank `profile_image_url` still renders no image — the
+  hardcoded fallback photo was removed, so `index.html` ships no
+  `src` and hidden images carry no `src` at all.
 
 ### Development Proxy
 
