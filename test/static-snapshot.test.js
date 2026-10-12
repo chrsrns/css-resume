@@ -14,6 +14,12 @@ const nonOverlayChildren = (el) =>
   [...el.children].filter((c) => !c.classList.contains("overlay-placeholder"));
 
 describe("index.html static snapshots mirror inline render markup", () => {
+  it("#profileImage ships without a src attribute", () => {
+    const img = doc.getElementById("profileImage");
+    expect(img).not.toBeNull();
+    expect(img.hasAttribute("src")).toBe(false);
+  });
+
   it("#skillsList holds a single bullet-joined li", () => {
     const list = doc.getElementById("skillsList");
     const lis = nonOverlayChildren(list).filter((c) => c.tagName === "LI");

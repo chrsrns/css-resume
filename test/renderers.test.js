@@ -810,6 +810,102 @@ describe("renderProfile image size", () => {
   });
 });
 
+describe("renderProfile image visibility", () => {
+  beforeEach(() => {
+    document.title = "Online Resume";
+    setProfileHtml();
+  });
+
+  afterEach(() => {
+    restoreLocation();
+    delete window.__CONFIG__;
+  });
+
+  const img = () => document.getElementById("profileImage");
+
+  it("hides the image and strips src for ?profileImage=0", () => {
+    stubLocation({ search: "?profileImage=0" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(true);
+    expect(img().hasAttribute("src")).toBe(false);
+  });
+
+  it("hides the image and strips src when PROFILE_IMAGE is false", () => {
+    window.__CONFIG__ = { PROFILE_IMAGE: false };
+    stubLocation({ search: "" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(true);
+    expect(img().hasAttribute("src")).toBe(false);
+  });
+
+  it("shows the image when ?profileImage=1 overrides PROFILE_IMAGE=false", () => {
+    window.__CONFIG__ = { PROFILE_IMAGE: false };
+    stubLocation({ search: "?profileImage=1" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(false);
+    expect(img().getAttribute("src")).toBe("https://example.com/p.jpg");
+  });
+
+  it("shows the image when enabled and profile_image_url is present", () => {
+    stubLocation({ search: "" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(false);
+    expect(img().getAttribute("src")).toBe("https://example.com/p.jpg");
+  });
+
+  it("hides the image when profile_image_url is absent, empty, or whitespace", () => {
+    stubLocation({ search: "" });
+    for (const url of [undefined, null, "", "   "]) {
+      setProfileHtml();
+      renderProfile({ profile_image_url: url });
+      expect(img().classList.contains("hidden")).toBe(true);
+      expect(img().hasAttribute("src")).toBe(false);
+    }
+  });
+
+  it("trims whitespace around a non-empty profile_image_url", () => {
+    stubLocation({ search: "" });
+    renderProfile({ profile_image_url: "  https://example.com/p.jpg  " });
+    expect(img().classList.contains("hidden")).toBe(false);
+    expect(img().getAttribute("src")).toBe("https://example.com/p.jpg");
+  });
+
+  it("re-shows the image when a hidden render becomes enabled", () => {
+    stubLocation({ search: "?profileImage=0" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(true);
+    stubLocation({ search: "?profileImage=1" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(false);
+    expect(img().getAttribute("src")).toBe("https://example.com/p.jpg");
+  });
+
+  it("removes a previously set src when a shown render becomes hidden", () => {
+    stubLocation({ search: "" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().getAttribute("src")).toBe("https://example.com/p.jpg");
+    stubLocation({ search: "?profileImage=0" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    expect(img().classList.contains("hidden")).toBe(true);
+    expect(img().hasAttribute("src")).toBe(false);
+  });
+
+  it("hides on a URL disappearing between renders", () => {
+    stubLocation({ search: "" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    renderProfile({});
+    expect(img().classList.contains("hidden")).toBe(true);
+    expect(img().hasAttribute("src")).toBe(false);
+  });
+
+  it("keeps hidden free of print variants", () => {
+    stubLocation({ search: "?profileImage=0" });
+    renderProfile({ profile_image_url: "https://example.com/p.jpg" });
+    const classes = [...img().classList].filter((c) => c.includes("print"));
+    expect(classes).toEqual([]);
+  });
+});
+
 const setSkillsHtml = () => {
   document.body.innerHTML = `<ul id="skillsList" class="relative"></ul>`;
 };

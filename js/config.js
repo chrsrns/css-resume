@@ -31,8 +31,10 @@ export const resolveSkillsInline = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
     : "",
-  configSkillsInline = ((typeof window !== "undefined" &&
-    window.__CONFIG__) || {}).SKILLS_INLINE,
+  configSkillsInline = (
+    (typeof window !== "undefined" && window.__CONFIG__) ||
+    {}
+  ).SKILLS_INLINE,
 ) => {
   const query = new URLSearchParams(search).get("skillsInline");
   if (query === "0") return false;
@@ -44,8 +46,10 @@ export const resolvePillsInline = (
   search = typeof window !== "undefined" && window.location
     ? window.location.search
     : "",
-  configPillsInline = ((typeof window !== "undefined" &&
-    window.__CONFIG__) || {}).PILLS_INLINE,
+  configPillsInline = (
+    (typeof window !== "undefined" && window.__CONFIG__) ||
+    {}
+  ).PILLS_INLINE,
 ) => {
   const query = new URLSearchParams(search).get("pillsInline");
   if (query === "0") return false;
@@ -65,6 +69,21 @@ export const resolveProfileImageSize = (
     toPositiveInteger(params.get("profileImageSize")) ??
     toPositiveInteger(configSize)
   );
+};
+
+export const resolveProfileImageVisible = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configProfileImage = (
+    (typeof window !== "undefined" && window.__CONFIG__) ||
+    {}
+  ).PROFILE_IMAGE,
+) => {
+  const query = new URLSearchParams(search).get("profileImage");
+  if (query === "0") return false;
+  if (query === "1") return true;
+  return configProfileImage !== false;
 };
 
 export const resolveProjectLimits = (
@@ -87,4 +106,19 @@ export const resolveProjectLimits = (
     toPositiveInteger(overrides.printCap) ?? queryPrint ?? cfgPrint ?? 6;
 
   return { screenLimit, printLimit };
+};
+
+export const resolveExperiencePrintLimit = (
+  search = typeof window !== "undefined" && window.location
+    ? window.location.search
+    : "",
+  configLimit = ((typeof window !== "undefined" && window.__CONFIG__) || {})
+    .EXPERIENCE_PRINT_LIMIT,
+) => {
+  const params = new URLSearchParams(search);
+  return (
+    toPositiveInteger(params.get("printExperiences")) ??
+    toPositiveInteger(configLimit) ??
+    2
+  );
 };
