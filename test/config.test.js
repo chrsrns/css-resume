@@ -1,5 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getConfig, resolvePillsInline, resolveProfileImageSize, resolveProjectLimits, resolveResumeId, resolveSkillsInline } from "../js/config.js";
+import {
+  getConfig,
+  resolvePillsInline,
+  resolveProfileImageSize,
+  resolveProfileImageVisible,
+  resolveProjectLimits,
+  resolveResumeId,
+  resolveSkillsInline,
+} from "../js/config.js";
 
 const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
@@ -281,5 +289,55 @@ describe("resolvePillsInline", () => {
     expect(resolvePillsInline("?pillsInline=1")).toBe(true);
     expect(resolvePillsInline("?pillsInline=0")).toBe(false);
     expect(resolvePillsInline("")).toBe(false);
+  });
+});
+
+describe("resolveProfileImageVisible", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("returns enabled when the param is absent and no config is set", () => {
+    stubConfig({});
+    expect(resolveProfileImageVisible("")).toBe(true);
+  });
+
+  it("returns enabled for ?profileImage=1", () => {
+    stubConfig({ PROFILE_IMAGE: false });
+    expect(resolveProfileImageVisible("?profileImage=1")).toBe(true);
+  });
+
+  it("returns hidden for ?profileImage=0", () => {
+    stubConfig({ PROFILE_IMAGE: true });
+    expect(resolveProfileImageVisible("?profileImage=0")).toBe(false);
+  });
+
+  it("falls back to config for invalid, empty, or other values", () => {
+    stubConfig({ PROFILE_IMAGE: false });
+    for (const bad of ["abc", "2", "", "10", "true"]) {
+      expect(resolveProfileImageVisible(`?profileImage=${bad}`)).toBe(false);
+    }
+    stubConfig({ PROFILE_IMAGE: true });
+    for (const bad of ["abc", "2", "", "10", "false"]) {
+      expect(resolveProfileImageVisible(`?profileImage=${bad}`)).toBe(true);
+    }
+  });
+
+  it("returns hidden only when PROFILE_IMAGE is false", () => {
+    stubConfig({ PROFILE_IMAGE: false });
+    expect(resolveProfileImageVisible("")).toBe(false);
+    stubConfig({ PROFILE_IMAGE: true });
+    expect(resolveProfileImageVisible("")).toBe(true);
+    stubConfig({ PROFILE_IMAGE: 0 });
+    expect(resolveProfileImageVisible("")).toBe(true);
+    stubConfig({});
+    expect(resolveProfileImageVisible("")).toBe(true);
+  });
+
+  it("does not throw when window.location is absent and search is explicit", () => {
+    stubConfig({ PROFILE_IMAGE: false });
+    expect(resolveProfileImageVisible("?profileImage=1")).toBe(true);
+    expect(resolveProfileImageVisible("?profileImage=0")).toBe(false);
+    expect(resolveProfileImageVisible("")).toBe(false);
   });
 });

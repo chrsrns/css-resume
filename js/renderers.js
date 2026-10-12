@@ -2,6 +2,7 @@ import { dateFormat } from "./date.format.js";
 import {
   resolvePillsInline,
   resolveProfileImageSize,
+  resolveProfileImageVisible,
   resolveProjectLimits,
   resolveSkillsInline,
 } from "./config.js";
@@ -116,8 +117,16 @@ const renderProfile = (resume) => {
   if (resume.name) document.title = `Online Resume - ${resume.name}`;
 
   const imgEl = document.getElementById("profileImage");
-  if (imgEl && resume.profile_image_url)
-    imgEl.setAttribute("src", resume.profile_image_url);
+  const imageUrl = String(resume.profile_image_url ?? "").trim();
+  if (imgEl) {
+    if (resolveProfileImageVisible() && imageUrl !== "") {
+      imgEl.setAttribute("src", imageUrl);
+      imgEl.classList.remove("hidden");
+    } else {
+      imgEl.removeAttribute("src");
+      imgEl.classList.add("hidden");
+    }
+  }
 
   if (imgEl) {
     const size = resolveProfileImageSize();
