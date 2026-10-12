@@ -54,7 +54,7 @@ config. Only positive integers are accepted; anything else falls back to
 
 ### Render modes
 
-Four query parameters control how sections render. They apply in API
+Five query parameters control how sections render. They apply in API
 mode, JSON mode, on screen, and in print/PDF output.
 
 - `?skillsInline=<0|1>` — `1` renders skills as a single bullet-separated
@@ -78,6 +78,11 @@ mode, JSON mode, on screen, and in print/PDF output.
   missing or blank `profile_image_url` still renders no image — the
   hardcoded fallback photo was removed, so `index.html` ships no
   `src` and hidden images carry no `src` at all.
+- `?printExperiences=<N>` — caps how many work-experience entries appear
+  in print/PDF output. Only positive integers are accepted; invalid
+  values fall back to `EXPERIENCE_PRINT_LIMIT` in `window.__CONFIG__`,
+  then to the default of 2. Screen rendering always shows every entry
+  regardless of this parameter.
 
 ### Development Proxy
 
@@ -187,6 +192,7 @@ Click the **"Save as PDF"** button or use your browser's print function (`Ctrl+P
 - Scales content to 67% zoom for optimal page fitting
 - Hides navigation elements and interactive buttons
 - Limits portfolio projects to first 6 entries
+- Limits work experiences to the first 2 entries (override with `?printExperiences`)
 - Preserves colors with `print-color-adjust: exact`
 
 ## 📄 License
