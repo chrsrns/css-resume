@@ -2,6 +2,7 @@ import { getConfig, resolveResumeId } from "./config.js";
 import { createWebSocketWithReconnect } from "./websocket.js";
 import { loadJsonDocument, normalizeResumeDocument, renderResumeDocument, resolveJsonSource, showJsonError, waitForRenderedImages } from "./json-mode.js";
 import { clearEl, el, forceStaticProjectsView, hideOverlayPlaceholders, reAddSectionPlaceholder, renderEducation, renderExperience, renderLanguages, renderProfile, renderProjects, renderSkills, renderSummary } from "./renderers.js";
+import { installPrintImageDownscale } from "./print-image.js";
 
 let carouselModulePromise = null;
 const loadCarousel = () => {
@@ -347,6 +348,8 @@ const onReady = async () => {
       window.print();
     };
   }
+
+  installPrintImageDownscale(document.getElementById("profileImage"));
 
   const jsonSource = resolveJsonSource();
   if (jsonSource) {
