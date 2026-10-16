@@ -22,7 +22,10 @@ const handleResumeChange = (event) => {
   const resumeId = resolveResumeId();
 
   // Ignore change events for a resume other than the one being displayed
-  if (event.resume_id != null && Number(event.resume_id) !== resumeId) {
+  if (
+    event.resume_id != null &&
+    String(event.resume_id).toLowerCase() !== String(resumeId).toLowerCase()
+  ) {
     return;
   }
 
@@ -362,7 +365,7 @@ const onReady = async () => {
 
   const { apiBaseUrl } = getConfig();
   const resumeId = resolveResumeId();
-  if (!Number.isFinite(resumeId)) return;
+  if (typeof resumeId !== "string") return;
 
   const refreshers = [
     refreshProfile(apiBaseUrl, resumeId),
