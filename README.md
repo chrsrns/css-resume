@@ -43,7 +43,7 @@ The application can be configured via the global `window.__CONFIG__` object, typ
 ```javascript
 window.__CONFIG__ = {
   API_BASE_URL: "/api",  // Backend API endpoint
-  RESUME_ID: "00000000-0000-0000-0000-000000000000"  // Resume UUID to fetch
+  RESUME_ID: "00000000-0000-0000-0000-000000000000", // Resume UUID to fetch
 };
 ```
 

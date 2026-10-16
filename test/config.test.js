@@ -29,7 +29,10 @@ describe("getConfig", () => {
   });
 
   it("uses provided API_BASE_URL and RESUME_ID", () => {
-    stubConfig({ API_BASE_URL: "https://api.example.com", RESUME_ID: RESUME_UUID });
+    stubConfig({
+      API_BASE_URL: "https://api.example.com",
+      RESUME_ID: RESUME_UUID,
+    });
     expect(getConfig()).toEqual({
       apiBaseUrl: "https://api.example.com",
       resumeId: RESUME_UUID,
@@ -126,7 +129,9 @@ describe("resolveResumeId", () => {
 
   it("?resume_id UUID overrides RESUME_ID", () => {
     stubConfig({ RESUME_ID: RESUME_UUID });
-    expect(resolveResumeId(`?resume_id=${RESUME_UUID_V4}`)).toBe(RESUME_UUID_V4);
+    expect(resolveResumeId(`?resume_id=${RESUME_UUID_V4}`)).toBe(
+      RESUME_UUID_V4,
+    );
   });
 
   it("accepts upper and mixed case UUIDs", () => {
