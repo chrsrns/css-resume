@@ -13,6 +13,9 @@ const stubConfig = (config) => {
   vi.stubGlobal("window", { __CONFIG__: config });
 };
 
+const RESUME_UUID = "018e5c5e-8f4a-7b2c-9d1e-3f4a5b6c7d8e";
+const RESUME_UUID_V4 = "2a4f6b8c-0d1e-4f2a-8b3c-5d7e9f0a1b2c";
+
 describe("getConfig", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -20,32 +23,44 @@ describe("getConfig", () => {
 
   it("uses defaults when window.__CONFIG__ is missing", () => {
     vi.stubGlobal("window", {});
-    expect(getConfig()).toEqual({ apiBaseUrl: "/api", resumeId: 1 });
+    const cfg = getConfig();
+    expect(cfg.apiBaseUrl).toBe("/api");
+    expect(cfg.resumeId).toBeUndefined();
   });
 
   it("uses provided API_BASE_URL and RESUME_ID", () => {
-    stubConfig({ API_BASE_URL: "https://api.example.com", RESUME_ID: 42 });
+    stubConfig({
+      API_BASE_URL: "https://api.example.com",
+      RESUME_ID: RESUME_UUID,
+    });
     expect(getConfig()).toEqual({
       apiBaseUrl: "https://api.example.com",
-      resumeId: 42,
+      resumeId: RESUME_UUID,
     });
   });
 
-  it("parses RESUME_ID from a numeric string", () => {
-    stubConfig({ API_BASE_URL: "/api", RESUME_ID: "192" });
-    expect(getConfig()).toEqual({ apiBaseUrl: "/api", resumeId: 192 });
+  it("trims a RESUME_ID UUID string", () => {
+    stubConfig({ API_BASE_URL: "/api", RESUME_ID: `  ${RESUME_UUID}  ` });
+    expect(getConfig()).toEqual({ apiBaseUrl: "/api", resumeId: RESUME_UUID });
   });
 
   it("defaults API_BASE_URL when it is not a string", () => {
-    stubConfig({ API_BASE_URL: 123, RESUME_ID: 5 });
-    expect(getConfig()).toEqual({ apiBaseUrl: "/api", resumeId: 5 });
+    stubConfig({ API_BASE_URL: 123, RESUME_ID: RESUME_UUID });
+    expect(getConfig()).toEqual({ apiBaseUrl: "/api", resumeId: RESUME_UUID });
   });
 
-  it("returns NaN for a non-numeric RESUME_ID", () => {
-    stubConfig({ API_BASE_URL: "/api", RESUME_ID: "not-a-number" });
+  it("returns undefined resumeId for a non-string RESUME_ID", () => {
+    stubConfig({ API_BASE_URL: "/api", RESUME_ID: 42 });
     const cfg = getConfig();
     expect(cfg.apiBaseUrl).toBe("/api");
-    expect(Number.isNaN(cfg.resumeId)).toBe(true);
+    expect(cfg.resumeId).toBeUndefined();
+  });
+
+  it("returns undefined resumeId for a malformed RESUME_ID", () => {
+    stubConfig({ API_BASE_URL: "/api", RESUME_ID: "not-a-uuid" });
+    const cfg = getConfig();
+    expect(cfg.apiBaseUrl).toBe("/api");
+    expect(cfg.resumeId).toBeUndefined();
   });
 });
 
@@ -112,34 +127,59 @@ describe("resolveResumeId", () => {
     vi.unstubAllGlobals();
   });
 
-  it("?resume_id overrides RESUME_ID", () => {
-    stubConfig({ RESUME_ID: 1 });
-    expect(resolveResumeId("?resume_id=7")).toBe(7);
+  it("?resume_id UUID overrides RESUME_ID", () => {
+    stubConfig({ RESUME_ID: RESUME_UUID });
+    expect(resolveResumeId(`?resume_id=${RESUME_UUID_V4}`)).toBe(
+      RESUME_UUID_V4,
+    );
   });
 
-  it("ignores empty, zero, negative, NaN, Infinity, fractional, and non-numeric values", () => {
-    stubConfig({ RESUME_ID: 5 });
-    for (const bad of ["", "0", "-3", "abc", "NaN", "Infinity", "2.5"]) {
-      expect(resolveResumeId(`?resume_id=${bad}`)).toBe(5);
+  it("accepts upper and mixed case UUIDs", () => {
+    stubConfig({ RESUME_ID: RESUME_UUID });
+    const upper = RESUME_UUID_V4.toUpperCase();
+    expect(resolveResumeId(`?resume_id=${upper}`)).toBe(upper);
+  });
+
+  it("ignores non-UUID values and falls back to RESUME_ID", () => {
+    stubConfig({ RESUME_ID: RESUME_UUID });
+    const hyphenless = RESUME_UUID_V4.replaceAll("-", "");
+    for (const bad of [
+      "",
+      "7",
+      "0",
+      "-3",
+      "abc",
+      "NaN",
+      "Infinity",
+      "2.5",
+      hyphenless,
+      RESUME_UUID_V4.slice(0, -2),
+      `${RESUME_UUID_V4}-1234`,
+      `{${RESUME_UUID_V4}}`,
+      ` ${RESUME_UUID_V4}x`,
+    ]) {
+      expect(resolveResumeId(`?resume_id=${bad}`)).toBe(RESUME_UUID);
     }
   });
 
   it("returns RESUME_ID when the param is absent", () => {
-    stubConfig({ RESUME_ID: 42 });
-    expect(resolveResumeId("")).toBe(42);
-    expect(resolveResumeId("?projects=3")).toBe(42);
+    stubConfig({ RESUME_ID: RESUME_UUID });
+    expect(resolveResumeId("")).toBe(RESUME_UUID);
+    expect(resolveResumeId("?projects=3")).toBe(RESUME_UUID);
   });
 
-  it("passes the RESUME_ID fallback through unvalidated", () => {
+  it("returns undefined when RESUME_ID is missing or malformed", () => {
     stubConfig({ RESUME_ID: 0 });
-    expect(resolveResumeId("?resume_id=abc")).toBe(0);
+    expect(resolveResumeId("?resume_id=abc")).toBeUndefined();
     stubConfig({ RESUME_ID: "bogus" });
-    expect(Number.isNaN(resolveResumeId(""))).toBe(true);
+    expect(resolveResumeId("")).toBeUndefined();
+    stubConfig({});
+    expect(resolveResumeId("")).toBeUndefined();
   });
 
   it("does not throw when window.location is absent", () => {
-    stubConfig({ RESUME_ID: 3 });
-    expect(resolveResumeId()).toBe(3);
+    stubConfig({ RESUME_ID: RESUME_UUID });
+    expect(resolveResumeId()).toBe(RESUME_UUID);
   });
 });
 
