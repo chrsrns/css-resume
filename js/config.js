@@ -5,15 +5,21 @@ const toPositiveInteger = (value) => {
   return n;
 };
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const toUuid = (value) => {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return UUID_RE.test(trimmed) ? trimmed : undefined;
+};
+
 export const getConfig = () => {
   const cfg = (typeof window !== "undefined" && window.__CONFIG__) || {};
   return {
     apiBaseUrl:
       typeof cfg.API_BASE_URL === "string" ? cfg.API_BASE_URL : "/api",
-    resumeId:
-      typeof cfg.RESUME_ID === "number"
-        ? cfg.RESUME_ID
-        : Number.parseInt(String(cfg.RESUME_ID || "1"), 10),
+    resumeId: toUuid(cfg.RESUME_ID),
   };
 };
 
@@ -24,7 +30,7 @@ export const resolveResumeId = (
   configResumeId = getConfig().resumeId,
 ) => {
   const params = new URLSearchParams(search);
-  return toPositiveInteger(params.get("resume_id")) ?? configResumeId;
+  return toUuid(params.get("resume_id")) ?? configResumeId;
 };
 
 export const resolveSkillsInline = (

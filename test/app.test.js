@@ -11,6 +11,10 @@ class FakeIntersectionObserver {
   disconnect() { }
 }
 
+const RESUME_UUID = "018e5c5e-8f4a-7b2c-9d1e-3f4a5b6c7d8e";
+const OVERRIDE_UUID = "2a4f6b8c-0d1e-4f2a-8b3c-5d7e9f0a1b2c";
+const OTHER_UUID = "9b8c7d6e-5f4a-4b3c-8d2e-1f0a9b8c7d6e";
+
 const setProjectsHtml = () => {
   document.body.innerHTML = `
     <button id="projectsViewToggle" type="button">Show Static List</button>
@@ -39,7 +43,7 @@ describe("carousel module load failure", () => {
       ok: true,
       json: async () => ({ body: [] }),
     }));
-    window.__CONFIG__ = { API_BASE_URL: "/api", RESUME_ID: 1 };
+    window.__CONFIG__ = { API_BASE_URL: "/api", RESUME_ID: RESUME_UUID };
     setProjectsHtml();
   });
 
@@ -209,7 +213,7 @@ describe("JSON mode render completion", () => {
   });
 
   it("does not set __RESUME_RENDER_DONE__ in API mode", async () => {
-    window.__CONFIG__ = { API_BASE_URL: "/api", RESUME_ID: 1 };
+    window.__CONFIG__ = { API_BASE_URL: "/api", RESUME_ID: RESUME_UUID };
     const { onReady } = await import("../js/app.js");
     await onReady();
     expect(window.__RESUME_RENDER_DONE__).toBeUndefined();
@@ -528,7 +532,7 @@ describe("API mode ?resume_id override", () => {
 
   const bootApi = async (
     search,
-    config = { API_BASE_URL: "/api", RESUME_ID: 1 },
+    config = { API_BASE_URL: "/api", RESUME_ID: RESUME_UUID },
   ) => {
     stubLocation({ search, hash: "", href: `http://localhost/${search}` });
     window.__CONFIG__ = config;
@@ -537,13 +541,18 @@ describe("API mode ?resume_id override", () => {
   };
 
   it("fetches every section and subscribes with the ?resume_id override", async () => {
-    await bootApi("?resume_id=7");
+    await bootApi(`?resume_id=${OVERRIDE_UUID}`);
 
     expect(fetchSpy).toHaveBeenCalled();
     for (const [url] of fetchSpy.mock.calls) {
-      expect(url).toContain("/resume/7");
+      expect(url).toContain(`/resume/${OVERRIDE_UUID}`);
     }
-    expect(wsSpy).toHaveBeenCalledWith("/api", 7, null, expect.any(Function));
+    expect(wsSpy).toHaveBeenCalledWith(
+      "/api",
+      OVERRIDE_UUID,
+      null,
+      expect.any(Function),
+    );
   });
 
   it("ignores an invalid ?resume_id and falls back to RESUME_ID", async () => {
@@ -551,20 +560,40 @@ describe("API mode ?resume_id override", () => {
 
     expect(fetchSpy).toHaveBeenCalled();
     for (const [url] of fetchSpy.mock.calls) {
-      expect(url).toContain("/resume/1");
+      expect(url).toContain(`/resume/${RESUME_UUID}`);
     }
-    expect(wsSpy).toHaveBeenCalledWith("/api", 1, null, expect.any(Function));
+    expect(wsSpy).toHaveBeenCalledWith(
+      "/api",
+      RESUME_UUID,
+      null,
+      expect.any(Function),
+    );
+  });
+
+  it("aborts without fetching or subscribing when RESUME_ID is malformed", async () => {
+    for (const bad of ["bogus", "192", 1, undefined]) {
+      fetchSpy.mockClear();
+      wsSpy.mockClear();
+      vi.resetModules();
+      await bootApi("", { API_BASE_URL: "/api", RESUME_ID: bad });
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(wsSpy).not.toHaveBeenCalled();
+      expect(
+        document.getElementById("jsonErrorBanner").classList.contains("hidden"),
+      ).toBe(true);
+    }
   });
 
   it("a resume.changed refresh fetches the resolved id", async () => {
-    await bootApi("?resume_id=7");
+    await bootApi(`?resume_id=${OVERRIDE_UUID}`);
     fetchSpy.mockClear();
 
     const handler = wsSpy.mock.calls[0][3];
     handler({
       data: JSON.stringify({
         type: "resume.changed",
-        resume_id: 7,
+        resume_id: OVERRIDE_UUID,
         action: { updated: "skills" },
       }),
     });
@@ -572,19 +601,39 @@ describe("API mode ?resume_id override", () => {
 
     expect(fetchSpy).toHaveBeenCalled();
     for (const [url] of fetchSpy.mock.calls) {
-      expect(url).toContain("/resume/7/skills");
+      expect(url).toContain(`/resume/${OVERRIDE_UUID}/skills`);
     }
   });
 
-  it("ignores resume.changed events for a different resume id", async () => {
-    await bootApi("?resume_id=7");
+  it("refreshes on a case-mismatched resume.changed resume_id", async () => {
+    await bootApi(`?resume_id=${OVERRIDE_UUID}`);
     fetchSpy.mockClear();
 
     const handler = wsSpy.mock.calls[0][3];
     handler({
       data: JSON.stringify({
         type: "resume.changed",
-        resume_id: 99,
+        resume_id: OVERRIDE_UUID.toUpperCase(),
+        action: { updated: "skills" },
+      }),
+    });
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(fetchSpy).toHaveBeenCalled();
+    for (const [url] of fetchSpy.mock.calls) {
+      expect(url).toContain(`/resume/${OVERRIDE_UUID}/skills`);
+    }
+  });
+
+  it("ignores resume.changed events for a different resume id", async () => {
+    await bootApi(`?resume_id=${OVERRIDE_UUID}`);
+    fetchSpy.mockClear();
+
+    const handler = wsSpy.mock.calls[0][3];
+    handler({
+      data: JSON.stringify({
+        type: "resume.changed",
+        resume_id: OTHER_UUID,
         action: { updated: "skills" },
       }),
     });
@@ -595,9 +644,9 @@ describe("API mode ?resume_id override", () => {
 
   it("a JSON source beats ?resume_id", async () => {
     stubLocation({
-      search: "?resume_id=9",
+      search: `?resume_id=${OVERRIDE_UUID}`,
       hash: "",
-      href: "http://localhost/?resume_id=9",
+      href: `http://localhost/?resume_id=${OVERRIDE_UUID}`,
     });
     window.__CONFIG__ = { RESUME_JSON: resumeDocumentFixture() };
     const { onReady } = await import("../js/app.js");

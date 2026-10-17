@@ -87,22 +87,29 @@ describe("createWebSocketConnection", () => {
   });
 
   it("sends a subscribe message on open", () => {
-    const ws = createWebSocketConnection("/api", 192);
+    const ws = createWebSocketConnection(
+      "/api",
+      "018e5c5e-8f4a-7b2c-9d1e-3f4a5b6c7d8e",
+    );
     expect(ws.url).toBe("wss://api.example.com/api/ws");
     ws.open();
     expect(ws.sent).toHaveLength(1);
     expect(JSON.parse(ws.sent[0])).toEqual({
       type: "subscribe",
-      resume_id: 192,
+      resume_id: "018e5c5e-8f4a-7b2c-9d1e-3f4a5b6c7d8e",
     });
   });
 
   it("includes auth token when provided", () => {
-    const ws = createWebSocketConnection("/api", 192, "secret-token");
+    const ws = createWebSocketConnection(
+      "/api",
+      "018e5c5e-8f4a-7b2c-9d1e-3f4a5b6c7d8e",
+      "secret-token",
+    );
     ws.open();
     expect(JSON.parse(ws.sent[0])).toEqual({
       type: "subscribe",
-      resume_id: 192,
+      resume_id: "018e5c5e-8f4a-7b2c-9d1e-3f4a5b6c7d8e",
       token: "secret-token",
     });
   });

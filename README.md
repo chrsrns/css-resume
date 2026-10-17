@@ -43,14 +43,14 @@ The application can be configured via the global `window.__CONFIG__` object, typ
 ```javascript
 window.__CONFIG__ = {
   API_BASE_URL: "/api",  // Backend API endpoint
-  RESUME_ID: 1           // Resume ID to fetch
+  RESUME_ID: "00000000-0000-0000-0000-000000000000", // Resume UUID to fetch
 };
 ```
 
-The `?resume_id=<id>` query parameter overrides `RESUME_ID` for a single
+The `?resume_id=<uuid>` query parameter overrides `RESUME_ID` for a single
 visit — handy for previewing a different public resume without changing
-config. Only positive integers are accepted; anything else falls back to
-`RESUME_ID`. The parameter is ignored when a JSON resume source is in use.
+config. Only canonical UUID strings are accepted; anything else falls back
+to `RESUME_ID`. The parameter is ignored when a JSON resume source is in use.
 
 ### Render modes
 
@@ -167,7 +167,7 @@ The application subscribes to real-time updates via WebSocket:
 ```json
 {
   "type": "subscribe",
-  "resume_id": 1,
+  "resume_id": "00000000-0000-0000-0000-000000000000",
   "token": "optional-auth-token"
 }
 ```
@@ -176,7 +176,7 @@ The application subscribes to real-time updates via WebSocket:
 ```json
 {
   "type": "resume.changed",
-  "resume_id": 1,
+  "resume_id": "00000000-0000-0000-0000-000000000000",
   "action": {
     "updated": "education"
   }
